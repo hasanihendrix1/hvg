@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-wholesalinglp-dev-184042-authRole",
+      "UnauthRoleArn": "arn:aws:iam::590184116055:role/amplify-wholesalinglp-dev-184042-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::590184116055:role/amplify-wholesalinglp-dev-184042-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-wholesalinglp-dev-184042-deployment",
+      "UnauthRoleName": "amplify-wholesalinglp-dev-184042-unauthRole",
+      "StackName": "amplify-wholesalinglp-dev-184042",
+      "StackId": "arn:aws:cloudformation:us-east-1:590184116055:stack/amplify-wholesalinglp-dev-184042/be286b30-5ce9-11ef-b166-0afff3a029dd",
+      "AmplifyAppId": "d1nk0nmhk6yvht"
+    }
+  }
+}
