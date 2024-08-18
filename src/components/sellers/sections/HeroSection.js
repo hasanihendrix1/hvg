@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/components/sellers/HeroSection.css";
+import "../../../styles/components/sellers/sections/HeroSection.css";
 
 const HeroSection = ({ title, subtitle }) => {
   const [animateUnderline, setAnimateUnderline] = useState(false);

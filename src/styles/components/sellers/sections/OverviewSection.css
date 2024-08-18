@@ -1,4 +1,4 @@
-@import "../../variables.css";
+@import "../../../variables.css";
 
 .overview {
   padding: 60px 20px;
@@ -19,6 +19,7 @@
   gap: 40px;
   max-width: 1200px;
   margin: 0 auto;
+  align-items: center; /* Vertically align content */
 }
 
 .overview-content .point {
@@ -38,4 +39,11 @@
   font-size: 1.1rem;
   line-height: 1.6;
   color: var(--form-text-color); /* Consistent dark gray for paragraph text */
+}
+
+.overview-image img {
+  width: 200px; /* Adjust this size as needed */
+  border-radius: 50%; /* Make the image circular */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Add some shadow for effect */
+  margin-left: 20px; /* Adds a little space between the image and the content */
 }

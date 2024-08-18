@@ -1,5 +1,6 @@
 import React from "react";
-import "../../styles/components/sellers/OverviewSection.css";
+import "../../../styles/components/sellers/sections/OverviewSection.css";
+import headshot from "../../../assets/logos/Headshot1.jpg";
 
 const OverviewSection = () => {
   return (
@@ -19,6 +20,9 @@ const OverviewSection = () => {
             Skip the agent commissions and repairs. We provide fair,
             no-obligation offers.
           </p>
+        </div>
+        <div className="overview-image">
+          <img src={headshot} alt="Company Logo or Headshot" />
         </div>
       </div>
     </section>

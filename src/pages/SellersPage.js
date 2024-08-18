@@ -1,9 +1,10 @@
 import React from "react";
-import HeroSection from "../components/sellers/HeroSection";
-import OverviewSection from "../components/sellers/OverviewSection";
+import HeroSection from "../components/sellers/sections/HeroSection";
+import OverviewSection from "../components/sellers/sections/OverviewSection";
 import SellerForm from "../components/sellers/SellerForm";
 import "../styles/pages/SellersPage.css";
 import WaveSVG from "../assets/images/hero-divider.svg";
+import FeaturedTestimonial from "../components/sellers/sections/FeaturedTestimonial";
 
 const SellersPage = () => {
   return (
@@ -22,6 +23,11 @@ const SellersPage = () => {
       </div>
       {/* Overview Section */}
       <OverviewSection />
+      {/* Testimonial Section */}
+      <FeaturedTestimonial
+        backgroundColor="var(--secondary-color)"
+        videoQuote="Very quick, very easy... we closed in 4 days. I spoke with you on Monday and here we are on Thursday."
+      />
     </div>
   );
 };
