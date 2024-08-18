@@ -1,0 +1,43 @@
+/* Importing the variables */
+@import '../../../styles/variables.css';
+
+.footer {
+  background-color: #000; /* Keeping black for contrast */
+  color: #fff;
+  padding: 25px;
+  text-align: center;
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 20px;
+}
+
+.footer-nav a {
+  color: var(--primary-hover); /* Slightly lighter maroon */
+  text-decoration: none;
+  font-weight: bold;
+  text-shadow: 0px 0px 5px rgba(194, 24, 91, 0.6);
+}
+
+.footer-nav a:hover {
+  text-decoration: underline;
+  color: var(--primary-color); /* Maroon color */
+}
+
+.footer-description {
+  margin: 40px auto 25px auto;
+  font-size: 1rem;
+  max-width: 800px;
+  line-height: 1.6;
+}
+
+.footer-description p {
+  margin: 0;
+}
+
+.footer-copyright {
+  font-size: 0.9rem;
+}

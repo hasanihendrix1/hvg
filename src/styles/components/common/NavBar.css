@@ -1,0 +1,57 @@
+/* Importing the variables */
+@import "../../../styles/variables.css";
+
+header {
+  background-color: var(--primary-color); /* Using the maroon color */
+  color: #fff;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-middle {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.cta-button-top {
+  background-color: #fff;
+  color: var(--primary-color);
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cta-button-top:hover {
+  background-color: var(--secondary-color);
+}

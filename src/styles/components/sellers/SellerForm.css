@@ -1,0 +1,70 @@
+/* Form Section with Box Style */
+.seller-form {
+  margin-top: -100px; /* Adjusted to overlap the hero section */
+  padding: 40px 30px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.95
+  ); /* White background with slight transparency */
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 2;
+  position: relative;
+}
+
+.seller-form form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.seller-form label {
+  color: black; /* Set label color to black */
+  font-weight: 400; /* You can add bold if you want the labels to stand out */
+  margin-bottom: 5px; /* Add some spacing between the label and the input */
+  display: block; /* Ensures label is above the input field */
+}
+
+.seller-form p {
+  margin-bottom: 20px;
+  color: black; /* Updated to primary-dark color */
+  font-weight: 500;
+}
+
+.seller-form input,
+.seller-form button {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: var(--form-text-color); /* Updated text color */
+}
+
+.seller-form input::placeholder {
+  color: var(
+    --form-placeholder-color
+  ); /* Placeholder color for better visibility */
+}
+
+.seller-form button {
+  background-color: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+}
+
+.seller-form button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Responsive adjustments for form container */
+@media (max-width: 768px) {
+  .seller-form {
+    margin-top: -60px;
+    padding: 30px 15px;
+  }
+}
