@@ -1,0 +1,24 @@
+/* variables.css */
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+
+/* Primary Branding Colors */
+:root {
+  --primary-color: #ae114f; /* Main maroon color */
+  --secondary-color: #d5b5a3; /* Neutral beige/tan color */
+
+  /* Variations */
+  --primary-hover: #c1245e; /* Lighter shade for hover effects */
+  --primary-dark: #8a0e40; /* Darker shade for text or accents */
+  --secondary-dark: #bf9983;
+  --secondary-light: #f0ddd1; /* Lighter variation of the neutral color */
+
+  /* Button Colors */
+  --button-background: var(--primary-color);
+  --button-hover: var(--primary-hover);
+  --button-text: #fff; /* White text for contrast */
+
+  --form-text-color: #333; /* Dark gray for text in the form */
+  --form-placeholder-color: #888; /* Lighter gray for placeholders */
+}
+
+/* You can add more variables as needed for text colors, shadows, etc. */

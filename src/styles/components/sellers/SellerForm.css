@@ -1,0 +1,74 @@
+@import "../../variables.css";
+
+/* Form Styling */
+.seller-form {
+  padding: 32px 20px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.915
+  ); /* Slight transparency for the background */
+  border-radius: 20px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 2;
+  position: relative;
+}
+
+.seller-form form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.seller-form label {
+  color: var(
+    --form-text-color
+  ); /* Use the dark gray form text color for labels */
+  font-weight: 400; /* Keep the labels slightly lighter */
+  margin-bottom: 5px;
+  display: block;
+}
+
+.seller-form p {
+  margin-bottom: 20px;
+  color: var(--form-text-color); /* Ensure consistency with form text */
+  font-weight: 500;
+}
+
+.seller-form input,
+.seller-form button {
+  width: 100%;
+  padding: 12.5px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid var(--secondary-dark); /* Consistent border color */
+  color: var(--form-text-color); /* Dark gray text inside input fields */
+  margin-bottom: 10px;
+}
+
+.seller-form input::placeholder {
+  color: var(--form-placeholder-color); /* Lighter gray placeholder color */
+}
+
+.seller-form button {
+  background-color: var(--primary-color);
+  color: var(--button-text);
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.seller-form button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Responsive adjustments for form container */
+@media (max-width: 768px) {
+  .seller-form {
+    margin-top: -60px;
+    padding: 30px 15px;
+  }
+}

@@ -1,0 +1,118 @@
+/* Importing the variables */
+@import "../../../styles/variables.css";
+
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: var(--primary-color);
+  color: var(--button-text); /* White text */
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--primary-color); /* Using the maroon color */
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-right p {
+  margin: 0;
+  font-size: 1rem; /* Adjust size as needed */
+  vertical-align: middle; /* Aligns it with other elements */
+  display: inline-block;
+}
+
+.cta-button-top {
+  margin-left: 15px; /* Space between the phone number and the button */
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.company-logo {
+  height: 40px; /* Adjust logo height */
+  margin-right: 0px; /* Space between logo and company name */
+  vertical-align: middle; /* Ensures the logo aligns vertically with the text */
+  display: inline-block; /* Keeps it inline with the text */
+}
+
+.navbar-left p {
+  display: inline-block;
+  vertical-align: middle; /* Aligns the company name text with the logo */
+  margin: 0;
+}
+
+.navbar-middle {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  align-items: center; /* This aligns the links vertically */
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  margin: 0; /* Remove any default margin that might be affecting alignment */
+  padding: 0; /* Remove any default padding that might be affecting alignment */
+}
+
+.nav-links a {
+  color: var(--button-text); /* White text */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+  color: var(--secondary-dark); /* Darker neutral for hover effect */
+}
+
+.cta-button-top {
+  background-color: var(--button-text); /* White background */
+  color: var(--primary-color); /* Maroon text */
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cta-button-top:hover {
+  background-color: var(--secondary-light); /* Lighter variation for hover */
+}
+
+@media (max-width: 480px) {
+  .top-bar {
+    flex-direction: column;
+    padding: 15px 10px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cta-button-top {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  body {
+    padding-top: 50px; /* Adjust padding to accommodate the navbar */
+  }
+}

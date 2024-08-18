@@ -1,0 +1,8 @@
+/* SVG wave styling */
+.wave-svg {
+  width: 100%;
+  height: auto;
+  position: relative;
+  margin-top: -5px; /* Adjust to fine-tune the overlap with the hero section */
+  z-index: 2;
+}

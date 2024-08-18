@@ -1,0 +1,86 @@
+@import "../../../styles/variables.css";
+@import "~bootstrap/dist/css/bootstrap.min.css"; /* Importing Bootstrap */
+
+/* Footer Container */
+.footer {
+  background-color: black;
+  color: var(--button-text);
+  padding: 25px;
+  text-align: center;
+}
+
+/* Navigation Links */
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-nav a {
+  color: var(--secondary-dark);
+  text-decoration: none;
+  font-weight: bold;
+  text-shadow: 0px 0px 5px rgba(194, 24, 91, 0.6);
+}
+
+.footer-nav a:hover {
+  text-decoration: underline;
+  color: var(--primary-color);
+}
+
+/* Footer Description */
+.footer-description {
+  margin: 40px auto 25px auto;
+  font-size: 1rem;
+  max-width: 800px;
+  line-height: 1.6;
+  color: var(--secondary-light);
+}
+
+/* Footer Text Adjustments */
+.footer-description p {
+  margin: 0;
+}
+
+.footer-copyright {
+  font-size: 0.9rem;
+  color: var(--secondary-light);
+}
+
+/* Bootstrap-based Responsive Adjustments */
+@media (max-width: 768px) {
+  .footer {
+    padding: 20px;
+  }
+
+  .footer-nav {
+    gap: 15px;
+  }
+
+  .footer-description {
+    font-size: 0.9rem;
+    padding: 0 15px;
+  }
+
+  .footer-copyright {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-nav {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-description {
+    font-size: 0.85rem;
+  }
+
+  .footer-copyright {
+    font-size: 0.75rem;
+  }
+}
