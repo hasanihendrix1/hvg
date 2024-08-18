@@ -8,7 +8,7 @@ const HeroSection = ({ title, subtitle }) => {
   return (
     <section className="hero">
       <div className="hero-content">
-        <h1>{title}</h1>
+        <h1 className="title">{title}</h1>
         {lines.map((line, index) => (
           <p key={index} className="subtitle-line">
             {/* Conditionally render text with bold styling */}

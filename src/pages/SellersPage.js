@@ -13,7 +13,7 @@ const SellersPage = () => {
         <img src={WaveSVG} alt="wave divider" className="wave-svg" />
         <HeroSection
           title="We Buy Houses in Atlanta, FAST!"
-          subtitle={`No Fees | No Commissions | No Closing Costs\nAny Condition Accepted | Get a Net Cash Offer\nSkip the Hassle – Sell Direct, Get Paid Faster.\n\nThis is Hendrix Ventures Group, LLC Official Website`}
+          subtitle={`No Fees | No Commissions | No Closing Costs\nAny Condition | Net Cash Offer\nSkip the Hassle – Sell Direct, Get Paid Faster.\n\nThis is Hendrix Ventures Group, LLC Official Website`}
         />
 
         <SellerForm />
