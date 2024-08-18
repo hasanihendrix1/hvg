@@ -1,12 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../../styles/components/common/NavBar.css";
+import logo from "../../assets/logos/HVentures-Logo1.png";
 
 const Navbar = () => {
   return (
     <header>
       <div className="top-bar">
         <div className="navbar-left">
+          <img src={logo} alt="Company Logo" className="company-logo" />
           <p>Hendrix Ventures Group, LLC</p>
         </div>
         <div className="navbar-middle">

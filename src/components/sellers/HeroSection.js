@@ -1,17 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/components/sellers/HeroSection.css";
 
 const HeroSection = ({ title, subtitle }) => {
-  // Split subtitle by line breaks and map over the lines
+  const [animateUnderline, setAnimateUnderline] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setAnimateUnderline(true);
+    }, 500); // Delay to make animation noticeable
+  }, []);
+
   const lines = subtitle.split("\n");
 
   return (
     <section className="hero">
       <div className="hero-content">
-        <h1 className="title">{title}</h1>
+        <h1 className="title">
+          {title.split(" ").map((word, index) =>
+            word === "FAST!" ? (
+              <span
+                key={index}
+                className={`underline-animation ${
+                  animateUnderline ? "underline-animate" : ""
+                }`}
+              >
+                {word}
+              </span>
+            ) : (
+              `${word} `
+            )
+          )}
+        </h1>
         {lines.map((line, index) => (
           <p key={index} className="subtitle-line">
-            {/* Conditionally render text with bold styling */}
             {line.includes("Hendrix Ventures Group, LLC") ? (
               <>
                 {line.split("Hendrix Ventures Group, LLC")[0]}
