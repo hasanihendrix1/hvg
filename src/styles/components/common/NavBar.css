@@ -19,28 +19,55 @@ header {
   background-color: var(--primary-color); /* Using the maroon color */
 }
 
-.navbar-left,
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* Styling for the company logo */
+.navbar-right p {
+  margin: 0;
+  font-size: 1rem; /* Adjust size as needed */
+  vertical-align: middle; /* Aligns it with other elements */
+  display: inline-block;
+}
+
+.cta-button-top {
+  margin-left: 15px; /* Space between the phone number and the button */
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 .company-logo {
-  height: 40px; /* Adjust size as needed */
+  height: 40px; /* Adjust logo height */
+  margin-right: 0px; /* Space between logo and company name */
+  vertical-align: middle; /* Ensures the logo aligns vertically with the text */
+  display: inline-block; /* Keeps it inline with the text */
+}
+
+.navbar-left p {
+  display: inline-block;
+  vertical-align: middle; /* Aligns the company name text with the logo */
+  margin: 0;
 }
 
 .navbar-middle {
   display: flex;
   justify-content: center;
   flex: 1;
+  align-items: center; /* This aligns the links vertically */
 }
 
 .nav-links {
   list-style: none;
   display: flex;
   gap: 25px;
+  margin: 0; /* Remove any default margin that might be affecting alignment */
+  padding: 0; /* Remove any default padding that might be affecting alignment */
 }
 
 .nav-links a {
