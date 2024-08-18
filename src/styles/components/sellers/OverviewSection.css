@@ -2,8 +2,8 @@
 
 .overview {
   padding: 60px 20px;
-  background-color: var(--secondary-light);
   text-align: center;
+  margin-top: 40px; /* Additional margin to create spacing */
 }
 
 .overview h2 {

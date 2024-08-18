@@ -17,6 +17,8 @@ const SellersPage = () => {
         />
 
         <SellerForm />
+        {/* Spacer */}
+        <div style={{ height: "50px" }}></div>
       </div>
       {/* Overview Section */}
       <OverviewSection />
