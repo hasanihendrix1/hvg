@@ -1,4 +1,4 @@
-@import '../../variables.css';
+@import "../../variables.css";
 
 .overview {
   padding: 60px 20px;
@@ -10,6 +10,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 40px;
+  color: var(--primary-dark); /* Applied a darker variation for the heading */
 }
 
 .overview-content {
@@ -23,15 +24,18 @@
 .overview-content .point {
   flex: 1;
   text-align: left;
+  color: var(--form-text-color); /* Applied dark gray for point text */
 }
 
 .overview-content .point h3 {
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 10px;
+  color: var(--primary-color); /* Applied maroon for subheadings */
 }
 
 .overview-content .point p {
   font-size: 1.1rem;
   line-height: 1.6;
+  color: var(--form-text-color); /* Consistent dark gray for paragraph text */
 }

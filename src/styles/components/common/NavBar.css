@@ -6,7 +6,7 @@ header {
   top: 0;
   width: 100%;
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--button-text); /* White text */
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -16,6 +16,7 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
+  background-color: var(--primary-color); /* Using the maroon color */
 }
 
 .navbar-left,
@@ -28,7 +29,6 @@ header {
 /* Styling for the company logo */
 .company-logo {
   height: 40px; /* Adjust size as needed */
-  margin-right: 0px; /* Space between logo and company name */
 }
 
 .navbar-middle {
@@ -44,18 +44,19 @@ header {
 }
 
 .nav-links a {
-  color: #fff;
+  color: var(--button-text); /* White text */
   text-decoration: none;
   font-weight: bold;
 }
 
 .nav-links a:hover {
   text-decoration: underline;
+  color: var(--secondary-dark); /* Darker neutral for hover effect */
 }
 
 .cta-button-top {
-  background-color: #fff;
-  color: var(--primary-color);
+  background-color: var(--button-text); /* White background */
+  color: var(--primary-color); /* Maroon text */
   padding: 8px 15px;
   border: none;
   border-radius: 5px;
@@ -64,9 +65,27 @@ header {
 }
 
 .cta-button-top:hover {
-  background-color: var(--secondary-color);
+  background-color: var(--secondary-light); /* Lighter variation for hover */
 }
 
-body {
-  padding-top: 70px;
+@media (max-width: 480px) {
+  .top-bar {
+    flex-direction: column;
+    padding: 15px 10px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cta-button-top {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  body {
+    padding-top: 50px; /* Adjust padding to accommodate the navbar */
+  }
 }

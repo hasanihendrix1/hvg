@@ -1,7 +1,14 @@
+@import "../../variables.css";
+
 /* Form Styling */
 .seller-form {
   padding: 32px 20px;
-  background: rgba(255, 255, 255, 0.915); /* Increased background opacity */
+  background: rgba(
+    255,
+    255,
+    255,
+    0.915
+  ); /* Slight transparency for the background */
   border-radius: 20px;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
   max-width: 700px;
@@ -17,38 +24,41 @@
 }
 
 .seller-form label {
-  color: black; /* Set label color to black */
-  font-weight: 400; /* You can add bold if you want the labels to stand out */
-  margin-bottom: 5px; /* Add some spacing between the label and the input */
-  display: block; /* Ensures label is above the input field */
+  color: var(
+    --form-text-color
+  ); /* Use the dark gray form text color for labels */
+  font-weight: 400; /* Keep the labels slightly lighter */
+  margin-bottom: 5px;
+  display: block;
 }
 
 .seller-form p {
   margin-bottom: 20px;
-  color: black; /* Updated to primary-dark color */
+  color: var(--form-text-color); /* Ensure consistency with form text */
   font-weight: 500;
 }
 
 .seller-form input,
 .seller-form button {
   width: 100%;
-  padding: 10px;
+  padding: 12.5px;
   margin: 10px 0;
   border-radius: 5px;
-  border: 1px solid #ccc;
-  color: var(--form-text-color); /* Updated text color */
+  border: 1px solid var(--secondary-dark); /* Consistent border color */
+  color: var(--form-text-color); /* Dark gray text inside input fields */
+  margin-bottom: 10px;
 }
 
 .seller-form input::placeholder {
-  color: var(
-    --form-placeholder-color
-  ); /* Placeholder color for better visibility */
+  color: var(--form-placeholder-color); /* Lighter gray placeholder color */
 }
 
 .seller-form button {
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--button-text);
   cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
 .seller-form button:hover {

@@ -1,17 +1,43 @@
-/* Title and Subtitle Styling */
+@import "../../variables.css";
+
+/* Hero Section Styling */
+.hero {
+  padding: 40px 20px; /* Adjusted padding for better spacing */
+  text-align: center;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-form-container {
+  position: relative;
+  padding: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("/src/assets/images/home_reno.jpg") no-repeat center center/cover;
+  color: #fff;
+}
+
+/* Title Styling */
 .hero-content .title {
   margin-bottom: 10px;
   text-shadow: -7px -4px 2px rgba(0, 0, 0, 0.268);
   font-size: 2.8rem;
   font-weight: 800;
+  color: var(--button-text); /* Using the white text color */
 }
 
 /* Subtitle Styling */
-.hero-content .subtitle-line {
-  margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+.hero-content p,
+.subtitle-line {
   font-size: 1.2rem;
+  margin-bottom: 15px;
   white-space: pre-line;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Bold Text */
+.bold-text {
+  font-weight: bold;
 }
 
 /* Animation for the Underlines */
@@ -42,10 +68,7 @@
   transition-delay: 0.6s; /* Delay for the second underline */
 }
 
-.underline-animation.underline-animate::before {
-  width: 100%;
-}
-
+.underline-animation.underline-animate::before,
 .underline-animation.underline-animate::after {
   width: 100%;
 }

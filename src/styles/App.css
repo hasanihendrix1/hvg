@@ -1,3 +1,5 @@
+@import "./variables.css";
+
 .App {
   text-align: center;
 }
@@ -14,18 +16,22 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: var(--primary-dark); /* Updated to use primary dark color */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(
+    --button-text
+  ); /* Using the white button text color for consistency */
 }
 
 .App-link {
-  color: #61dafb;
+  color: var(
+    --secondary-light
+  ); /* Updated to use your lighter secondary color */
 }
 
 @keyframes App-logo-spin {

@@ -1,4 +1,5 @@
 /* variables.css */
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
 
 /* Primary Branding Colors */
 :root {
@@ -8,6 +9,7 @@
   /* Variations */
   --primary-hover: #c1245e; /* Lighter shade for hover effects */
   --primary-dark: #8a0e40; /* Darker shade for text or accents */
+  --secondary-dark: #bf9983;
   --secondary-light: #f0ddd1; /* Lighter variation of the neutral color */
 
   /* Button Colors */
