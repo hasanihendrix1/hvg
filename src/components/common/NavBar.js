@@ -4,6 +4,12 @@ import "../../styles/components/common/NavBar.css";
 import logo from "../../assets/logos/HVentures-Logo1.png";
 
 const Navbar = () => {
+  const navLinks = [
+    { path: "/how-it-works", label: "How It Works" },
+    { path: "/our-company", label: "Our Company" },
+    { path: "/terms-conditions", label: "Terms & Conditions" },
+    { path: "/privacy-policy", label: "Privacy Policy" },
+  ];
   return (
     <header>
       <div className="top-bar">
@@ -13,18 +19,11 @@ const Navbar = () => {
         </div>
         <div className="navbar-middle">
           <ul className="nav-links">
-            <li>
-              <Link to="/how-it-works">How It Works</Link>
-            </li>
-            <li>
-              <Link to="/our-company">Our Company</Link>
-            </li>
-            <li>
-              <Link to="/terms-conditions">Terms & Conditions</Link>
-            </li>
-            <li>
-              <Link to="/privacy-policy">Privacy Policy</Link>
-            </li>
+            {navLinks.map((link) => (
+              <li key={link.path}>
+                <Link to={link.path}>{link.label}</Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="navbar-right">

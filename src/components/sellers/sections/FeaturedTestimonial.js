@@ -2,7 +2,7 @@ import React from "react";
 import "../../../styles/components/sellers/sections/FeaturedTestimonial.css";
 import sellerImage from "../../../assets/logos/seller_closing.jpg";
 
-const FeaturedTestimonial = ({ backgroundColor }) => {
+const FeaturedTestimonial = ({ backgroundColor = "#fff" }) => {
   return (
     <section
       className="testimonial-section"
@@ -19,8 +19,8 @@ const FeaturedTestimonial = ({ backgroundColor }) => {
         </blockquote>
         <div className="testimonial-note">
           <em>
-            – Helped homeowner avoid <strong>foreclosure</strong> with just days to spare
-            before deadline.
+            – Helped homeowner avoid <strong>foreclosure</strong> with just days
+            to spare before deadline.
           </em>
         </div>
       </div>

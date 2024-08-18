@@ -4,7 +4,6 @@ import "./styles/index.css";
 import App from "./App";
 import reportWebVitals from "./utils/reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./styles/index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

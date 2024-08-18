@@ -10,40 +10,47 @@ const HeroSection = ({ title, subtitle }) => {
     }, 500); // Delay to make animation noticeable
   }, []);
 
+  const renderTitle = (title) => {
+    return title.split(" ").map((word, index) =>
+      word === "FAST!" ? (
+        <span
+          key={index}
+          className={`underline-animation ${
+            animateUnderline ? "underline-animate" : ""
+          }`}
+        >
+          {word}
+        </span>
+      ) : (
+        `${word} `
+      )
+    );
+  };
+
   const lines = subtitle.split("\n");
 
   return (
     <section className="hero">
       <div className="hero-content">
-        <h1 className="title">
-          {title.split(" ").map((word, index) =>
-            word === "FAST!" ? (
-              <span
-                key={index}
-                className={`underline-animation ${
-                  animateUnderline ? "underline-animate" : ""
-                }`}
-              >
-                {word}
-              </span>
-            ) : (
-              `${word} `
-            )
-          )}
-        </h1>
-        {lines.map((line, index) => (
-          <p key={index} className="subtitle-line">
-            {line.includes("Hendrix Ventures Group, LLC") ? (
-              <>
-                {line.split("Hendrix Ventures Group, LLC")[0]}
+        <h1 className="title">{renderTitle(title)}</h1>
+        {lines.map((line, index) => {
+          if (line.includes("Hendrix Ventures Group, LLC")) {
+            const [before, after] = line.split("Hendrix Ventures Group, LLC");
+            return (
+              <p key={index} className="subtitle-line">
+                {before}
                 <strong>Hendrix Ventures Group, LLC</strong>
-                {line.split("Hendrix Ventures Group, LLC")[1]}
-              </>
-            ) : (
-              line
-            )}
-          </p>
-        ))}
+                {after}
+              </p>
+            );
+          } else {
+            return (
+              <p key={index} className="subtitle-line">
+                {line}
+              </p>
+            );
+          }
+        })}
       </div>
     </section>
   );
