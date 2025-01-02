@@ -3,18 +3,19 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SellersPage from "./pages/SellersPage";
 import BuyersPage from "./pages/BuyersPage";
 import Navbar from "./components/common/NavBar";
-import Footer from "./components/common/Footer";
+import BuyersNav from "./components/common/BuyerNav";
+import BuyerFooter from "./components/common/BuyerFooter";
 
 function App() {
   return (
     <Router>
-      <Navbar />
+      <BuyersNav />
       <Routes>
         <Route path="/sellers" element={<SellersPage />} />
         <Route path="/buyers" element={<BuyersPage />} />
-        <Route path="/" element={<SellersPage />} />
+        <Route path="/" element={<BuyersPage />} />
       </Routes>
-      <Footer />
+      <BuyerFooter />
     </Router>
   );
 }
