@@ -1,0 +1,43 @@
+.deal-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); /* Ensures dynamic centering */
+  gap: 20px;
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+  margin: 20px auto; /* Adds vertical margin and centers the grid */
+  max-width: 1200px; /* Restricts the maximum width for alignment */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background: #9d174d;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.pagination button:hover {
+  background: #fbb034;
+}
+
+.pagination button.active {
+  background: #fbb034;
+  color: #000;
+}
+
+.deal-inventory {
+  margin: 45px auto; /* Centers the inventory container */
+  max-width: calc(100% - 80px);
+}

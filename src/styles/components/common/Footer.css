@@ -1,12 +1,11 @@
-@import "../../../styles/variables.css";
-
 /* Footer Container */
 .footer {
-  background-color: #000; /* Black background for a professional look */
-  color: #fff; /* White text for contrast */
-  padding: 30px;
+  background-color: #9d174d; /* Maroon background */
+  color: #fff; /* White text */
+  padding: 40px 20px;
   text-align: center;
   font-family: Arial, sans-serif;
+  border-top: 5px solid #fff; /* Optional subtle white border for separation */
 }
 
 /* Navigation Links */
@@ -19,7 +18,7 @@
 }
 
 .footer-nav a {
-  color: #fbb034; /* Gold-like color for sophistication */
+  color: #fff; /* White links */
   text-decoration: none;
   font-weight: bold;
   font-size: 1rem;
@@ -27,15 +26,15 @@
 
 .footer-nav a:hover {
   text-decoration: underline;
-  color: #e09c24; /* Slightly darker gold on hover */
+  color: #fff; /* Maintain white on hover */
 }
 
 /* Slogan Section */
 .footer-slogan p {
-  font-size: 1.2rem;
+  font-size: 1.4rem; /* Slightly larger size for emphasis */
   font-weight: bold;
   margin: 10px 0;
-  color: #fbb034;
+  color: #fff; /* White text */
 }
 
 /* Footer Description */
@@ -44,13 +43,13 @@
   font-size: 1rem;
   max-width: 800px;
   line-height: 1.6;
-  color: #bbb; /* Softer gray for subtle contrast */
+  color: #fff; /* White text for consistency */
 }
 
 /* Footer Copyright */
 .footer-copyright {
   font-size: 0.9rem;
-  color: #777; /* Muted gray for less visual weight */
+  color: #fff; /* White text for uniformity */
   margin-top: 10px;
 }
 
@@ -70,7 +69,7 @@
   }
 
   .footer-slogan p {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
   .footer-copyright {
@@ -90,7 +89,7 @@
   }
 
   .footer-slogan p {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   .footer-copyright {

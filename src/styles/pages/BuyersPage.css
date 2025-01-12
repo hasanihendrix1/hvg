@@ -1,93 +1,69 @@
 .buyers-page {
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px 0; /* Add spacing from the top and bottom */
 }
 
 .hero-container {
   display: flex;
   justify-content: space-between;
-  padding: 2rem;
-  background: #f9f9f9;
+  align-items: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #9d174d, #fbb034);
+  border-radius: 10px;
+  color: #fff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  margin: 45px 40px; /* Increase top margin to create space from the navbar */
+  max-width: calc(100% - 80px);
+}
+
+.hero-logo {
+  margin: 1rem 0; /* Add space around the logo */
+  max-width: 175px; /* Adjust the logo size */
+  width: 100%;
+  height: auto;
+  display: block; /* Ensure proper alignment */
+}
+
+.hero-phone-number {
+  margin-top: 1rem;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.hero-phone-number a {
+  color: #fbb034;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.hero-phone-number a:hover {
+  text-decoration: underline;
 }
 
 .hero-text {
-  max-width: 50%;
+  max-width: 50%; /* Ensure the text doesn't stretch too far */
 }
 
 .hero-text h1 {
-  font-size: 2.5rem;
-  color: #333;
+  font-size: 2.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #fff;
 }
 
 .hero-text p {
   font-size: 1.2rem;
-  margin: 1rem 0;
-}
-
-.hero-form {
-  background: #fff;
-  padding: 2rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-
-.hero-form h2 {
-  font-size: 1.5rem;
   margin-bottom: 1rem;
-}
-
-.hero-form form {
-  display: flex;
-  flex-direction: column;
-}
-
-.hero-form label {
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.hero-form input {
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.hero-form button {
-  padding: 0.8rem;
-  background: #fbb034;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.hero-form button:hover {
-  background: #e09c24;
+  line-height: 1.5;
 }
 
 .info-section {
   padding: 2rem;
   background: #fff;
   text-align: center;
-}
-
-.info-section h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.info-section p {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-.info-section ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.info-section li {
-  font-size: 1rem;
-  margin: 0.5rem 0;
+  border-radius: 10px; /* Keep consistent with other card styling */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  max-width: 1200px;
 }
