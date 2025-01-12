@@ -5,14 +5,6 @@ import "../../styles/components/common/Footer.css";
 const BuyerFooter = () => {
   return (
     <footer className="footer">
-      <nav className="footer-nav">
-        <Link to="/faq">FAQ</Link>
-        <Link to="/resources">Resources</Link>
-        <Link to="/privacy-policy">Privacy Policy</Link>
-        <Link to="/terms-conditions">Terms & Conditions</Link>
-        <Link to="/compare">Compare</Link>
-      </nav>
-
       <div className="footer-slogan">
         <p>
           <strong>Confident Connections. Successful Closings.</strong>
