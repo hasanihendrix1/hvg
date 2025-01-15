@@ -84,3 +84,20 @@
   transform: translateY(0); /* Button clicks down */
   box-shadow: none; /* Remove shadow for pressed effect */
 }
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Adds space between radio buttons */
+  margin-top: 10px;
+}
+
+.radio-group label {
+  font-size: 1rem;
+  color: #555; /* Neutral color */
+  cursor: pointer; /* Makes the label clickable */
+}
+
+.radio-group input {
+  margin-right: 10px; /* Adds space between the radio button and text */
+}

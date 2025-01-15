@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../styles/components/buyers/BuyerForm.css";
 
 const BuyerForm = () => {
+  const [buyerType, setBuyerType] = useState("");
+
+  const handleBuyerTypeChange = (e) => {
+    setBuyerType(e.target.value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted!");
+    console.log("Form submitted with data:");
+    console.log("Buyer Type:", buyerType);
     // Add API or CMS logic here
   };
 
@@ -41,8 +48,44 @@ const BuyerForm = () => {
             <option value="atlanta">Atlanta</option>
           </select>
         </div>
+        <div className="form-group">
+          <label>What type of buyer are you?*</label>
+          <div className="radio-group">
+            <label>
+              <input
+                type="radio"
+                name="buyerType"
+                value="Landlord"
+                checked={buyerType === "Landlord"}
+                onChange={handleBuyerTypeChange}
+                required
+              />
+              Landlord
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="buyerType"
+                value="Fix and Flipper"
+                checked={buyerType === "Fix and Flipper"}
+                onChange={handleBuyerTypeChange}
+              />
+              Fix and Flipper
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="buyerType"
+                value="Both"
+                checked={buyerType === "Both"}
+                onChange={handleBuyerTypeChange}
+              />
+              Both
+            </label>
+          </div>
+        </div>
         <button type="submit" className="form-submit">
-          Show Me The Deals!
+          Send Me Deals!
         </button>
       </form>
     </div>
