@@ -1,14 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import "../../styles/components/common/Footer.css";
+import Logo from "../../assets/logos/HVentures-Logo3.png";
 
 const BuyerFooter = () => {
   return (
     <footer className="footer">
       <div className="footer-slogan">
-        <p>
-          <strong>Confident Connections. Successful Closings.</strong>
-        </p>
+        <strong>Confident Connections. Successful Closings.</strong>
+        <img src={Logo} alt="Hendrix Ventures Logo" className="footer-logo" />
       </div>
 
       <div className="footer-description">

@@ -8,33 +8,27 @@
   border-top: 5px solid #fff; /* Optional subtle white border for separation */
 }
 
-/* Navigation Links */
-.footer-nav {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 20px;
+/* Slogan Section */
+.footer-slogan {
+  display: flex; /* Flexbox for alignment */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Align text and image vertically */
+  gap: 10px; /* Add space between text and logo */
   margin-bottom: 20px;
 }
 
-.footer-nav a {
-  color: #fff; /* White links */
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 1rem;
-}
-
-.footer-nav a:hover {
-  text-decoration: underline;
-  color: #fff; /* Maintain white on hover */
-}
-
-/* Slogan Section */
-.footer-slogan p {
+.footer-slogan strong {
   font-size: 1.4rem; /* Slightly larger size for emphasis */
   font-weight: bold;
-  margin: 10px 0;
   color: #fff; /* White text */
+  margin: 0; /* Remove extra margin */
+}
+
+.footer-logo {
+  max-height: 40px; /* Constrain logo height */
+  width: auto; /* Maintain aspect ratio */
+  height: auto;
+  display: inline-block; /* Inline-block for proper alignment */
 }
 
 /* Footer Description */
@@ -59,17 +53,14 @@
     padding: 20px;
   }
 
-  .footer-nav {
-    gap: 15px;
+  .footer-slogan {
+    flex-direction: column; /* Stack text and logo vertically */
+    gap: 15px; /* Increase spacing */
   }
 
   .footer-description {
     font-size: 0.9rem;
     padding: 0 15px;
-  }
-
-  .footer-slogan p {
-    font-size: 1.2rem;
   }
 
   .footer-copyright {
@@ -78,18 +69,13 @@
 }
 
 @media (max-width: 480px) {
-  .footer-nav {
-    flex-direction: column;
-    align-items: center;
+  .footer-slogan {
+    flex-direction: column; /* Ensure vertical stacking */
     gap: 10px;
   }
 
   .footer-description {
     font-size: 0.85rem;
-  }
-
-  .footer-slogan p {
-    font-size: 1rem;
   }
 
   .footer-copyright {

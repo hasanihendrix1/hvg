@@ -2,13 +2,22 @@
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(300px, 1fr)
+    minmax(300px, 0.5fr)
   ); /* Ensures dynamic centering */
   gap: 20px;
   justify-content: center; /* Center items horizontally */
   align-items: center; /* Center items vertically */
   margin: 20px auto; /* Adds vertical margin and centers the grid */
   max-width: 1200px; /* Restricts the maximum width for alignment */
+}
+
+.no-deals-message {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #555;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
 }
 
 .pagination {

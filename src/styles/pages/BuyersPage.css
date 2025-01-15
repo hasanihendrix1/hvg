@@ -6,13 +6,7 @@
 
 .hero-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 3rem 2rem;
-  background: linear-gradient(135deg, #9d174d, #00000087);
-  border-radius: 10px;
-  color: #fff;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  padding: 1.5rem 6.5em;
   margin: 45px 40px; /* Increase top margin to create space from the navbar */
   max-width: calc(100% - 80px);
 }
@@ -28,11 +22,10 @@
 .hero-phone-number {
   margin-top: 1rem;
   font-size: 1.3rem;
-  color: #fff;
 }
 
 .hero-phone-number a {
-  color: #fbb034;
+  color: var(--primary-dark);
   text-decoration: none;
   font-weight: bold;
 }
@@ -42,14 +35,14 @@
 }
 
 .hero-text {
-  max-width: 50%; /* Ensure the text doesn't stretch too far */
+  max-width: 55%; /* Ensure the text doesn't stretch too far */
 }
 
 .hero-text h1 {
-  font-size: 2.8rem;
+  font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color: #fff;
+  color: var(--primary-color);
 }
 
 .hero-text p {
@@ -66,4 +59,30 @@
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   margin: 20px auto;
   max-width: 1200px;
+}
+
+.deal-inventory-section {
+  display: flex; /* Set the layout to flexbox */
+  justify-content: space-between; /* Add spacing between the components */
+  align-items: flex-start; /* Align items to the top */
+  gap: 20px; /* Add consistent spacing between components */
+  margin: 20px auto; /* Center the section vertically */
+  max-width: 85%; /* Optional: Limit the max width of the section */
+  transform: translateY(-45px);
+}
+
+.buyer-form-wrapper {
+  max-width: 45%; /* Set max width for the form */
+}
+
+/* Additional responsiveness for smaller screens */
+@media (max-width: 768px) {
+  .deal-inventory-section {
+    flex-direction: column; /* Stack components vertically */
+    gap: 40px; /* Increase spacing for stacked layout */
+  }
+
+  .deal-inventory-section > * {
+    max-width: 100%; /* Allow full width */
+  }
 }
