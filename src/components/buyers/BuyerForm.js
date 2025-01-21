@@ -2,17 +2,66 @@ import React, { useState } from "react";
 import "../../styles/components/buyers/BuyerForm.css";
 
 const BuyerForm = () => {
-  const [buyerType, setBuyerType] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    contact: "",
+    email: "",
+    market: "",
+    buyerType: "",
+  });
 
-  const handleBuyerTypeChange = (e) => {
-    setBuyerType(e.target.value);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted with data:");
-    console.log("Buyer Type:", buyerType);
-    // Add API or CMS logic here
+
+    // Basic validation (additional validation can be added)
+    if (
+      !formData.name ||
+      !formData.contact ||
+      !formData.email ||
+      !formData.market ||
+      !formData.buyerType
+    ) {
+      alert("Please fill in all required fields!");
+      return;
+    }
+
+    try {
+      const response = await fetch("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.text();
+
+      if (response.ok) {
+        alert("Your information has been submitted successfully!");
+        console.log("Response from server:", result);
+        // Clear form after successful submission
+        setFormData({
+          name: "",
+          contact: "",
+          email: "",
+          market: "",
+          buyerType: "",
+        });
+      } else {
+        alert(`Submission failed: ${result}`);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("An error occurred. Please try again later.");
+    }
   };
 
   return (
@@ -21,13 +70,24 @@ const BuyerForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Name*</label>
-          <input type="text" id="name" placeholder="Enter your name" required />
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter your name"
+            required
+          />
         </div>
         <div className="form-group">
           <label htmlFor="contact">Contact Number*</label>
           <input
             type="text"
             id="contact"
+            name="contact"
+            value={formData.contact}
+            onChange={handleChange}
             placeholder="Enter your contact number"
             required
           />
@@ -37,15 +97,25 @@ const BuyerForm = () => {
           <input
             type="email"
             id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Enter your email"
             required
           />
         </div>
         <div className="form-group">
           <label htmlFor="market">Market*</label>
-          <select id="market" required>
+          <select
+            id="market"
+            name="market"
+            value={formData.market}
+            onChange={handleChange}
+            required
+          >
             <option value="">Select a market</option>
             <option value="atlanta">Atlanta</option>
+            {/* Add other markets as needed */}
           </select>
         </div>
         <div className="form-group">
@@ -56,8 +126,8 @@ const BuyerForm = () => {
                 type="radio"
                 name="buyerType"
                 value="Landlord"
-                checked={buyerType === "Landlord"}
-                onChange={handleBuyerTypeChange}
+                checked={formData.buyerType === "Landlord"}
+                onChange={handleChange}
                 required
               />
               Landlord
@@ -67,8 +137,8 @@ const BuyerForm = () => {
                 type="radio"
                 name="buyerType"
                 value="Fix and Flipper"
-                checked={buyerType === "Fix and Flipper"}
-                onChange={handleBuyerTypeChange}
+                checked={formData.buyerType === "Fix and Flipper"}
+                onChange={handleChange}
               />
               Fix and Flipper
             </label>
@@ -77,8 +147,8 @@ const BuyerForm = () => {
                 type="radio"
                 name="buyerType"
                 value="Both"
-                checked={buyerType === "Both"}
-                onChange={handleBuyerTypeChange}
+                checked={formData.buyerType === "Both"}
+                onChange={handleChange}
               />
               Both
             </label>
