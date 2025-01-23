@@ -1,88 +1,173 @@
-.buyers-page {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px 0; /* Add spacing from the top and bottom */
-}
+@media screen and (min-width: 1024px) and (max-width: 1440px) {
+  .buyers-page {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px 0; /* Add spacing from the top and bottom */
+  }
 
-.hero-container {
-  display: flex;
-  padding: 1.5rem 6.5em;
-  margin: 45px 40px; /* Increase top margin to create space from the navbar */
-  max-width: calc(100% - 80px);
-}
+  .hero-container {
+    display: flex;
+    padding: 1.5rem 6.5em;
+    margin: 45px 40px; /* Increase top margin to create space from the navbar */
+    max-width: calc(100% - 80px);
+  }
 
-.hero-logo {
-  margin: 1rem 0; /* Add space around the logo */
-  max-width: 175px; /* Adjust the logo size */
-  width: 100%;
-  height: auto;
-  display: block; /* Ensure proper alignment */
-}
+  .hero-logo {
+    margin: 1rem 0; /* Add space around the logo */
+    max-width: 175px; /* Adjust the logo size */
+    width: 100%;
+    height: auto;
+    display: block; /* Ensure proper alignment */
+  }
 
-.hero-phone-number {
-  margin-top: 1rem;
-  font-size: 1.3rem;
-}
+  .hero-phone-number {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+  }
 
-.hero-phone-number a {
-  color: var(--primary-dark);
-  text-decoration: none;
-  font-weight: bold;
-}
+  .hero-phone-number a {
+    color: var(--primary-dark);
+    text-decoration: none;
+    font-weight: bold;
+  }
 
-.hero-phone-number a:hover {
-  text-decoration: underline;
-}
+  .hero-phone-number a:hover {
+    text-decoration: underline;
+  }
 
-.hero-text {
-  max-width: 55%; /* Ensure the text doesn't stretch too far */
-}
+  .hero-text {
+    max-width: 55%; /* Ensure the text doesn't stretch too far */
+  }
 
-.hero-text h1 {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: var(--primary-color);
-}
+  .hero-text h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+  }
 
-.hero-text p {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  line-height: 1.5;
-}
+  .hero-text p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
 
-.info-section {
-  padding: 2rem;
-  background: #fff;
-  text-align: center;
-  border-radius: 10px; /* Keep consistent with other card styling */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  margin: 20px auto;
-  max-width: 1200px;
-}
+  .info-section {
+    padding: 2rem;
+    background: #fff;
+    text-align: center;
+    border-radius: 10px; /* Keep consistent with other card styling */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 1200px;
+  }
 
-.deal-inventory-section {
-  display: flex; /* Set the layout to flexbox */
-  justify-content: space-between; /* Add spacing between the components */
-  align-items: flex-start; /* Align items to the top */
-  gap: 20px; /* Add consistent spacing between components */
-  margin: 20px auto; /* Center the section vertically */
-  max-width: 85%; /* Optional: Limit the max width of the section */
-  transform: translateY(-45px);
-}
-
-.buyer-form-wrapper {
-  max-width: 45%; /* Set max width for the form */
-}
-
-/* Additional responsiveness for smaller screens */
-@media (max-width: 768px) {
   .deal-inventory-section {
-    flex-direction: column; /* Stack components vertically */
-    gap: 40px; /* Increase spacing for stacked layout */
+    display: flex; /* Set the layout to flexbox */
+    justify-content: space-between; /* Add spacing between the components */
+    align-items: flex-start; /* Align items to the top */
+    gap: 20px; /* Add consistent spacing between components */
+    margin: 20px auto; /* Center the section vertically */
+    max-width: 85%; /* Optional: Limit the max width of the section */
+    transform: translateY(-45px);
   }
 
-  .deal-inventory-section > * {
-    max-width: 100%; /* Allow full width */
+  .buyer-form-wrapper {
+    max-width: 45%; /* Set max width for the form */
   }
+
+  /* Additional responsiveness for smaller screens */
+  @media (max-width: 768px) {
+    .deal-inventory-section {
+      flex-direction: column; /* Stack components vertically */
+      gap: 40px; /* Increase spacing for stacked layout */
+    }
+
+    .deal-inventory-section > * {
+      max-width: 100%; /* Allow full width */
+    }
+  }
+}
+
+@media screen and (min-width: 1441px) {
+  .buyers-page {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 30px 0; /* Add extra spacing for larger screens */
+  }
+
+  .hero-container {
+    display: flex;
+    padding: 2rem 8em; /* Increase padding for better spacing on larger screens */
+    margin: 60px 50px; /* Add more margin for larger screens */
+    max-width: calc(
+      100% - 100px
+    ); /* Adjust the width to fit better on wide screens */
+  }
+
+  .hero-logo {
+    margin: 1.5rem 0; /* Add more space around the logo */
+    max-width: 200px; /* Slightly increase the logo size */
+    width: 100%;
+    height: auto;
+    display: block; /* Ensure proper alignment */
+  }
+
+  .hero-phone-number {
+    margin-top: 1.5rem;
+    font-size: 1.5rem; /* Increase font size for better readability */
+  }
+
+  .hero-phone-number a {
+    color: var(--primary-dark);
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .hero-phone-number a:hover {
+    text-decoration: underline;
+  }
+
+  .hero-text {
+    max-width: 50%; /* Allow the text to take up slightly less width */
+  }
+
+  .hero-text h1 {
+    font-size: 2.5rem; /* Increase font size for larger screens */
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+  }
+
+  .hero-text p {
+    font-size: 1.4rem; /* Increase font size for readability */
+    margin-bottom: 1.5rem;
+    line-height: 1.7; /* Adjust line height for better readability */
+  }
+
+  .info-section {
+    padding: 3rem; /* Increase padding for larger screens */
+    background: #fff;
+    text-align: center;
+    border-radius: 10px; /* Keep consistent with other card styling */
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+    margin: 30px auto;
+    max-width: 1400px; /* Increase max width */
+  }
+
+  .deal-inventory-section {
+    display: flex; /* Set the layout to flexbox */
+    justify-content: space-between; /* Add spacing between the components */
+    align-items: flex-start; /* Align items to the top */
+    gap: 30px; /* Add consistent spacing between components */
+    margin: 30px auto; /* Center the section vertically */
+    max-width: 80%; /* Optional: Limit the max width of the section */
+    transform: translateY(-50px); /* Adjust transform for larger screens */
+  }
+
+  .buyer-form-wrapper {
+    max-width: 40%; /* Slightly reduce the width of the form for balance */
+  }
+
+  /* Optional: Add additional large-screen-specific styles here */
 }

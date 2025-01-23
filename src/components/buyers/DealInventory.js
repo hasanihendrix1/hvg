@@ -10,6 +10,12 @@ const client = createClient({
   useCdn: true, // Use the Sanity CDN for faster response times in production
 });
 
+const convertToDate = (timestamp) => {
+  const [year, quarter] = timestamp.split("-Q");
+  const month = (parseInt(quarter) - 1) * 3; // Convert quarter to the first month of the quarter (0-indexed for JS Date)
+  return new Date(`${year}-${String(month + 1).padStart(2, "0")}-01`); // Ensure the month is 2 digits
+};
+
 const DealInventory = ({ filterStatus }) => {
   const [deals, setDeals] = useState([]); // Add deals state here
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,17 +28,22 @@ const DealInventory = ({ filterStatus }) => {
         const data = await client.fetch(
           `*[_type == "deal"]{
             _id,
-            title,
+            timestamp,
             "price": price,
             status,
             address,
             bedrooms,
             bathrooms,
             sqft,
-            "image": image.asset->url
+            "image": image.asset->url,
+            "mediaLink": mediaLink
           }`
         );
-        setDeals(data); // Update the deals state with fetched data
+        const sortedDeals = data.sort(
+          (a, b) => convertToDate(b.timestamp) - convertToDate(a.timestamp)
+        );
+        debugger;
+        setDeals(sortedDeals); // Update the deals state with fetched data
       } catch (error) {
         console.error("Error fetching deals:", error);
       }

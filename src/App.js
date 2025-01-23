@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SellersPage from "./pages/SellersPage";
 import BuyersPage from "./pages/BuyersPage";
-import Navbar from "./components/common/NavBar";
 import BuyersNav from "./components/common/BuyerNav";
 import BuyerFooter from "./components/common/BuyerFooter";
 

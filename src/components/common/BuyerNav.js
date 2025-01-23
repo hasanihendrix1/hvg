@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import "../../styles/components/common/NavBar.css";
 import logo from "../../assets/logos/HVentures-Logo1.png";
 

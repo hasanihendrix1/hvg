@@ -3,7 +3,8 @@ import "../../styles/components/buyers/BuyerForm.css";
 
 const BuyerForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     contact: "",
     email: "",
     market: "",
@@ -18,12 +19,26 @@ const BuyerForm = () => {
     }));
   };
 
+  const mapBuyerType = (buyerType) => {
+    switch (buyerType) {
+      case "Landlord":
+        return "Landlord";
+      case "Fix and Flipper":
+        return "Fix and Flips";
+      case "Both":
+        return "Cash Buyer";
+      default:
+        return "";
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation (additional validation can be added)
+    // Basic validation
     if (
-      !formData.name ||
+      !formData.firstName ||
+      !formData.lastName ||
       !formData.contact ||
       !formData.email ||
       !formData.market ||
@@ -33,13 +48,27 @@ const BuyerForm = () => {
       return;
     }
 
+    const payload = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      number: formData.contact,
+      buyerType: mapBuyerType(formData.buyerType),
+      level: "Potential Buyer",
+    };
+
     try {
-      const response = await fetch("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL", {
+      console.log(
+        "Google Apps Script URL:",
+        process.env.REACT_APP_GOOGLE_APPS_SCRIPT_URL_BUYER
+      );
+
+      const response = await fetch("/exec", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.text();
@@ -49,7 +78,8 @@ const BuyerForm = () => {
         console.log("Response from server:", result);
         // Clear form after successful submission
         setFormData({
-          name: "",
+          firstName: "",
+          lastName: "",
           contact: "",
           email: "",
           market: "",
@@ -69,14 +99,26 @@ const BuyerForm = () => {
       <h2>Gain Priority Access to Discounted Deals!</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="name">Name*</label>
+          <label htmlFor="firstName">First Name*</label>
           <input
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
+            id="firstName"
+            name="firstName"
+            value={formData.firstName}
             onChange={handleChange}
-            placeholder="Enter your name"
+            placeholder="Enter your first name"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="lastName">Last Name*</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Enter your last name"
             required
           />
         </div>
