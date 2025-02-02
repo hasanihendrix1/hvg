@@ -5,8 +5,6 @@ import { formatPrice } from "../../utils/common"; // Adjust the path as needed
 const DealCard = ({ deal }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  debugger;
-
   const normalizedStatus =
     deal.status.toLowerCase() === "pending" ||
     deal.status.toLowerCase() === "under contract"

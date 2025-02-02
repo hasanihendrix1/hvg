@@ -52,18 +52,14 @@ const BuyerForm = () => {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
+      investorLiftScore: 0,
       number: formData.contact,
       buyerType: mapBuyerType(formData.buyerType),
       level: "Potential Buyer",
     };
 
     try {
-      console.log(
-        "Google Apps Script URL:",
-        process.env.REACT_APP_GOOGLE_APPS_SCRIPT_URL_BUYER
-      );
-
-      const response = await fetch("/exec", {
+      const response = await fetch("/.netlify/functions/newBuyer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +67,7 @@ const BuyerForm = () => {
         body: JSON.stringify(payload),
       });
 
-      const result = await response.text();
+      const result = await response.json();
 
       if (response.ok) {
         alert("Your information has been submitted successfully!");
@@ -86,7 +82,7 @@ const BuyerForm = () => {
           buyerType: "",
         });
       } else {
-        alert(`Submission failed: ${result}`);
+        alert(`Submission failed: ${result.message}`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);

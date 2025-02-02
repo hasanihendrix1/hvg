@@ -25,9 +25,7 @@ const BuyersPage = () => {
         </div>
         <InventoryFilterBar onFilterChange={setFilterStatus} />
         <div className="deal-inventory-section">
-          <div className="deal-inventory-wrapper">
-            <DealInventory filterStatus={filterStatus} />
-          </div>
+          <DealInventory filterStatus={filterStatus} />
           <div className="buyer-form-wrapper">
             <BuyerForm />
           </div>

@@ -1,3 +1,7 @@
+/* ===============================
+   Base Styles (Desktop/Laptop)
+   =============================== */
+
 /* Footer Container */
 .footer {
   background-color: #9d174d; /* Maroon background */
@@ -47,38 +51,63 @@
   margin-top: 10px;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
+/* ===============================
+   Responsive Styles
+   =============================== */
+
+/* Mobile Phones (up to 480px) */
+@media (max-width: 480px) {
   .footer {
-    padding: 20px;
+    padding: 30px 10px; /* Reduce padding on mobile devices */
   }
 
   .footer-slogan {
-    flex-direction: column; /* Stack text and logo vertically */
-    gap: 15px; /* Increase spacing */
+    flex-direction: column; /* Stack slogan elements vertically */
+    gap: 5px; /* Reduce gap */
+    margin-bottom: 15px;
+  }
+
+  .footer-slogan strong {
+    font-size: 1.2rem; /* Slightly smaller font size */
+  }
+
+  .footer-logo {
+    max-height: 30px; /* Slightly smaller logo */
   }
 
   .footer-description {
-    font-size: 0.9rem;
-    padding: 0 15px;
+    font-size: 0.9rem; /* Adjust font size for readability */
+    margin: 15px auto;
+    max-width: 90%; /* Allow the description to use more available width */
   }
 
   .footer-copyright {
     font-size: 0.8rem;
+    margin-top: 8px;
   }
 }
 
-@media (max-width: 480px) {
+/* Tablets (481px to 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .footer {
+    padding: 35px 15px; /* Moderately reduce padding */
+  }
+
+  .footer-slogan strong {
+    font-size: 1.3rem; /* Slight adjustment for tablets */
+  }
+
+  .footer-logo {
+    max-height: 35px; /* Adjust logo size for tablets */
+  }
+
   .footer-slogan {
-    flex-direction: column; /* Ensure vertical stacking */
-    gap: 10px;
+    margin-bottom: 18px;
   }
 
   .footer-description {
-    font-size: 0.85rem;
-  }
-
-  .footer-copyright {
-    font-size: 0.75rem;
+    font-size: 0.95rem;
+    margin: 18px auto;
+    max-width: 95%; /* Use more width on tablets */
   }
 }

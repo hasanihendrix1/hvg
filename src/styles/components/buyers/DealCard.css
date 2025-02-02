@@ -1,3 +1,6 @@
+/* ======================
+   Base Styles (Desktop/Laptop)
+   ====================== */
 .deal-card {
   display: flex;
   flex-direction: column;
@@ -142,4 +145,83 @@
 
 .popup-close:hover {
   background: #7a1038;
+}
+
+/* ======================
+   Responsive Styles
+   ====================== */
+
+/* Mobile Phones (up to 480px) */
+@media (max-width: 480px) {
+  .deal-card-image {
+    height: 140px; /* Reduced height for mobile devices */
+  }
+  .deal-card-info {
+    padding: 0.75rem; /* Reduced padding for a more compact layout */
+  }
+  .deal-card-price {
+    font-size: 1rem;
+  }
+  .deal-card-details {
+    font-size: 0.9rem;
+  }
+  .deal-card-address {
+    font-size: 0.8rem;
+  }
+  .deal-card-status {
+    font-size: 0.8rem;
+    padding: 0.15rem 0.4rem;
+  }
+  /* Popup adjustments for mobile */
+  .popup-content {
+    padding: 20px;
+  }
+  .popup-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  .popup-content p {
+    font-size: 0.9rem;
+  }
+  .popup-close {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Tablets (481px to 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .deal-card-image {
+    height: 160px; /* Adjust image height for tablets */
+  }
+  .deal-card-info {
+    padding: 0.9rem; /* Slightly reduced padding for tablets */
+  }
+  .deal-card-price {
+    font-size: 1.1rem;
+  }
+  .deal-card-details {
+    font-size: 0.95rem;
+  }
+  .deal-card-address {
+    font-size: 0.85rem;
+  }
+  .deal-card-status {
+    font-size: 0.85rem;
+    padding: 0.18rem 0.45rem;
+  }
+  /* Popup adjustments for tablets */
+  .popup-content {
+    padding: 22px;
+  }
+  .popup-content h3 {
+    font-size: 1.6rem;
+  }
+  .popup-content p {
+    font-size: 0.95rem;
+  }
+  .popup-close {
+    padding: 9px 18px;
+    font-size: 0.95rem;
+  }
 }

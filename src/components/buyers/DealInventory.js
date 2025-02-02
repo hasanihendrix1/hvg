@@ -1,65 +1,62 @@
 import React, { useState, useEffect } from "react";
-import { createClient } from "@sanity/client";
 import DealCard from "./DealCard";
 import "../../styles/components/buyers/DealInventory.css";
 
-const client = createClient({
-  projectId: process.env.REACT_APP_SANITY_PROJECT_ID,
-  dataset: process.env.REACT_APP_SANITY_DATASET,
-  apiVersion: "2023-01-01", // Use the current date to ensure up-to-date API features
-  useCdn: true, // Use the Sanity CDN for faster response times in production
-});
+// Custom hook to get current window width
+const useWindowWidth = () => {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return width;
+};
 
 const convertToDate = (timestamp) => {
   const [year, quarter] = timestamp.split("-Q");
-  const month = (parseInt(quarter) - 1) * 3; // Convert quarter to the first month of the quarter (0-indexed for JS Date)
-  return new Date(`${year}-${String(month + 1).padStart(2, "0")}-01`); // Ensure the month is 2 digits
+  const month = (parseInt(quarter) - 1) * 3;
+  return new Date(`${year}-${String(month + 1).padStart(2, "0")}-01`);
 };
 
 const DealInventory = ({ filterStatus }) => {
-  const [deals, setDeals] = useState([]); // Add deals state here
+  const [deals, setDeals] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const dealsPerPage = 4;
+  const windowWidth = useWindowWidth();
+
+  // Set dealsPerPage based on screen width: 6 for screens >= 1440px, otherwise 4
+  const dealsPerPage = windowWidth >= 1440 ? 6 : 4;
 
   useEffect(() => {
-    // Fetch data from Sanity
     const fetchDeals = async () => {
       try {
-        const data = await client.fetch(
-          `*[_type == "deal"]{
-            _id,
-            timestamp,
-            "price": price,
-            status,
-            address,
-            bedrooms,
-            bathrooms,
-            sqft,
-            "image": image.asset->url,
-            "mediaLink": mediaLink
-          }`
-        );
+        const response = await fetch("/.netlify/functions/getDeals", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`Error fetching deals: ${response.statusText}`);
+        }
+        const data = await response.json();
         const sortedDeals = data.sort(
           (a, b) => convertToDate(b.timestamp) - convertToDate(a.timestamp)
         );
-        debugger;
-        setDeals(sortedDeals); // Update the deals state with fetched data
+        setDeals(sortedDeals);
       } catch (error) {
         console.error("Error fetching deals:", error);
       }
     };
-
     fetchDeals();
   }, []);
 
-  // Filter deals based on the selected status
   const filteredDeals = filterStatus
     ? deals.filter(
         (deal) => deal.status.toLowerCase() === filterStatus.toLowerCase()
       )
     : deals;
 
-  // Pagination logic
   const indexOfLastDeal = currentPage * dealsPerPage;
   const indexOfFirstDeal = indexOfLastDeal - dealsPerPage;
   const currentDeals = filteredDeals.slice(indexOfFirstDeal, indexOfLastDeal);
@@ -68,7 +65,7 @@ const DealInventory = ({ filterStatus }) => {
 
   return (
     <section className="deal-inventory">
-      {filteredDeals.length === 0 ? ( // Show message if no deals match the filter
+      {filteredDeals.length === 0 ? (
         <div className="no-deals-message">
           <p>No results for the selected status.</p>
         </div>
