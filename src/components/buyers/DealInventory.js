@@ -51,12 +51,25 @@ const DealInventory = ({ filterStatus }) => {
     fetchDeals();
   }, []);
 
+  console.log(
+    "All deals status values:",
+    deals.map((d) => d.status)
+  ); // Debugging output
+
   const filteredDeals = filterStatus
-    ? deals.filter(
-        (deal) => deal.status.toLowerCase() === filterStatus.toLowerCase()
-      )
+    ? filterStatus.toLowerCase() === "closed"
+      ? deals.filter((deal) => {
+          const status = deal.status.toLowerCase().trim();
+          return status === "assigned" || status === "sold";
+        })
+      : deals.filter(
+          (deal) => deal.status.toLowerCase() === filterStatus.toLowerCase()
+        )
     : deals;
 
+  console.log("Filtered Deals:", filteredDeals); // Debugging the final filtered result
+
+  debugger;
   const indexOfLastDeal = currentPage * dealsPerPage;
   const indexOfFirstDeal = indexOfLastDeal - dealsPerPage;
   const currentDeals = filteredDeals.slice(indexOfFirstDeal, indexOfLastDeal);
