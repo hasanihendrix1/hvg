@@ -5,6 +5,11 @@ exports.handler = async () => {
   try {
     // Sanity API URL
     const SANITY_API_URL = process.env.REACT_APP_SANITY_URL;
+    if (!SANITY_API_URL) {
+      throw new Error(
+        "Sanity API URL is not configured. Please set REACT_APP_SANITY_URL environment variable."
+      );
+    }
 
     // GROQ query to fetch deals
     const query = `*[_type == "deal"]{

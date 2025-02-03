@@ -4,8 +4,14 @@ require("dotenv").config();
 const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_APPS_SCRIPT_URL_BUYER;
 
 exports.handler = async (event) => {
-  const buyerData = JSON.parse(event.body);
   try {
+    const buyerData = JSON.parse(event.body);
+    if (!buyerData || typeof buyerData !== "object") {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: "Invalid buyer data" }),
+      };
+    }
     const response = await axios.post(GOOGLE_SCRIPT_URL, buyerData, {
       headers: {
         "Content-Type": "application/json",

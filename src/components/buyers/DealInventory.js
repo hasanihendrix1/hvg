@@ -76,7 +76,7 @@ const DealInventory = ({ filterStatus }) => {
               <DealCard key={deal._id} deal={deal} />
             ))}
           </div>
-          <div className="pagination">
+          <nav className="pagination" aria-label="Deals pagination">
             {Array.from(
               { length: Math.ceil(filteredDeals.length / dealsPerPage) },
               (_, i) => (
@@ -84,12 +84,14 @@ const DealInventory = ({ filterStatus }) => {
                   key={i + 1}
                   onClick={() => paginate(i + 1)}
                   className={currentPage === i + 1 ? "active" : ""}
+                  aria-label={`Page ${i + 1}`}
+                  aria-current={currentPage === i + 1 ? "page" : undefined}
                 >
                   {i + 1}
                 </button>
               )
             )}
-          </div>
+          </nav>
         </>
       )}
     </section>
