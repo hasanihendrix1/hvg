@@ -1,0 +1,113 @@
+/* ===============================
+   Base Styles (Desktop/Laptop)
+   =============================== */
+
+/* Footer Container */
+.footer {
+  background-color: #9d174d; /* Maroon background */
+  color: #fff; /* White text */
+  padding: 40px 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  border-top: 5px solid #fff; /* Optional subtle white border for separation */
+}
+
+/* Slogan Section */
+.footer-slogan {
+  display: flex; /* Flexbox for alignment */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Align text and image vertically */
+  gap: 10px; /* Add space between text and logo */
+  margin-bottom: 20px;
+}
+
+.footer-slogan strong {
+  font-size: 1.4rem; /* Slightly larger size for emphasis */
+  font-weight: bold;
+  color: #fff; /* White text */
+  margin: 0; /* Remove extra margin */
+}
+
+.footer-logo {
+  max-height: 40px; /* Constrain logo height */
+  width: auto; /* Maintain aspect ratio */
+  height: auto;
+  display: inline-block; /* Inline-block for proper alignment */
+}
+
+/* Footer Description */
+.footer-description {
+  margin: 20px auto;
+  font-size: 1rem;
+  max-width: 800px;
+  line-height: 1.6;
+  color: #fff; /* White text for consistency */
+}
+
+/* Footer Copyright */
+.footer-copyright {
+  font-size: 0.9rem;
+  color: #fff; /* White text for uniformity */
+  margin-top: 10px;
+}
+
+/* ===============================
+   Responsive Styles
+   =============================== */
+
+/* Mobile Phones (up to 480px) */
+@media (max-width: 480px) {
+  .footer {
+    padding: 30px 10px; /* Reduce padding on mobile devices */
+  }
+
+  .footer-slogan {
+    flex-direction: column; /* Stack slogan elements vertically */
+    gap: 5px; /* Reduce gap */
+    margin-bottom: 15px;
+  }
+
+  .footer-slogan strong {
+    font-size: 1.2rem; /* Slightly smaller font size */
+  }
+
+  .footer-logo {
+    max-height: 30px; /* Slightly smaller logo */
+  }
+
+  .footer-description {
+    font-size: 0.9rem; /* Adjust font size for readability */
+    margin: 15px auto;
+    max-width: 90%; /* Allow the description to use more available width */
+  }
+
+  .footer-copyright {
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+}
+
+/* Tablets (481px to 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .footer {
+    padding: 35px 15px; /* Moderately reduce padding */
+  }
+
+  .footer-slogan strong {
+    font-size: 1.3rem; /* Slight adjustment for tablets */
+  }
+
+  .footer-logo {
+    max-height: 35px; /* Adjust logo size for tablets */
+  }
+
+  .footer-slogan {
+    margin-bottom: 18px;
+  }
+
+  .footer-description {
+    font-size: 0.95rem;
+    margin: 18px auto;
+    max-width: 95%; /* Use more width on tablets */
+  }
+}

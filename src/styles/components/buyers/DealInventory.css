@@ -1,0 +1,118 @@
+/* ======================================================
+   Base Styles (Optimized for Laptops & Desktops)
+   ====================================================== */
+.deal-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 0.5fr)
+  ); /* Dynamic grid columns */
+  gap: 20px;
+  justify-content: center; /* Centers items horizontally */
+  align-items: center; /* Centers items vertically */
+  margin: 20px auto; /* Vertical margin and horizontal centering */
+  max-width: 1200px; /* Maximum width for alignment */
+}
+
+.no-deals-message {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #555;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background: #9d174d;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.pagination button:hover {
+  background: #fbb034;
+}
+
+.pagination button.active {
+  background: #fbb034;
+  color: #000;
+}
+
+.deal-inventory {
+  margin: 45px auto; /* Centers the inventory container */
+  max-width: calc(100% - 80px);
+  transform: none;
+}
+
+
+
+/* ======================================================
+   Tablet Styles (Screen widths between 481px and 1024px)
+   ====================================================== */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .deal-grid {
+    /* Use a slightly smaller minimum column size and allow columns to fill the available space */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 15px auto;
+    max-width: 90%; /* Adjusted max width for tablets */
+  }
+
+  .no-deals-message {
+    font-size: 1.1rem;
+    margin-top: 15px;
+  }
+
+  .pagination button {
+    padding: 7px 10px;
+    margin: 0 4px;
+  }
+
+  .deal-inventory {
+    margin: 30px auto;
+    max-width: calc(100% - 60px);
+  }
+}
+
+/* ======================================================
+   Mobile Styles (Screen widths up to 480px)
+   ====================================================== */
+@media (max-width: 480px) {
+  .deal-grid {
+    grid-template-columns: 1fr; /* Use a single-column grid on small devices */
+    gap: 10px;
+    margin: 10px auto;
+    max-width: 95%;
+  }
+
+  .no-deals-message {
+    font-size: 1rem;
+    margin-top: 10px;
+  }
+
+  .pagination {
+    margin-top: 15px;
+  }
+
+  .pagination button {
+    padding: 6px 8px;
+    margin: 0 3px;
+    font-size: 0.9rem;
+  }
+
+  .deal-inventory {
+    margin: 20px auto;
+    max-width: calc(100% - 40px);
+  }
+}
