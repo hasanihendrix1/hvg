@@ -3,8 +3,11 @@ import "../../styles/components/sellers/SellerForm.css";
 import headshot from "../../assets/logos/PNG-02.png";
 
 const SellerForm = () => {
-  // State to record the time the form was rendered
+  // Record the time the form was rendered
   const [startTime, setStartTime] = useState(Date.now());
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setStartTime(Date.now());
@@ -14,7 +17,21 @@ const SellerForm = () => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
+    let data = Object.fromEntries(formData.entries());
+    // Format the timestamp into a readable string
+    data.timestamp = new Date(Number(data.timestamp)).toLocaleString();
+
+    // Phone number validation using a regex for typical 10-digit numbers
+    const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    if (!phoneRegex.test(data.phone)) {
+      setErrorMessage(
+        "Please enter a valid phone number (e.g., 123-456-7890)."
+      );
+      setSuccessMessage("");
+      return;
+    }
+
+    setLoading(true);
 
     fetch("/.netlify/functions/sendLead", {
       method: "POST",
@@ -26,9 +43,19 @@ const SellerForm = () => {
       .then((res) => res.json())
       .then((response) => {
         console.log(response);
+        setSuccessMessage("Your offer request was sent successfully!");
+        setErrorMessage("");
+        e.target.reset();
+        setStartTime(Date.now());
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error submitting form:", error);
+        setErrorMessage(
+          "There was an error submitting your request. Please try again."
+        );
+        setSuccessMessage("");
+        setLoading(false);
       });
   };
 
@@ -36,7 +63,7 @@ const SellerForm = () => {
     <section className="seller-form">
       <div className="form-header">
         <img src={headshot} alt="Hasani Hendrix" className="headshot" />
-        {/* New title and description */}
+        {/* Title and description */}
         <div className="form-title">
           <h2>Get Your Cash Offer Today</h2>
           <p>
@@ -69,9 +96,12 @@ const SellerForm = () => {
         <input type="hidden" name="timestamp" value={startTime} />
 
         <button type="submit" className="cta-button">
-          Get My Offer Now!
+          {loading ? "Submitting..." : "Get My Offer Now!"}
         </button>
       </form>
+      {loading && <div className="loading-spinner"></div>}
+      {successMessage && <p className="success-message">{successMessage}</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
       <p className="disclaimer">
         By submitting this form, you agree to receive text, email, and phone
         communications from us.
