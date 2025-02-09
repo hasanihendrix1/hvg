@@ -1,0 +1,39 @@
+.selling-process {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+}
+
+.selling-process h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.step {
+  max-width: 32%;
+  text-align: center;
+}
+
+.step-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.step h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.step p {
+  font-size: 1rem;
+  color: #333;
+  margin-top: 10px;
+}

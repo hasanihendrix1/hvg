@@ -6,6 +6,11 @@ const OverviewSection = () => {
   return (
     <section className="overview">
       <h2>Why Choose Us?</h2>
+      {/* Image placed below the title */}
+      <div className="overview-image">
+        <img src={headshot} alt="Company Logo or Headshot" />
+      </div>
+      {/* Points are now in a flex container */}
       <div className="overview-content">
         <div className="point">
           <h3>Fast & Simple Process</h3>
@@ -20,9 +25,6 @@ const OverviewSection = () => {
             Skip the agent commissions and repairs. We provide fair,
             no-obligation offers.
           </p>
-        </div>
-        <div className="overview-image">
-          <img src={headshot} alt="Company Logo or Headshot" />
         </div>
       </div>
     </section>

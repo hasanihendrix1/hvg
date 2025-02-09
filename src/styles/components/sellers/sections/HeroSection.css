@@ -1,6 +1,8 @@
 @import "../../../variables.css";
 
-/* Hero Section Styling */
+/* =====================================================
+   Hero Section Styling
+   ===================================================== */
 .hero {
   padding: 40px 20px; /* Adjusted padding for better spacing */
   text-align: center;
@@ -17,30 +19,31 @@
   color: #fff;
 }
 
-/* Title Styling */
+/* Title Styling in Hero */
 .hero-content .title {
   margin-bottom: 10px;
-  text-shadow: -7px -4px 2px rgba(0, 0, 0, 0.268);
+  text-shadow: -17px -11px 11px rgba(0, 0, 0, 0.268);
   font-size: 2.8rem;
   font-weight: 800;
-  color: var(--button-text); /* Using the white text color */
+  color: #0b0101bd;
 }
 
-/* Subtitle Styling */
+/* Subtitle Styling in Hero */
 .hero-content p,
 .subtitle-line {
   font-size: 1.2rem;
   margin-bottom: 15px;
   white-space: pre-line;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  text-shadow: -2px -3px 15px rgba(0, 0, 0, 0.7);
+  color: #000000; /* Change this to the desired color */
 }
 
-/* Bold Text */
+/* Bold Text Helper */
 .bold-text {
   font-weight: bold;
 }
 
-/* Animation for the Underlines */
+/* Underline Animation for Emphasis */
 .underline-animation {
   position: relative;
   display: inline-block;
@@ -52,7 +55,7 @@
   position: absolute;
   width: 0;
   height: 2px; /* Thinner underline */
-  background-color: var(--secondary-light); /* Cream color */
+  background-color: var(--secondary-light); /* Cream color from variables.css */
   transition: width 1.2s ease-in-out;
 }
 
@@ -71,4 +74,89 @@
 .underline-animation.underline-animate::before,
 .underline-animation.underline-animate::after {
   width: 100%;
+}
+
+/* =====================================================
+   Global Styling for White Background Sections
+   ===================================================== */
+
+/* Base body styles */
+body {
+  font-family: "Lato", sans-serif; /* Using the Lato font imported in variables.css */
+  margin: 0;
+  padding: 0;
+  background-color: #fff; /* Clean white background */
+  color: #333; /* Dark text for readability */
+}
+
+/* A centered container for content */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* General Section Styling */
+.section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+/* ============================
+   Seller Form Section Styling
+   ============================ */
+.seller-form {
+  background-color: #fff;
+  color: #333;
+  padding: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+.seller-form input,
+.seller-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.seller-form input::placeholder,
+.seller-form textarea::placeholder {
+  color: var(--form-placeholder-color); /* Lighter gray from variables.css */
+}
+
+/* Call-to-Action Button Styling for White Sections */
+.cta-button {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  background-color: var(--button-background); /* Uses your primary color */
+  color: var(--button-text); /* White text for contrast */
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.cta-button:hover {
+  background-color: var(--button-hover);
+  transform: scale(1.02);
+}
+
+/* =====================================================
+   Responsive Adjustments
+   ===================================================== */
+@media (max-width: 768px) {
+  .hero-content .title {
+    font-size: 2rem;
+  }
+
+  .container {
+    padding: 0 10px;
+  }
 }

@@ -11,8 +11,9 @@ function App() {
     <Router>
       <BuyersNav />
       <Routes>
-        <Route path="/" element={<ComingSoonPage />} /> {/* Landing Page */}
+        <Route path="/" element={<SellersPage />} /> {/* Landing Page */}
         <Route path="/investordeals" element={<BuyersPage />} />
+        <Route path="/*" element={<ComingSoonPage />} />
       </Routes>
       <BuyerFooter />
     </Router>
