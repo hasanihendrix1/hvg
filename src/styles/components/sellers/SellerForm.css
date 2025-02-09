@@ -1,16 +1,40 @@
 @import "../../variables.css";
 
+/* Headshot Image */
 .headshot {
-  width: 11.5%;
-  height: 10%;
+  width: 13%;
+  height: 65%;
   border-radius: 50%;
   position: absolute;
-  top: 15px;
-  left: 15px;
+  top: -50%;
+  left: -2%;
   z-index: 3; /* Ensures it's above form content */
 }
 
-/* Form Styling */
+/* Form Header: Container for the headshot, title, and description */
+.form-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  /* Add left padding to create space so that the headshot doesn't overlap the text */
+  padding-left: 80px;
+}
+
+/* Form Title Styling */
+.form-title h2 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--primary-dark);
+}
+
+.form-title p {
+  font-size: 1rem;
+  margin: 5px 0 0 0;
+  color: var(--form-text-color);
+}
+
+/* Seller Form Styling */
 .seller-form {
   padding: 65px 24px 32px; /* Adjusted top padding to prevent overlap */
   background: rgba(255, 255, 255, 0.915);

@@ -18,20 +18,28 @@ const SellersPage = () => {
           <SellerForm />
         </section>
 
-        <SellingProcess />
+        {/* Add an id so that clicking "How It Works" scrolls here */}
+        <section id="how-it-works">
+          <SellingProcess />
+        </section>
 
         <OverviewSection />
 
         <div className="section-spacer"></div>
         <div className="section-spacer"></div>
 
-        <FeaturedTestimonial
-          backgroundColor="var(--secondary-color)"
-          videoQuote="Very quick, very easy... we closed in 4 days. I spoke with you on Monday and here we are on Thursday."
-        />
+        {/* Wrap the testimonial section with an id for "Testimonials" */}
+        <div id="testimonials">
+          <FeaturedTestimonial
+            backgroundColor="var(--secondary-color)"
+            videoQuote="Very quick, very easy... we closed in 4 days. I spoke with you on Monday and here we are on Thursday."
+          />
+        </div>
+
+        <div className="section-spacer"></div>
 
         {/* Final sign-up section */}
-        <section className="final-signup-section">
+        <section id="get-offer" className="final-signup-section">
           <h2 className="final-signup-title">
             Ready to Get Your No-Obligation Cash Offer?
           </h2>

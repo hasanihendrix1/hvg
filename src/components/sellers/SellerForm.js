@@ -36,6 +36,14 @@ const SellerForm = () => {
     <section className="seller-form">
       <div className="form-header">
         <img src={headshot} alt="Hasani Hendrix" className="headshot" />
+        {/* New title and description */}
+        <div className="form-title">
+          <h2>Get Your Cash Offer Today</h2>
+          <p>
+            Fill out the form below for a free, no-obligation cash offer on your
+            home.
+          </p>
+        </div>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
