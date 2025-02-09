@@ -78,7 +78,8 @@
   margin-bottom: 10px;
 }
 
-.seller-form input::placeholder {
+.seller-form input::placeholder,
+.seller-form textarea::placeholder {
   color: var(--form-placeholder-color); /* Lighter gray placeholder color */
 }
 
@@ -94,10 +95,160 @@
   background-color: var(--primary-hover);
 }
 
-/* Responsive adjustments for form container */
+/* =====================================================
+   Responsive Adjustments
+   ===================================================== */
+
+/* For tablets and small laptops (up to 768px wide) */
 @media (max-width: 768px) {
   .seller-form {
-    margin-top: -60px;
     padding: 30px 15px;
+  }
+  .form-title h2 {
+    font-size: 1.6rem;
+  }
+  .form-title p {
+    font-size: 0.95rem;
+  }
+  .form-header {
+    padding-left: 60px;
+  }
+  .headshot {
+    /* Slight adjustments if needed */
+    width: 14.5%;
+    height: 60%;
+    top: -32%;
+  }
+}
+
+/* For devices up to 712px wide */
+@media (max-width: 712px) {
+  .seller-form {
+    padding: 28px 12px;
+    margin: 10px auto;
+  }
+  .form-title h2 {
+    font-size: 1.5rem;
+  }
+  .form-title p {
+    font-size: 0.85rem;
+  }
+  .form-header {
+    padding-left: 50px;
+  }
+  .headshot {
+    width: 15%;
+    height: 52%;
+    top: -28%;
+  }
+}
+
+/* For common smartphones (up to 414px wide) */
+@media (max-width: 414px) {
+  .seller-form {
+    padding: 25px 10px;
+    margin: 8px auto;
+  }
+  .form-title h2 {
+    font-size: 1.4rem;
+  }
+  .form-title p {
+    font-size: 0.8rem;
+  }
+  .form-header {
+    padding-left: 40px;
+  }
+  .headshot {
+    width: 13%;
+    height: 45%;
+    top: -20%;
+  }
+}
+
+/* For devices up to 412px wide */
+@media (max-width: 412px) {
+  .seller-form {
+    padding: 24px 9px;
+    margin: 8px auto;
+  }
+  .form-title h2 {
+    font-size: 1.35rem;
+  }
+  .form-title p {
+    font-size: 0.78rem;
+  }
+  .form-header {
+    padding-left: 38px;
+  }
+  .headshot {
+    width: 13%;
+    height: 45%;
+    top: -20%;
+  }
+}
+
+/* For devices up to 393px wide */
+@media (max-width: 393px) {
+  .seller-form {
+    padding: 22px 8px;
+    margin: 7px auto;
+  }
+  .form-title h2 {
+    font-size: 1.3rem;
+  }
+  .form-title p {
+    font-size: 0.75rem;
+  }
+  .form-header {
+    padding-left: 35px;
+  }
+  .headshot {
+    width: 12%;
+    height: 47%;
+    top: -22%;
+  }
+}
+
+/* For devices up to 390px wide */
+@media (max-width: 390px) {
+  .seller-form {
+    padding: 22px 8px;
+    margin: 7px auto;
+  }
+  .form-title h2 {
+    font-size: 1.28rem;
+  }
+  .form-title p {
+    font-size: 0.74rem;
+  }
+  .form-header {
+    padding-left: 34px;
+  }
+  .headshot {
+    width: 13%;
+    height: 45%;
+    top: -22%;
+  }
+}
+
+/* For extra small devices (up to 360px wide) */
+@media (max-width: 360px) {
+  .seller-form {
+    padding: 20px 6px;
+    margin: 6px auto;
+  }
+  .form-title h2 {
+    font-size: 1.2rem;
+  }
+  .form-title p {
+    font-size: 0.7rem;
+  }
+  .form-header {
+    padding-left: 30px;
+  }
+  .headshot {
+    width: 15%;
+    height: 50%;
+    top: -21%;
   }
 }

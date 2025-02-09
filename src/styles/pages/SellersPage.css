@@ -73,13 +73,70 @@ body {
   margin-bottom: 40px;
 }
 
-/* Responsive Adjustments */
+/*
+  Responsive Adjustments
+*/
+
+/* For tablets and small laptops (up to 768px wide) */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2rem;
   }
 
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
   .container {
     padding: 0 10px;
+  }
+
+  .cta-button {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+
+  .final-signup-title {
+    font-size: 2rem;
+  }
+}
+
+/* For smaller devices such as many smartphones (up to 414px wide) */
+@media (max-width: 414px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .cta-button {
+    padding: 8px 18px;
+    font-size: 0.9rem;
+  }
+
+  .final-signup-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* For extra small devices (around 393px or 360px wide) */
+@media (max-width: 393px) {
+  .hero-title {
+    font-size: 1.7rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .cta-button {
+    padding: 7px 16px;
+    font-size: 0.85rem;
+  }
+
+  .final-signup-title {
+    font-size: 1.7rem;
   }
 }
