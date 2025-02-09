@@ -1,8 +1,7 @@
 const axios = require("axios");
 require("dotenv").config();
 
-const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwCjM1tyumWT0keHkAYwfy8X1W-KPA0uuzBwEFru_jzClC2N1rXQMtqHnhnBXSTmtuNMg/exec";
+const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_APPS_SCRIPT_URL_LEAD;
 
 exports.handler = async (event, context) => {
   // Allow only POST requests
