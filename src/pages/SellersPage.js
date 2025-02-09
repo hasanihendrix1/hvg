@@ -12,7 +12,7 @@ const SellersPage = () => {
       <div className="container">
         <section className="hero-form-container">
           <HeroSection
-            title="Signed & Sold, FAST!"
+            title="We Buy Houses, FAST!"
             subtitle={`Any Condition | Net Cash Offer\nNo Fees | No Commissions | No Closing Costs\nSkip the Hassle – Sell Direct, Get Paid Faster.\n\nThis is Hendrix Ventures Group, LLC Official Website`}
           />
           <SellerForm />
@@ -25,7 +25,6 @@ const SellersPage = () => {
 
         <OverviewSection />
 
-        <div className="section-spacer"></div>
         <div className="section-spacer"></div>
 
         {/* Wrap the testimonial section with an id for "Testimonials" */}
