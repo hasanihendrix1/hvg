@@ -16,7 +16,7 @@ const SellerForm = () => {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-    fetch("/.netlify/functions/submitSellerForm", {
+    fetch("/.netlify/functions/sendLead", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
