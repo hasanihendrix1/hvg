@@ -1,4 +1,3 @@
-/* Importing the variables */
 @import "../../../styles/variables.css";
 
 header {
@@ -27,6 +26,14 @@ header {
   align-items: center;
   gap: 15px;
   font-weight: bold;
+}
+
+.navbar-right {
+  flex-wrap: nowrap;
+}
+
+.nav-item {
+  white-space: nowrap;
 }
 
 .company-logo {
@@ -82,25 +89,115 @@ header {
   background-color: var(--secondary-light); /* Lighter variation for hover */
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
+/* =====================================================
+   Responsive Adjustments for Specific Screen Sizes
+   ===================================================== */
+
+/* For tablets and small laptops (up to 768px wide) */
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 10px 40px 10px 20px; /* Slightly reduce right padding */
+  }
+  .nav-links {
+    gap: 20px;
+  }
+  .cta-button-top {
+    padding: 7px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+/* For devices up to 712px wide */
+@media (max-width: 712px) {
+  .top-bar {
+    padding: 10px 35px 10px 20px;
+  }
+  .nav-links {
+    gap: 18px;
+  }
+  .cta-button-top {
+    padding: 7px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+/* For common smartphones (up to 414px wide) */
+@media (max-width: 414px) {
   .top-bar {
     flex-direction: column;
     padding: 15px 10px;
   }
-
   .nav-links {
     flex-direction: column;
     align-items: center;
     gap: 10px;
   }
-
   .cta-button-top {
     font-size: 0.85rem;
     padding: 6px 10px;
   }
-
   body {
     padding-top: 50px; /* Adjust padding to accommodate the fixed navbar */
+  }
+}
+
+/* For devices up to 412px wide */
+@media (max-width: 412px) {
+  .top-bar {
+    padding: 15px 9px;
+  }
+  .nav-links {
+    gap: 9px;
+  }
+  .cta-button-top {
+    font-size: 0.83rem;
+    padding: 6px 9px;
+  }
+}
+
+/* For devices up to 393px wide */
+@media (max-width: 393px) {
+  .top-bar {
+    padding: 15px 8px;
+  }
+  .nav-links {
+    gap: 8px;
+  }
+  .cta-button-top {
+    font-size: 0.8rem;
+    padding: 5px 8px;
+  }
+}
+
+/* For devices up to 390px wide */
+@media (max-width: 390px) {
+  .top-bar {
+    padding: 15px 8px;
+  }
+  .nav-links {
+    gap: 8px;
+  }
+  .cta-button-top {
+    font-size: 0.8rem;
+    padding: 5px 8px;
+  }
+}
+
+/* For extra small devices (up to 360px wide) */
+@media (max-width: 360px) {
+  .top-bar {
+    flex-direction: column;
+    padding: 15px 6px;
+  }
+  .nav-links {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .nav-item {
+    font-size: 0.85rem;
+  }
+  .cta-button-top {
+    font-size: 0.75rem;
+    padding: 5px 6px;
   }
 }
