@@ -1,0 +1,171 @@
+@import "../../../variables.css";
+
+/* Base Styles for Selling Process Section */
+.selling-process {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+}
+
+.selling-process h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.step {
+  max-width: 32%;
+  text-align: center;
+}
+
+.step-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.step h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.step p {
+  font-size: 1rem;
+  color: #333;
+  margin-top: 10px;
+}
+
+/* =====================================================
+   Responsive Adjustments
+   ===================================================== */
+
+/* For tablets and small laptops (up to 768px wide) */
+@media (max-width: 768px) {
+  .selling-process {
+    padding: 40px 15px;
+  }
+  .selling-process h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+  }
+  .steps-container {
+    gap: 30px;
+    flex-direction: column; /* Stack items vertically for easier readability */
+  }
+  .step {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .step-icon {
+    font-size: 45px;
+  }
+  .step h3 {
+    font-size: 1.3rem;
+  }
+  .step p {
+    font-size: 0.95rem;
+  }
+}
+
+/* For common smartphones (up to 430px wide, including 412px) */
+@media (max-width: 430px) {
+  .selling-process {
+    padding: 30px 10px;
+  }
+  .selling-process h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+  .steps-container {
+    gap: 20px;
+    flex-direction: column;
+  }
+  .step {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .step-icon {
+    font-size: 40px;
+  }
+  .step h3 {
+    font-size: 1.2rem;
+  }
+  .step p {
+    font-size: 0.9rem;
+  }
+}
+
+/* For devices up to 393px wide */
+@media (max-width: 393px) {
+  .selling-process {
+    padding: 28px 8px;
+  }
+  .selling-process h2 {
+    font-size: 1.55rem;
+    margin-bottom: 18px;
+  }
+  .steps-container {
+    gap: 15px;
+  }
+  .step-icon {
+    font-size: 38px;
+  }
+  .step h3 {
+    font-size: 1.15rem;
+  }
+  .step p {
+    font-size: 0.85rem;
+  }
+}
+
+/* For devices up to 390px wide */
+@media (max-width: 390px) {
+  .selling-process {
+    padding: 28px 8px;
+  }
+  .selling-process h2 {
+    font-size: 1.55rem;
+    margin-bottom: 18px;
+  }
+  .steps-container {
+    gap: 15px;
+  }
+  .step-icon {
+    font-size: 38px;
+  }
+  .step h3 {
+    font-size: 1.15rem;
+  }
+  .step p {
+    font-size: 0.85rem;
+  }
+}
+
+/* For extra small devices (up to 360px wide) */
+@media (max-width: 360px) {
+  .selling-process {
+    padding: 26px 6px;
+  }
+  .selling-process h2 {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+  }
+  .steps-container {
+    gap: 10px;
+  }
+  .step-icon {
+    font-size: 36px;
+  }
+  .step h3 {
+    font-size: 1.1rem;
+  }
+  .step p {
+    font-size: 0.8rem;
+  }
+}
