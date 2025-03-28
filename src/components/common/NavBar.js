@@ -27,7 +27,7 @@ const Navbar = () => {
           </ul>
         </div>
         <div className="navbar-right">
-          <p>Call Us: (123) 456-7890</p>
+          <p>Call Us: (470) 305-1065</p>
           <button className="cta-button-top">Get Your Offer Now!</button>
         </div>
       </div>
