@@ -42,7 +42,9 @@ const SellerForm = () => {
     })
       .then((res) => res.json())
       .then((response) => {
-        console.log(response);
+.then((response) => {
+  setSuccessMessage("Your offer request was sent successfully!");
+});
         setSuccessMessage("Your offer request was sent successfully!");
         setErrorMessage("");
         e.target.reset();
