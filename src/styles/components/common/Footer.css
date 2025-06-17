@@ -51,6 +51,28 @@
   margin-top: 10px;
 }
 
+.footer-compliance-links {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #fff;
+  line-height: 1.8;
+}
+
+.footer-compliance-links p {
+  margin: 0.3em 0;
+}
+
+.footer-compliance-links a {
+  color: #ffe3ec;
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+.footer-compliance-links a:hover {
+  color: #fff;
+}
+
 /* ===============================
    Responsive Styles
    =============================== */

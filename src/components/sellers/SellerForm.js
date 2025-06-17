@@ -102,9 +102,33 @@ const SellerForm = () => {
       {loading && <div className="loading-spinner"></div>}
       {successMessage && <p className="success-message">{successMessage}</p>}
       {errorMessage && <p className="error-message">{errorMessage}</p>}
-      <p className="disclaimer">
+      <p className="form-consent">
         By submitting this form, you agree to receive text, email, and phone
-        communications from us.
+        communications from us. Message &amp; data rates may apply. See our{" "}
+        <a
+          href="https://hendrixventuresgroup.h.trustco.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          SMS Policy
+        </a>
+        ,{" "}
+        <a
+          href="https://hendrixventuresgroup.h.trustco.ai/#termsArea"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Terms &amp; Conditions
+        </a>
+        , and{" "}
+        <a
+          href="https://hendrixventuresgroup.h.trustco.ai/#privacyArea"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Privacy Policy
+        </a>
+        .
       </p>
     </section>
   );
