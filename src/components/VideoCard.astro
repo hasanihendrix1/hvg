@@ -1,0 +1,182 @@
+---
+// Click-to-load video facade (plan §9): a static poster until the visitor
+// deliberately presses play — audio is the credibility payload, so no
+// autoplay. Plays via Mux when a playbackId exists, else youtube-nocookie.
+// Zero third-party bytes load before the click either way.
+import type { Testimonial } from "../data/testimonials";
+
+export interface Props {
+  t: Testimonial;
+  headingLevel?: "h3" | "h4";
+}
+const { t, headingLevel: Heading = "h3" } = Astro.props;
+
+const poster = t.muxPlaybackId
+  ? `https://image.mux.com/${t.muxPlaybackId}/thumbnail.webp?width=960`
+  : `https://i.ytimg.com/vi/${t.youtubeId}/hqdefault.jpg`;
+---
+
+<figure class="video-card">
+  <div
+    class="video-frame"
+    data-youtube-id={t.youtubeId}
+    data-mux-id={t.muxPlaybackId}
+    data-title={t.title}
+  >
+    <img
+      src={poster}
+      alt=""
+      width="960"
+      height="540"
+      loading="lazy"
+      class="video-poster"
+    />
+    <button type="button" class="video-play" aria-label={`Play: ${t.title}`}>
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="currentColor">
+        <path d="M8 5v14l11-7z"></path>
+      </svg>
+      <span>Play</span>
+    </button>
+  </div>
+  <figcaption>
+    <Heading class="video-title">{t.title}</Heading>
+    <p class="video-context">{t.sellerLabel} · {t.context}</p>
+    {t.quote && <blockquote class="video-quote">“{t.quote}”</blockquote>}
+    <p class="video-match">
+      Matches our records: {t.match.address} — {t.match.status},{" "}
+      {t.match.quarter}
+    </p>
+  </figcaption>
+</figure>
+
+<style>
+  .video-card {
+    margin: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .video-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+
+  .video-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-play {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    background: rgba(20, 10, 8, 0.35);
+    color: #fff;
+    border: none;
+    font: inherit;
+    font-weight: 650;
+    font-size: var(--text-lg);
+    cursor: pointer;
+    transition: background-color var(--transition);
+  }
+
+  .video-play:hover {
+    background: rgba(20, 10, 8, 0.5);
+  }
+
+  .video-play svg {
+    background: var(--color-brand);
+    border-radius: 50%;
+    padding: 10px;
+    width: 46px;
+    height: 46px;
+  }
+
+  figcaption {
+    padding: var(--space-4) var(--space-5) var(--space-5);
+  }
+
+  .video-title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-1);
+  }
+
+  .video-context {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    margin-bottom: var(--space-3);
+  }
+
+  .video-quote {
+    margin: 0 0 var(--space-3);
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--color-accent-warm);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--color-ink);
+  }
+
+  .video-match {
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    margin: 0;
+  }
+</style>
+
+<script>
+  // One handler for every facade on the page. Mux path lazy-imports the
+  // player only after a deliberate click; YouTube path swaps in a nocookie
+  // iframe. Nothing loads before intent.
+  document.querySelectorAll<HTMLElement>(".video-frame").forEach((frame) => {
+    const btn = frame.querySelector<HTMLButtonElement>(".video-play");
+    if (!btn) return;
+    btn.addEventListener("click", async () => {
+      const muxId = frame.dataset.muxId;
+      const title = frame.dataset.title || "Seller story";
+      try {
+        void fetch("/.netlify/functions/track-event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "video_play",
+            path: window.location.pathname,
+            meta: { video: title },
+          }),
+          keepalive: true,
+        });
+      } catch {
+        /* analytics never blocks playback */
+      }
+      if (muxId) {
+        await import("@mux/mux-player");
+        const player = document.createElement("mux-player");
+        player.setAttribute("playback-id", muxId);
+        player.setAttribute("metadata-video-title", title);
+        player.setAttribute("autoplay", "true");
+        player.setAttribute("style", "width:100%;height:100%;");
+        frame.replaceChildren(player);
+      } else {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube-nocookie.com/embed/${frame.dataset.youtubeId}?autoplay=1&rel=0`;
+        iframe.title = title;
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        iframe.setAttribute(
+          "style",
+          "width:100%;height:100%;border:0;position:absolute;inset:0;"
+        );
+        frame.replaceChildren(iframe);
+      }
+    });
+  });
+</script>

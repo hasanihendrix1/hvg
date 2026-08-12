@@ -1,14 +1,25 @@
 ---
 import Base from "../layouts/Base.astro";
+import VideoCard from "../components/VideoCard.astro";
+import { Image } from "astro:assets";
+import headshot from "../assets/hasani-headshot.jpg";
+import { fetchDeals, quarterLabel } from "../data/deals";
+import { testimonials, videoSchema } from "../data/testimonials";
 
-// ⚑ "15 houses" figure pending owner verification of the displayable
-// transaction set (plan §16.2) — sourced from the Sanity deal records.
+// ⚑ purchase count pending owner verification of the displayable
+// transaction set (plan §16.2) — sourced live from the Sanity deal records.
+const deals = await fetchDeals();
+const galleryDeals = deals.filter((d) => d.image).slice(0, 6);
+const featured = testimonials[0];
+const moreStories = testimonials.slice(1);
+const site = Astro.site?.href ?? "https://hendrixventures.com/";
 ---
 
 <Base
   title="Sell Your House for Cash in Atlanta | Hendrix Ventures Group"
   description="We buy Atlanta houses as-is, for cash — no fees, no commissions, no repairs. A real local buyer with documented purchases. Get a free, no-obligation offer."
   path="/"
+  schema={[videoSchema(featured, site)]}
 >
   <!-- 1. HERO -->
   <section class="hero">
@@ -53,11 +64,31 @@ import Base from "../layouts/Base.astro";
   <section class="proof-bar" aria-label="Track record">
     <div class="container">
       <p>
-        <span class="stat">15 documented purchases</span> across metro Atlanta
-        and Georgia <span class="stat">since 2020</span> — Lithonia, Smyrna,
-        Sandy Springs, Mableton, Douglasville, Cartersville and more.
+        <span class="stat">{deals.length} documented purchases</span> across
+        metro Atlanta and Georgia <span class="stat">since 2020</span> —
+        Lithonia, Smyrna, Sandy Springs, Mableton, Douglasville, Cartersville
+        and more.
         <a href="/houses-weve-bought">See the record</a>
       </p>
+    </div>
+  </section>
+
+  <!-- 2b. FEATURED SELLER STORY -->
+  <section class="featured-story">
+    <div class="container featured-story-grid">
+      <div class="featured-story-copy">
+        <h2>Don't take our word for it</h2>
+        <p>
+          The Memorial Drive seller was days from a foreclosure deadline. We
+          closed in four. Here's the story in their own words — matched to the
+          documented transaction on
+          <a href="/houses-weve-bought">our record page</a>.
+        </p>
+        <p>
+          <a href="/reviews">All seller stories →</a>
+        </p>
+      </div>
+      <VideoCard t={featured} />
     </div>
   </section>
 
@@ -118,8 +149,15 @@ import Base from "../layouts/Base.astro";
 
   <!-- 5. FOUNDER NOTE -->
   <section class="founder">
-    <div class="container-narrow">
-      <!-- Photo of Hasani lands here in Phase 3 (owner asset, plan §16.6) -->
+    <div class="container-narrow founder-grid">
+      <Image
+        src={headshot}
+        alt="Hasani Hendrix, owner of Hendrix Ventures Group"
+        width={280}
+        densities={[1, 2]}
+        class="founder-photo"
+      />
+      <div>
       <h2>You'll talk to me, not a call center</h2>
       <p>
         I'm Hasani Hendrix. I've been buying Georgia houses since 2020 —
@@ -131,6 +169,44 @@ import Base from "../layouts/Base.astro";
       <p class="founder-sig">
         Hasani Hendrix · Hendrix Ventures Group LLC, Atlanta
       </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5b. RECENT PURCHASES GALLERY -->
+  <section class="gallery">
+    <div class="container">
+      <h2>Recent purchases</h2>
+      <ul class="gallery-grid" role="list">
+        {
+          galleryDeals.map((deal) => (
+            <li class="gallery-card">
+              <img
+                src={`${deal.image}?w=480&fit=max&auto=format`}
+                alt={`Property at ${deal.address}`}
+                width="480"
+                height="270"
+                loading="lazy"
+              />
+              <p class="gallery-meta">
+                {deal.address.split(",")[0]} ·{" "}
+                <span class="stat">{quarterLabel(deal.timestamp)}</span>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+      <p><a href="/houses-weve-bought">See the full record →</a></p>
+    </div>
+  </section>
+
+  <!-- 5c. MORE SELLER STORIES -->
+  <section class="more-stories">
+    <div class="container">
+      <h2>More sellers, in their own words</h2>
+      <div class="more-stories-grid">
+        {moreStories.map((t) => <VideoCard t={t} headingLevel="h3" />)}
+      </div>
     </div>
   </section>
 
@@ -278,6 +354,83 @@ import Base from "../layouts/Base.astro";
   .economics {
     background: var(--color-surface);
     border-block: 1px solid var(--color-line);
+  }
+
+  .featured-story {
+    padding-block: var(--space-8);
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+
+  .featured-story-grid {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (max-width: 860px) {
+    .featured-story-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .founder-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    .founder-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .founder-photo {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
+    height: auto;
+  }
+
+  .gallery {
+    padding-block: var(--space-8);
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+
+  .gallery-grid {
+    list-style: none;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .gallery-card img {
+    border-radius: var(--radius);
+    border: 1px solid var(--color-line);
+    width: 100%;
+    height: auto;
+  }
+
+  .gallery-meta {
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    margin-top: var(--space-2);
+  }
+
+  .more-stories {
+    padding-block: var(--space-8);
+  }
+
+  .more-stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 460px));
+    gap: var(--space-5);
+    margin-top: var(--space-5);
   }
 
   .founder-sig {

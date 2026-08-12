@@ -1,12 +1,201 @@
 ---
 import Base from "../layouts/Base.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import VideoCard from "../components/VideoCard.astro";
+import { fetchDeals, quarterLabel } from "../data/deals";
+import { testimonials, videoSchema } from "../data/testimonials";
+
+const deals = await fetchDeals();
+const site = Astro.site?.href ?? "https://hendrixventures.com/";
+const schemas = testimonials.map((t) => videoSchema(t, site));
+
+const caseStudyByAddressStart = new Map(
+  testimonials.map((t) => [t.match.address.split(",")[0].toLowerCase(), t])
+);
+const hasStory = (address: string) =>
+  [...caseStudyByAddressStart.keys()].some((k) =>
+    address.toLowerCase().startsWith(k.split(" ").slice(0, 2).join(" "))
+  );
 ---
 
 <Base
-  title={"Houses We've Bought | Hendrix Ventures Group"}
-  description={"Documented house purchases by Hendrix Ventures Group across metro Atlanta and Georgia since 2020, with photos and dates."}
-  path={"/houses-weve-bought"}
+  title="Houses We've Bought | Hendrix Ventures Group"
+  description="Documented house purchases by Hendrix Ventures Group across metro Atlanta and Georgia since 2020, with photos and dates — including sellers telling their own stories."
+  path="/houses-weve-bought"
+  schema={schemas}
 >
-  <PagePlaceholder heading={"Houses we've bought"} lede={"Fifteen documented purchases across metro Atlanta and Georgia since 2020 \u2014 Lithonia, Smyrna, Sandy Springs, Mableton, Douglasville, Cartersville and more. The full documented gallery, including seller video stories, is being prepared for this page."} />
+  <section class="record-intro">
+    <div class="container-narrow">
+      <h1>Houses we've bought</h1>
+      <p class="lede">
+        This is our record — {deals.length} documented purchases since 2020,
+        with photos and dates, straight from our transaction files. Three of
+        the sellers tell their own story on camera below.
+      </p>
+      <p class="record-legend">
+        <strong>Sold</strong> means we purchased the house ourselves.
+        <strong>Assigned</strong> means we put the house under contract and,
+        as our agreements allow, assigned that contract to another buyer who
+        closed the purchase. Either way, the seller got the certainty they
+        were promised — and we're transparent about both.
+      </p>
+    </div>
+  </section>
+
+  <section class="record-grid-section" aria-label="Documented purchases">
+    <div class="container">
+      <ul class="record-grid" role="list">
+        {
+          deals.map((deal) => (
+            <li class="record-card">
+              {deal.image ? (
+                <img
+                  src={`${deal.image}?w=640&fit=max&auto=format`}
+                  alt={`Property at ${deal.address}`}
+                  width="640"
+                  height="360"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="record-noimage" aria-hidden="true" />
+              )}
+              <div class="record-card-body">
+                <p class="record-address">{deal.address}</p>
+                <p class="record-meta">
+                  <span class={`record-status record-status-${deal.status?.toLowerCase()}`}>
+                    {deal.status}
+                  </span>
+                  <span class="stat">{quarterLabel(deal.timestamp)}</span>
+                  {hasStory(deal.address) && (
+                    <a href="#seller-stories" class="record-story-link">
+                      Seller story ↓
+                    </a>
+                  )}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="stories" id="seller-stories">
+    <div class="container">
+      <h2>Three of these sellers, in their own words</h2>
+      <p class="stories-lede">
+        Unscripted, on camera, matched to the transactions above. Press play —
+        nothing loads until you do.
+      </p>
+      <div class="stories-grid">
+        {testimonials.map((t) => <VideoCard t={t} />)}
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .record-intro {
+    padding-block: var(--space-7) var(--space-5);
+  }
+
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+  }
+
+  .record-legend {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    background: var(--color-brand-tint);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+  }
+
+  .record-grid-section {
+    padding-block: var(--space-5) var(--space-7);
+  }
+
+  .record-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-5);
+  }
+
+  .record-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .record-card img,
+  .record-noimage {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: var(--color-line);
+  }
+
+  .record-card-body {
+    padding: var(--space-4);
+  }
+
+  .record-address {
+    font-weight: 600;
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-2);
+  }
+
+  .record-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    margin: 0;
+    flex-wrap: wrap;
+  }
+
+  .record-status {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 650;
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+  }
+
+  .record-status-sold {
+    color: var(--color-success);
+  }
+
+  .record-status-assigned {
+    color: var(--color-ink-soft);
+  }
+
+  .record-story-link {
+    margin-left: auto;
+  }
+
+  .stories {
+    padding-block: var(--space-7) var(--space-8);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .stories-lede {
+    color: var(--color-ink-soft);
+    max-width: 60ch;
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+  }
+</style>
