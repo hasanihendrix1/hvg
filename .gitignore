@@ -33,3 +33,6 @@ yarn-error.log*
 # Astro
 dist/
 .astro/
+
+# Local video staging (never commit source videos)
+videos-inbox/
