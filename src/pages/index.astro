@@ -123,26 +123,33 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     </div>
   </section>
 
-  <!-- 4. HONEST ECONOMICS -->
+  <!-- 4. IN GOOD HANDS -->
   <section class="economics">
     <div class="container-narrow">
-      <h2>How we make money — and when you shouldn't sell to us</h2>
-      <p>
-        We're investors. We buy below full market value, put in the work —
-        repairs, cleanouts, title problems, tenants — and make our profit when
-        we resell or rent the house. That's the honest trade: you give up some
-        price to skip the repairs, the showings, the fees, and the waiting.
-      </p>
-      <p>
-        <strong>Which means we're not right for everyone.</strong> If your
-        house is in good shape and you have a few months, listing with an
-        agent will likely net you more money. We'll tell you that on the phone
-        too.
-      </p>
-      <p>
-        What you'll never get from us: fees, commissions, pressure, or a
-        renegotiated price at the closing table.
-      </p>
+      <h2>You're in good hands here</h2>
+      <ul class="hands-list" role="list">
+        <li>
+          <strong>A written offer that doesn't move.</strong> The number we
+          put in writing is the number at closing — no renegotiating at the
+          table, ever.
+        </li>
+        <li>
+          <strong>Never a dollar out of your pocket.</strong> No fees, no
+          commissions, no closing costs — we take on the repairs, the
+          cleanout, and the risk, and make our profit on the resale. That's
+          how we can charge you nothing.
+        </li>
+        <li>
+          <strong>A Georgia attorney guards every closing.</strong> Your
+          money flows through the attorney's escrow — never through us — and
+          every signature is supervised, as Georgia law requires.
+        </li>
+        <li>
+          <strong>Straight answers, even when they cost us.</strong> If your
+          house is in great shape and you have time, listing it can net you
+          more — and if that's your situation, we'll say so on the phone.
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -353,6 +360,20 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
   .economics {
     background: var(--color-surface);
     border-block: 1px solid var(--color-line);
+  }
+
+  .hands-list {
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .hands-list li {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--color-accent-warm);
+    line-height: 1.7;
   }
 
   .featured-story {

@@ -10,8 +10,8 @@ export interface Faq {
 
 export const faqs: Faq[] = [
   {
-    q: "Will you lowball me?",
-    a: "Our offer will be below full retail value — we say that out loud because it's true of every cash buyer, whether they admit it or not. The offer is built from what the repaired house would sell for, minus repair costs, our costs, and our profit. What you're buying with that discount is certainty: no repairs, no fees, no showings, no financing fall-through, and a closing date you choose. If your house is in good shape and you have a few months, listing with an agent will likely net you more — and if that's your situation, we'll tell you so on the phone.",
+    q: "How do you decide what to offer?",
+    a: "Every offer is a real number we're prepared to close on, built the same way every time: what the repaired house would sell for, minus the cost of the repairs and the costs we take on. We put it in writing, we don't change it at the table, and you're free to take it to your own attorney or agent — we encourage it. And if your house is in great shape and you have time to list it, we'll tell you that's your better option. You'll never wonder where the number came from or whether it will hold. It will.",
   },
   {
     q: "How do I know this isn't a scam?",
@@ -35,7 +35,7 @@ export const faqs: Faq[] = [
   },
   {
     q: "How do you make money?",
-    a: "We buy below full market value, then either repair and resell the house, rent it, or — in some transactions — assign our purchase contract to another buyer who closes it, earning a fee on the assignment. Both paths are on our record page, labeled honestly: 'Sold' means we bought it ourselves, 'Assigned' means another buyer closed the purchase we put under contract. Either way, the price and terms you agreed to don't change.",
+    a: "We buy at a price that leaves room for the work we take on, then either repair and resell the house, rent it, or — in some transactions — assign our purchase contract to another buyer who closes it, earning a fee on the assignment. Both paths are on our record page, labeled honestly: 'Sold' means we bought it ourselves, 'Assigned' means another buyer closed the purchase we put under contract. Either way, the price and terms you agreed to don't change.",
   },
   {
     q: "Do I pay anything — fees, commissions, closing costs?",
