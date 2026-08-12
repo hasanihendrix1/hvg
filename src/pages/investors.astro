@@ -1,12 +1,48 @@
 ---
 import Base from "../layouts/Base.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import InvestorInventory from "../islands/InvestorInventory";
+import BuyerSignup from "../islands/BuyerSignup";
 ---
 
 <Base
-  title={"Investor Deals | Hendrix Ventures Group"}
-  description={"Off-market investment property inventory from Hendrix Ventures Group in Atlanta, Georgia."}
-  path={"/investors"}
+  title="Investor Deals | Hendrix Ventures Group"
+  description="Off-market investment property inventory from Hendrix Ventures Group in metro Atlanta, Georgia — and first look at new deals for serious buyers."
+  path="/investors"
 >
-  <PagePlaceholder heading={"For investors"} lede={"The investor deal inventory is being rebuilt as part of our site upgrade. Until it's back, email hasani@hendrixventures.com for current inventory or to join the buyer list."} />
+  <section class="inv-intro">
+    <div class="container">
+      <h1>Investor inventory</h1>
+      <p class="lede">
+        Off-market Georgia deals from our acquisitions pipeline. Questions or
+        offers:
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+        · <a href="tel:+16787105786">(678) 710-5786</a>
+      </p>
+      <InvestorInventory client:load />
+    </div>
+  </section>
+
+  <section class="inv-signup">
+    <div class="container">
+      <BuyerSignup client:visible />
+    </div>
+  </section>
 </Base>
+
+<style>
+  .inv-intro {
+    padding-block: var(--space-7) var(--space-6);
+  }
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+    margin-bottom: var(--space-6);
+  }
+  .inv-signup {
+    padding-block: var(--space-6) var(--space-8);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+  }
+</style>
