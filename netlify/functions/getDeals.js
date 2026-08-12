@@ -11,10 +11,8 @@ exports.handler = async () => {
       );
     }
 
-    // GROQ query to fetch deals. Available (active) listings are excluded at
-    // the source so the public endpoint never exposes them — the inventory
-    // shows completed transactions only.
-    const query = `*[_type == "deal" && status != "Available"]{
+    // GROQ query to fetch deals
+    const query = `*[_type == "deal"]{
       _id,
       timestamp,
       "price": price,
