@@ -125,6 +125,24 @@
   text-align: center;
 }
 
+.form-consent {
+  margin-top: 15px;
+  font-size: 0.95rem;
+  color: #333;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.form-consent a {
+  color: #9d174d;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.form-consent a:hover {
+  color: #60112e;
+}
+
 /* =====================================================
    Responsive Adjustments
    ===================================================== */
