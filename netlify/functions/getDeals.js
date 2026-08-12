@@ -1,7 +1,7 @@
-const axios = require("axios");
-require("dotenv").config();
+import axios from "axios";
+import "dotenv/config";
 
-exports.handler = async () => {
+export const handler = async () => {
   try {
     // Sanity API URL
     const SANITY_API_URL = process.env.REACT_APP_SANITY_URL;

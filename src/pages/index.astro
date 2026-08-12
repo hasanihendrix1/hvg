@@ -1,0 +1,249 @@
+---
+import Base from "../layouts/Base.astro";
+
+// ⚑ "15 houses" figure pending owner verification of the displayable
+// transaction set (plan §16.2) — sourced from the Sanity deal records.
+---
+
+<Base
+  title="Sell Your House for Cash in Atlanta | Hendrix Ventures Group"
+  description="We buy Atlanta houses as-is, for cash — no fees, no commissions, no repairs. A real local buyer with documented purchases. Get a free, no-obligation offer."
+  path="/"
+>
+  <!-- 1. HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <h1>We buy Atlanta houses as&#8209;is — and we show our work.</h1>
+        <p class="hero-sub">
+          A cash offer on your schedule. No fees, no repairs, no obligation —
+          from a real Atlanta buyer with every purchase documented on this
+          site.
+        </p>
+        <div class="hero-actions">
+          <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
+          <a href="tel:+16787105786" class="btn btn-secondary"
+            >Call or text (678) 710-5786</a
+          >
+        </div>
+        <p class="hero-microcopy">
+          Takes about 2 minutes · No obligation · Your info stays private
+        </p>
+        <ul class="trust-strip" role="list">
+          <li>Georgia LLC</li>
+          <li>Closings by independent GA closing attorneys</li>
+          <li>You pick the closing date</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. PROOF BAR -->
+  <section class="proof-bar" aria-label="Track record">
+    <div class="container">
+      <p>
+        <span class="stat">15 houses</span> bought across metro Atlanta and
+        Georgia <span class="stat">since 2020</span> — Lithonia, Smyrna, Sandy
+        Springs, Mableton, Douglasville, Cartersville and more.
+        <a href="/houses-weve-bought">See every one</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 3. HOW IT WORKS -->
+  <section class="process" id="how-it-works">
+    <div class="container">
+      <h2>How it works</h2>
+      <ol class="steps" role="list">
+        <li>
+          <h3><span class="step-num" aria-hidden="true">1</span> Tell us about the house</h3>
+          <p>
+            Two minutes online, or one phone call. Address and how to reach
+            you — that's all we ask up front.
+          </p>
+        </li>
+        <li>
+          <h3><span class="step-num" aria-hidden="true">2</span> Get a written offer</h3>
+          <p>
+            We visit or video-walk the property and put a real offer in
+            writing — usually within 24 hours of the walkthrough. Take it to
+            your attorney; we encourage it.
+          </p>
+        </li>
+        <li>
+          <h3><span class="step-num" aria-hidden="true">3</span> Pick your closing date</h3>
+          <p>
+            Close in days or months out — your schedule. An independent
+            Georgia closing attorney handles everything, and your funds flow
+            through the attorney's escrow, never through us.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. HONEST ECONOMICS -->
+  <section class="economics">
+    <div class="container-narrow">
+      <h2>How we make money — and when you shouldn't sell to us</h2>
+      <p>
+        We're investors. We buy below full market value, put in the work —
+        repairs, cleanouts, title problems, tenants — and make our profit when
+        we resell or rent the house. That's the honest trade: you give up some
+        price to skip the repairs, the showings, the fees, and the waiting.
+      </p>
+      <p>
+        <strong>Which means we're not right for everyone.</strong> If your
+        house is in good shape and you have a few months, listing with an
+        agent will likely net you more money. We'll tell you that on the phone
+        too.
+      </p>
+      <p>
+        What you'll never get from us: fees, commissions, pressure, or a
+        renegotiated price at the closing table.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. FOUNDER NOTE -->
+  <section class="founder">
+    <div class="container-narrow">
+      <!-- Photo of Hasani lands here in Phase 3 (owner asset, plan §16.6) -->
+      <h2>You'll talk to me, not a call center</h2>
+      <p>
+        I'm Hasani Hendrix. I've been buying Georgia houses since 2020 —
+        every one of them is documented on this site, and three of the
+        sellers tell their own story on camera. If we talk, you'll get a
+        straight answer about whether selling to us makes sense for your
+        situation, even when the answer is no.
+      </p>
+      <p class="founder-sig">
+        Hasani Hendrix · Hendrix Ventures Group LLC, Atlanta
+      </p>
+    </div>
+  </section>
+
+  <!-- 6. FINAL CTA -->
+  <section class="final-cta">
+    <div class="container-narrow">
+      <h2>Get your no-obligation cash offer</h2>
+      <p>
+        Free, in writing, and it expires on your schedule — not ours. Say no
+        by text if you'd rather not have the conversation.
+      </p>
+      <div class="hero-actions">
+        <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
+        <a href="tel:+16787105786" class="btn btn-secondary"
+          >Call or text (678) 710-5786</a
+        >
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .hero-copy {
+    max-width: 46rem;
+  }
+
+  .hero-sub {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+    max-width: 54ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-block: var(--space-5) var(--space-3);
+  }
+
+  .hero-microcopy {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .trust-strip {
+    display: flex;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .trust-strip li {
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--color-accent-warm);
+  }
+
+  .proof-bar {
+    background: var(--color-brand-tint);
+    border-block: 1px solid var(--color-line);
+    padding-block: var(--space-5);
+  }
+
+  .proof-bar p {
+    margin: 0;
+    max-width: 70ch;
+  }
+
+  .process,
+  .economics,
+  .founder,
+  .final-cta {
+    padding-block: var(--space-8);
+  }
+
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 780px) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7em;
+    height: 1.7em;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.7em;
+    margin-right: var(--space-2);
+    vertical-align: 0.1em;
+  }
+
+  .economics {
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+
+  .founder-sig {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--color-ink);
+  }
+
+  .final-cta {
+    text-align: left;
+  }
+</style>

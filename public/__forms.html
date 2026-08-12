@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- Netlify Forms registrations. Netlify parses any deployed HTML file for
+     form definitions at build time; the lead functions relay submissions to
+     these form names server-side after spam checks. Not linked from the site. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Form registrations</title>
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <form name="seller-lead" data-netlify="true" hidden>
+      <input type="text" name="name" />
+      <input type="text" name="phone" />
+      <input type="text" name="address" />
+    </form>
+    <form name="investor-signup" data-netlify="true" hidden>
+      <input type="text" name="firstName" />
+      <input type="text" name="lastName" />
+      <input type="text" name="contact" />
+      <input type="email" name="email" />
+      <input type="text" name="market" />
+      <input type="text" name="buyerType" />
+    </form>
+  </body>
+</html>

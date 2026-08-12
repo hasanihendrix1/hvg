@@ -1,5 +1,5 @@
-const axios = require("axios");
-require("dotenv").config();
+import axios from "axios";
+import "dotenv/config";
 
 // PRIMARY store: Supabase. Publishable key is committed on purpose — it is
 // public by design and row-level security only permits INSERT with it.
@@ -16,7 +16,7 @@ const NETLIFY_FORMS_ORIGIN = process.env.URL || "https://hendrixventures.com";
 
 const SINK_TIMEOUT_MS = 3500;
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
