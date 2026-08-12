@@ -21,6 +21,8 @@ const SellerForm = () => {
     const form = e.target;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+    // Fill time measured entirely on the client clock — immune to clock skew
+    data.fillTimeMs = Date.now() - startTime;
 
     // Accepts 10-digit US numbers, with or without a +1/1 prefix
     const phoneRegex =
@@ -105,24 +107,23 @@ const SellerForm = () => {
           />
         </div>
 
-        {/* Honeypot field — hidden from real users and assistive tech */}
+        {/* Honeypot field — hidden from real users and assistive tech.
+            Named "fax" so password managers won't autofill it (they target
+            "website"/"url" fields), while bots still fill every input. */}
         <div
           className="form-group honeypot"
           style={{ display: "none" }}
           aria-hidden="true"
         >
-          <label htmlFor={`${uid}-website`}>Website</label>
+          <label htmlFor={`${uid}-fax`}>Fax</label>
           <input
             type="text"
-            id={`${uid}-website`}
-            name="website"
+            id={`${uid}-fax`}
+            name="fax"
             tabIndex={-1}
             autoComplete="off"
           />
         </div>
-
-        {/* Hidden timestamp field */}
-        <input type="hidden" name="timestamp" value={startTime} />
 
         <button type="submit" className="cta-button" disabled={loading}>
           {loading ? "Submitting..." : "Get My Offer Now!"}
