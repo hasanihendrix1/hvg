@@ -11,8 +11,13 @@ export interface Props {
 }
 const { t, headingLevel: Heading = "h3" } = Astro.props;
 
+// Portrait sources (posterPosition set) use the natural-aspect frame and a
+// hand-picked CSS crop so faces stay centered; landscape sources keep the
+// Mux smartcrop poster untouched.
 const poster = t.muxPlaybackId
-  ? `https://image.mux.com/${t.muxPlaybackId}/thumbnail.webp?width=960&height=540&fit_mode=smartcrop&time=${t.posterTime}`
+  ? t.posterPosition
+    ? `https://image.mux.com/${t.muxPlaybackId}/thumbnail.webp?width=720&time=${t.posterTime}`
+    : `https://image.mux.com/${t.muxPlaybackId}/thumbnail.webp?width=960&height=540&fit_mode=smartcrop&time=${t.posterTime}`
   : `https://i.ytimg.com/vi/${t.youtubeId}/hqdefault.jpg`;
 ---
 
@@ -30,6 +35,7 @@ const poster = t.muxPlaybackId
       height="540"
       loading="lazy"
       class="video-poster"
+      style={t.posterPosition ? `object-position: ${t.posterPosition}` : undefined}
     />
     <button type="button" class="video-play" aria-label={`Play: ${t.title}`}>
       <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" fill="currentColor">

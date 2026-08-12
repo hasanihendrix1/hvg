@@ -13,6 +13,9 @@ export interface Testimonial {
   youtubeId: string;
   muxPlaybackId: string | null;
   posterTime: number;
+  /** CSS object-position for portrait sources rendered in the 16:9 frame;
+      undefined keeps the Mux smartcrop poster untouched */
+  posterPosition?: string;
   uploadDate: string; // first published on this site via Mux
   title: string;
   sellerLabel: string;
@@ -53,6 +56,7 @@ export const testimonials: Testimonial[] = [
     youtubeId: "gmGcCpwWiMU",
     muxPlaybackId: "0128JxbQQnLBdOYBxuitvawQSVRMSEQEU7boBSVul8Os",
     posterTime: 8,
+    posterPosition: "50% 24%",
     uploadDate: "2026-08-12",
     title: "Ms. Henderson's East Atlanta closing",
     sellerLabel: "Ms. Henderson",
@@ -73,6 +77,7 @@ export const testimonials: Testimonial[] = [
     youtubeId: "3qn9_7rSgAg",
     muxPlaybackId: "RqJvLPbL65lZylua502kJjEn5Dwp8XmMkqh1ga1ozJco",
     posterTime: 10,
+    posterPosition: "50% 42%",
     uploadDate: "2026-08-12",
     title: "Tom's Gainesville sale — his primary residence",
     sellerLabel: "Tom",
