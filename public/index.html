@@ -66,5 +66,21 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- Hidden registrations for Netlify Forms. Submissions are relayed
+         server-side by the lead functions after spam checks; these exist so
+         Netlify's build detects the forms and shows entries in the dashboard. -->
+    <form name="seller-lead" data-netlify="true" hidden>
+      <input type="text" name="name" />
+      <input type="text" name="phone" />
+      <input type="text" name="address" />
+    </form>
+    <form name="investor-signup" data-netlify="true" hidden>
+      <input type="text" name="firstName" />
+      <input type="text" name="lastName" />
+      <input type="text" name="contact" />
+      <input type="email" name="email" />
+      <input type="text" name="market" />
+      <input type="text" name="buyerType" />
+    </form>
   </body>
 </html>
