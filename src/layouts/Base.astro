@@ -99,5 +99,32 @@ const baseSchema = {
     </main>
     <Footer />
     <StickyMobileBar />
+    <script>
+      // First-party, cookieless analytics (owner free-route directive):
+      // page views + call clicks to our own event sink. No third parties.
+      const track = (event: string, meta?: Record<string, unknown>) => {
+        try {
+          void fetch("/.netlify/functions/track-event", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event,
+              path: window.location.pathname,
+              meta,
+            }),
+            keepalive: true,
+          });
+        } catch {
+          /* never break the page for analytics */
+        }
+      };
+      track("page_view");
+      document.addEventListener("click", (e) => {
+        const a = (e.target as Element | null)?.closest?.(
+          'a[href^="tel:"]'
+        );
+        if (a) track("call_click");
+      });
+    </script>
   </body>
 </html>
