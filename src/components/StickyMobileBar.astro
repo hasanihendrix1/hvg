@@ -1,13 +1,35 @@
 ---
 // The ONE persistent element on the site (plan §7.12): a thin bottom bar on
-// mobile with the two real actions. No popups, no chat, no timers — ever.
+// mobile with the two real actions for the current audience. No popups, no
+// chat, no timers — ever.
+export interface Props {
+  variant?: "seller" | "investor";
+}
+const { variant = "seller" } = Astro.props;
 ---
 
 <div class="sticky-bar" role="region" aria-label="Quick actions">
-  <a href="tel:+16787105786" class="btn btn-secondary bar-call">
-    Call or text
-  </a>
-  <a href="/get-offer" class="btn btn-primary bar-offer">Get my offer</a>
+  {
+    variant === "seller" ? (
+      <>
+        <a href="tel:+16787105786" class="btn btn-secondary bar-a">
+          Call or text
+        </a>
+        <a href="/get-offer" class="btn btn-primary bar-b">
+          Get my offer
+        </a>
+      </>
+    ) : (
+      <>
+        <a href="tel:+16787105786" class="btn btn-secondary bar-a">
+          Call or text
+        </a>
+        <a href="#buyer-list" class="btn btn-primary bar-b">
+          Join the buyer list
+        </a>
+      </>
+    )
+  }
 </div>
 
 <style>
@@ -30,8 +52,8 @@
       border-top: 1px solid var(--color-line);
     }
 
-    .bar-call,
-    .bar-offer {
+    .bar-a,
+    .bar-b {
       flex: 1;
       font-size: var(--text-sm);
       padding: 0.75em 0.5em;

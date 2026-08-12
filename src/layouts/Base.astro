@@ -14,6 +14,8 @@ export interface Props {
   ogImage?: string;
   /** Extra JSON-LD objects, serialized into the head */
   schema?: object[];
+  /** Mobile sticky-bar actions: seller journey (default) or investor */
+  sticky?: "seller" | "investor";
 }
 
 const {
@@ -22,6 +24,7 @@ const {
   path = "/",
   ogImage = "/og-image.jpg",
   schema = [],
+  sticky = "seller",
 } = Astro.props;
 
 const canonical = new URL(path, Astro.site).href;
@@ -98,7 +101,7 @@ const baseSchema = {
       <slot />
     </main>
     <Footer />
-    <StickyMobileBar />
+    <StickyMobileBar variant={sticky} />
     <script>
       // First-party, cookieless analytics (owner free-route directive):
       // page views + call clicks to our own event sink. No third parties.

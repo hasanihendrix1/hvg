@@ -112,45 +112,71 @@ export default function InvestorInventory() {
         <p className="inv-note">No deals match that status right now.</p>
       ) : (
         <ul className="inv-grid" role="list">
-          {shown.map((deal) => (
-            <li key={deal._id} className="inv-card">
-              {deal.image ? (
-                <img
-                  src={`${deal.image}?w=640&fit=max&auto=format`}
-                  alt={`Property at ${deal.address}`}
-                  width={640}
-                  height={360}
-                  loading="lazy"
-                />
-              ) : (
-                <div className="inv-noimage" aria-hidden="true" />
-              )}
-              <div className="inv-card-body">
-                <p className="inv-price">{formatPrice(deal.price)}</p>
-                <p className="inv-details">
-                  {deal.bedrooms} bd · {deal.bathrooms} ba ·{" "}
-                  {Number(deal.sqft).toLocaleString()} sqft
-                </p>
-                <p className="inv-address">{deal.address}</p>
-                <p className="inv-meta">
-                  <span
-                    className={`inv-status inv-status-${(deal.status || "").toLowerCase()}`}
-                  >
-                    {deal.status || "—"}
-                  </span>
-                  {deal.mediaLink && (
-                    <a
-                      href={deal.mediaLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
+          {shown.flatMap((deal, i) => {
+            const card = (
+              <li key={deal._id} className="inv-card">
+                {deal.image ? (
+                  <img
+                    src={`${deal.image}?w=640&fit=max&auto=format`}
+                    alt={`Property at ${deal.address}`}
+                    width={640}
+                    height={360}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="inv-noimage" aria-hidden="true" />
+                )}
+                <div className="inv-card-body">
+                  <p className="inv-price">{formatPrice(deal.price)}</p>
+                  <p className="inv-details">
+                    {deal.bedrooms} bd · {deal.bathrooms} ba ·{" "}
+                    {Number(deal.sqft).toLocaleString()} sqft
+                  </p>
+                  <p className="inv-address">{deal.address}</p>
+                  <p className="inv-meta">
+                    <span
+                      className={`inv-status inv-status-${(deal.status || "").toLowerCase()}`}
                     >
-                      Photos &amp; media
+                      {deal.status || "—"}
+                    </span>
+                    {deal.mediaLink && (
+                      <a
+                        href={deal.mediaLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Photos &amp; media
+                      </a>
+                    )}
+                  </p>
+                </div>
+              </li>
+            );
+            // The "first look" card sits inside the grid, at the moment a
+            // buyer is actively scanning inventory — same chrome as the
+            // deals, no popup, no interruption.
+            const joinIndex = Math.min(2, shown.length - 1);
+            if (i === joinIndex) {
+              return [
+                card,
+                <li key="join-card" className="inv-card inv-join-card">
+                  <div className="inv-join-body">
+                    <p className="inv-join-kicker">First look</p>
+                    <h3>New deals go to the buyer list first</h3>
+                    <p className="inv-join-copy">
+                      Serious buyers on our list hear about new inventory
+                      first. Tell us what you buy and we'll bring the right
+                      deals straight to you.
+                    </p>
+                    <a href="#buyer-list" className="btn btn-primary">
+                      Join the buyer list
                     </a>
-                  )}
-                </p>
-              </div>
-            </li>
-          ))}
+                  </div>
+                </li>,
+              ];
+            }
+            return [card];
+          })}
         </ul>
       )}
     </div>
