@@ -36,3 +36,8 @@ dist/
 
 # Local video staging (never commit source videos)
 videos-inbox/
+
+# Playwright artifacts
+screenshots/
+test-results/
+playwright-report/

@@ -95,7 +95,12 @@ import Base from "../layouts/Base.astro";
   <section class="hiw-compare">
     <div class="container">
       <h2>Selling to us vs. listing — honestly</h2>
-      <div class="table-scroll">
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Selling comparison table"
+      >
         <table>
           <caption class="sr-only">
             Comparison of selling to Hendrix Ventures Group versus listing

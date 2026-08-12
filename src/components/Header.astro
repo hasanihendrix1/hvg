@@ -124,4 +124,18 @@ const current = Astro.url.pathname;
       justify-content: space-between;
     }
   }
+
+  /* Small phones: shrink the two remaining items so nothing overflows */
+  @media (max-width: 480px) {
+    .header-inner {
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .wordmark {
+      font-size: var(--text-base);
+    }
+    .header-phone {
+      font-size: var(--text-sm);
+    }
+  }
 </style>
