@@ -1,0 +1,81 @@
+---
+import Base from "../layouts/Base.astro";
+import { faqs, faqSchema } from "../data/faqs";
+
+const site = Astro.site?.href ?? "https://hendrixventures.com/";
+---
+
+<Base
+  title="FAQ — Honest Answers | Hendrix Ventures Group"
+  description="Straight answers about selling your Atlanta house for cash: will the offer be low, is this legitimate, what does it cost, how fast is closing, and when listing with an agent is the better choice."
+  path="/faq"
+  schema={[faqSchema(site)]}
+>
+  <section class="faq-intro">
+    <div class="container-narrow">
+      <h1>Questions, answered honestly</h1>
+      <p class="lede">
+        These are the real questions sellers ask — including the
+        uncomfortable ones. If yours isn't here,
+        <a href="tel:+16787105786">call or text (678) 710-5786</a> and ask it
+        directly.
+      </p>
+    </div>
+  </section>
+
+  <section class="faq-list-section">
+    <div class="container-narrow">
+      {
+        faqs.map((f) => (
+          <details class="faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+      <div class="cta-row">
+        <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
+        <a href="tel:+16787105786" class="btn btn-secondary"
+          >Call or text (678) 710-5786</a
+        >
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .faq-intro {
+    padding-block: var(--space-7) var(--space-4);
+  }
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+  }
+  .faq-list-section {
+    padding-block: var(--space-4) var(--space-8);
+  }
+  .faq-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-3);
+  }
+  .faq-item summary {
+    cursor: pointer;
+    font-weight: 650;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+  .faq-item p {
+    margin: var(--space-4) 0 var(--space-2);
+    color: var(--color-ink-soft);
+    line-height: 1.7;
+  }
+  .cta-row {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-top: var(--space-6);
+  }
+</style>

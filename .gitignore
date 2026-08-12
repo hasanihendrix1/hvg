@@ -29,3 +29,15 @@ yarn-error.log*
 # Local Netlify folder
 .netlify
 
+
+# Astro
+dist/
+.astro/
+
+# Local video staging (never commit source videos)
+videos-inbox/
+
+# Playwright artifacts
+screenshots/
+test-results/
+playwright-report/

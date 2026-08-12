@@ -1,0 +1,56 @@
+---
+import Base from "../layouts/Base.astro";
+import InvestorInventory from "../islands/InvestorInventory";
+import BuyerSignup from "../islands/BuyerSignup";
+---
+
+<Base
+  title="Investor Deals | Hendrix Ventures Group"
+  description="Off-market investment property inventory from Hendrix Ventures Group in metro Atlanta, Georgia — and first look at new deals for serious buyers."
+  path="/investors"
+  sticky="investor"
+>
+  <section class="inv-intro">
+    <div class="container">
+      <div class="inv-header">
+        <div>
+          <h1>Investor inventory</h1>
+          <p class="lede">
+            Off-market Georgia deals from our acquisitions pipeline. Questions
+            or offers:
+            <a href="mailto:hasani@hendrixventures.com"
+              >hasani@hendrixventures.com</a
+            >
+            · <a href="tel:+16787105786">(678) 710-5786</a>
+          </p>
+        </div>
+        <a href="#buyer-list" class="btn btn-primary inv-header-cta"
+          >Get first look at new deals</a
+        >
+      </div>
+      <InvestorInventory client:load />
+    </div>
+  </section>
+
+  <section class="inv-signup" id="buyer-list">
+    <div class="container">
+      <BuyerSignup client:visible />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .inv-intro {
+    padding-block: var(--space-7) var(--space-6);
+  }
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+    margin-bottom: var(--space-6);
+  }
+  .inv-signup {
+    padding-block: var(--space-6) var(--space-8);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+import Base from "../layouts/Base.astro";
+import VideoCard from "../components/VideoCard.astro";
+import { testimonials, videoSchema } from "../data/testimonials";
+import { Image } from "astro:assets";
+import closingPhoto from "../assets/seller-closing.jpg";
+
+const site = Astro.site?.href ?? "https://hendrixventures.com/";
+const featured = testimonials[0];
+const rest = testimonials.slice(1);
+const schemas = testimonials.map((t) => videoSchema(t, site));
+---
+
+<Base
+  title="Seller Stories | Hendrix Ventures Group"
+  description="Real Atlanta-area sellers tell their own stories about selling their houses to Hendrix Ventures Group — on camera, matched to documented transactions."
+  path="/reviews"
+  schema={schemas}
+>
+  <section class="reviews-intro">
+    <div class="container-narrow">
+      <h1>Sellers, in their own words</h1>
+      <p class="lede">
+        We don't paste five-star graphics on this page. What we have is
+        better: three sellers who told their own story on camera, each matched
+        to a documented transaction you can check on
+        <a href="/houses-weve-bought">our record page</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="reviews-featured">
+    <div class="container featured-grid">
+      <VideoCard t={featured} />
+      <div class="featured-side">
+        <Image
+          src={closingPhoto}
+          alt="A seller at their closing with Hendrix Ventures Group"
+          width={640}
+          densities={[1, 2]}
+          class="closing-photo"
+        />
+        <p class="featured-note">
+          Mike's previous buyer kept him under contract for almost a month,
+          then backed out at the last minute. With us, the first call was on a
+          Monday and the closing was that Thursday — four days. His own words,
+          on camera.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reviews-more">
+    <div class="container">
+      <h2>More seller stories</h2>
+      <div class="stories-grid">
+        {rest.map((t) => <VideoCard t={t} />)}
+      </div>
+      <p class="reviews-honesty">
+        That's every video we have — we'd rather show three real ones than
+        pad this page. We ask every seller for an honest review at closing,
+        so this page grows one true story at a time.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .reviews-intro {
+    padding-block: var(--space-7) var(--space-5);
+  }
+
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+  }
+
+  .reviews-featured {
+    padding-block: var(--space-5) var(--space-7);
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .featured-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .closing-photo {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
+    height: auto;
+  }
+
+  .featured-note {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    margin-top: var(--space-4);
+  }
+
+  .reviews-more {
+    padding-block: var(--space-7) var(--space-8);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 420px));
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+  }
+
+  .reviews-honesty {
+    margin-top: var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    max-width: 60ch;
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/source-serif-4";
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import StickyMobileBar from "../components/StickyMobileBar.astro";
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Path for the canonical URL, e.g. "/how-it-works" */
+  path?: string;
+  ogImage?: string;
+  /** Extra JSON-LD objects, serialized into the head */
+  schema?: object[];
+  /** Mobile sticky-bar actions: seller journey (default) or investor */
+  sticky?: "seller" | "investor";
+}
+
+const {
+  title,
+  description,
+  path = "/",
+  ogImage = "/og-image.jpg",
+  schema = [],
+  sticky = "seller",
+} = Astro.props;
+
+const canonical = new URL(path, Astro.site).href;
+const ogImageAbs = new URL(ogImage, Astro.site).href;
+
+// LocalBusiness schema ships on every page (plan §13). No self-serving
+// review markup — that's a Google policy violation competitors commit.
+const baseSchema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://hendrixventures.com/#business",
+  name: "Hendrix Ventures Group LLC",
+  url: "https://hendrixventures.com/",
+  telephone: "+16787105786",
+  email: "hasani@hendrixventures.com",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Atlanta",
+    addressRegion: "GA",
+    addressCountry: "US",
+  },
+  areaServed: [
+    { "@type": "City", name: "Atlanta" },
+    { "@type": "State", name: "Georgia" },
+  ],
+  description:
+    "Real estate investment company buying houses for cash across metro Atlanta, Georgia.",
+  founder: { "@type": "Person", name: "Hasani Hendrix" },
+  sameAs: ["https://www.youtube.com/@hendrixventures334"],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#8a0e40" />
+
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/logo192.png" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hendrix Ventures Group" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(baseSchema)}
+    />
+    {
+      schema.map((s) => (
+        <script type="application/ld+json" set:html={JSON.stringify(s)} />
+      ))
+    }
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <StickyMobileBar variant={sticky} />
+    <script>
+      // First-party, cookieless analytics (owner free-route directive):
+      // page views + call clicks to our own event sink. No third parties.
+      const track = (event: string, meta?: Record<string, unknown>) => {
+        try {
+          void fetch("/.netlify/functions/track-event", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event,
+              path: window.location.pathname,
+              meta,
+            }),
+            keepalive: true,
+          });
+        } catch {
+          /* never break the page for analytics */
+        }
+      };
+      track("page_view");
+      document.addEventListener("click", (e) => {
+        const a = (e.target as Element | null)?.closest?.(
+          'a[href^="tel:"]'
+        );
+        if (a) track("call_click");
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+/* ==========================================================================
+   HVG design tokens — the single source of visual truth.
+   Direction (approved plan §5): "documentary warmth" — light, warm,
+   serif-led, one deep maroon used sparingly. All colors checked for
+   WCAG 2.2 AA contrast on their intended backgrounds.
+   ========================================================================== */
+
+:root {
+  /* ---- Color ---- */
+  --color-ink: #241b16; /* primary text — 14.9:1 on paper */
+  --color-ink-soft: #55483f; /* secondary text — 7.6:1 on paper */
+  --color-paper: #faf7f3; /* page background */
+  --color-surface: #ffffff; /* cards, form fields */
+  --color-line: #e7ddd3; /* hairline rules, borders */
+  --color-brand: #8a0e40; /* deep maroon — CTAs & key accents ONLY */
+  --color-brand-hover: #6f0b33;
+  --color-brand-tint: #f7ecef; /* subtle brand-tinted backgrounds */
+  --color-accent-warm: #d5b5a3; /* legacy tan, demoted to rules/details */
+  --color-success: #2e6e46;
+  --color-error: #9c2b1f;
+  --color-focus: #1d4ed8; /* focus rings — distinct from brand */
+
+  /* ---- Typography ---- */
+  --font-display: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+  --font-body: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+
+  /* Fluid type scale */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.1875rem;
+  --text-xl: clamp(1.25rem, 1.1rem + 0.8vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 1.2vw, 2rem);
+  --text-3xl: clamp(1.9rem, 1.5rem + 2vw, 2.75rem);
+  --text-4xl: clamp(2.3rem, 1.8rem + 2.8vw, 3.5rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+
+  /* ---- Space (4pt scale) ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* ---- Shape & elevation (deliberately minimal) ---- */
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow: 0 1px 3px rgba(36, 27, 22, 0.08), 0 4px 16px rgba(36, 27, 22, 0.06);
+
+  /* ---- Layout ---- */
+  --container: 1140px;
+  --container-narrow: 720px;
+
+  /* ---- Motion (restraint is the brand) ---- */
+  --transition: 150ms ease;
+}

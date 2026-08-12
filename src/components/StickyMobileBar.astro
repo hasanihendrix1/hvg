@@ -1,0 +1,62 @@
+---
+// The ONE persistent element on the site (plan §7.12): a thin bottom bar on
+// mobile with the two real actions for the current audience. No popups, no
+// chat, no timers — ever.
+export interface Props {
+  variant?: "seller" | "investor";
+}
+const { variant = "seller" } = Astro.props;
+---
+
+<div class="sticky-bar" role="region" aria-label="Quick actions">
+  {
+    variant === "seller" ? (
+      <>
+        <a href="tel:+16787105786" class="btn btn-secondary bar-a">
+          Call or text
+        </a>
+        <a href="/get-offer" class="btn btn-primary bar-b">
+          Get my offer
+        </a>
+      </>
+    ) : (
+      <>
+        <a href="tel:+16787105786" class="btn btn-secondary bar-a">
+          Call or text
+        </a>
+        <a href="#buyer-list" class="btn btn-primary bar-b">
+          Join the buyer list
+        </a>
+      </>
+    )
+  }
+</div>
+
+<style>
+  .sticky-bar {
+    display: none;
+  }
+
+  @media (max-width: 860px) {
+    .sticky-bar {
+      display: flex;
+      gap: var(--space-3);
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+      padding: var(--space-3) var(--space-4);
+      padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-line);
+    }
+
+    .bar-a,
+    .bar-b {
+      flex: 1;
+      font-size: var(--text-sm);
+      padding: 0.75em 0.5em;
+    }
+  }
+</style>

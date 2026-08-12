@@ -1,0 +1,88 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Contact | Hendrix Ventures Group"
+  description="Call, text, or email Hendrix Ventures Group LLC in Atlanta, Georgia. You'll reach the owner, not a call center."
+  path="/contact"
+>
+  <section class="contact-page">
+    <div class="container-narrow">
+      <h1>Talk to Hasani</h1>
+      <p class="lede">
+        Every call, text, and email lands with the owner — there's no call
+        center and no script. If we miss you, leave a message and you'll hear
+        back from a person, not an autoresponder.
+      </p>
+
+      <ul class="contact-list" role="list">
+        <li>
+          <strong>Call or text</strong>
+          <a href="tel:+16787105786" class="contact-big">(678) 710-5786</a>
+        </li>
+        <li>
+          <strong>Email</strong>
+          <a href="mailto:hasani@hendrixventures.com" class="contact-big"
+            >hasani@hendrixventures.com</a
+          >
+        </li>
+        <li>
+          <strong>Mail</strong>
+          <span
+            >Hendrix Ventures Group LLC<br />1700 Northside Dr NW, Suite A7
+            #813<br />Atlanta, GA 30318</span
+          >
+        </li>
+      </ul>
+
+      <p class="contact-note">
+        Rather start with the house?
+        <a href="/get-offer">The offer form takes about two minutes</a> — no
+        obligation either way.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact-page {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+    max-width: 54ch;
+  }
+  .contact-list {
+    list-style: none;
+    margin: var(--space-6) 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .contact-list li {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .contact-list strong {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .contact-big {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+  }
+  .contact-big:hover {
+    color: var(--color-brand);
+  }
+  .contact-note {
+    color: var(--color-ink-soft);
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+import Base from "../layouts/Base.astro";
+import OfferForm from "../islands/OfferForm";
+---
+
+<Base
+  title="Get Your Cash Offer | Hendrix Ventures Group"
+  description="Request a free, no-obligation cash offer for your Atlanta-area house. Two minutes, no fees, no repairs, close on your schedule."
+  path="/get-offer"
+>
+  <section class="offer-page">
+    <div class="container offer-layout">
+      <div class="offer-intro">
+        <h1>Get your cash offer</h1>
+        <p class="offer-lede">
+          Two minutes, two steps. No obligation, no fees, and your information
+          stays private — we only use it to talk to you about this house.
+        </p>
+        <ul class="offer-expectations" role="list">
+          <li><strong>1.</strong> Tell us the address and how to reach you</li>
+          <li>
+            <strong>2.</strong> We look at the house — in person or by video
+          </li>
+          <li>
+            <strong>3.</strong> You get a written offer, usually within 24
+            hours of the walkthrough
+          </li>
+        </ul>
+        <p class="offer-alt">
+          Rather talk it through?
+          <a href="tel:+16787105786">Call or text Hasani: (678) 710-5786</a>
+        </p>
+      </div>
+      <OfferForm client:load />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .offer-page {
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .offer-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .offer-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+
+  .offer-lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+    max-width: 46ch;
+  }
+
+  .offer-expectations {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0;
+    display: grid;
+    gap: var(--space-3);
+    color: var(--color-ink-soft);
+  }
+
+  .offer-alt {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+</style>

@@ -1,0 +1,239 @@
+/* Investor inventory + buyer signup — token-driven */
+
+.inv-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.inv-toolbar label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.inv-toolbar select {
+  font: inherit;
+  padding: 0.45em 0.7em;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.inv-note {
+  color: var(--color-ink-soft);
+}
+
+.inv-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.inv-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.inv-card img,
+.inv-noimage {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--color-line);
+  display: block;
+}
+
+.inv-card-body {
+  padding: var(--space-4);
+}
+
+.inv-price {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  margin: 0 0 var(--space-1);
+}
+
+.inv-details,
+.inv-address {
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+  margin: 0 0 var(--space-2);
+}
+
+.inv-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-xs);
+  margin: 0;
+}
+
+.inv-status {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 650;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+}
+
+.inv-status-available {
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+/* Buyer signup */
+.buyer-form {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: var(--space-6);
+  max-width: 34rem;
+}
+
+.buyer-form h3 {
+  margin-bottom: var(--space-4);
+}
+
+.buyer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 560px) {
+  .buyer-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.buyer-form .form-group {
+  margin-bottom: var(--space-4);
+}
+
+.buyer-form label {
+  display: block;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.buyer-form input[type="text"],
+.buyer-form input[type="tel"],
+.buyer-form input[type="email"] {
+  width: 100%;
+  font: inherit;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 0.6em 0.8em;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.buyer-types {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  margin: 0 0 var(--space-4);
+}
+
+.buyer-types legend {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding-inline: var(--space-1);
+}
+
+.buyer-type-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-right: var(--space-4);
+  font-weight: 400;
+}
+
+.buyer-consent {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  font-size: var(--text-xs);
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+  font-weight: 400;
+}
+
+.buyer-consent input {
+  margin-top: 0.25em;
+  flex-shrink: 0;
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--color-brand);
+}
+
+.buyer-error {
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  margin-top: var(--space-3);
+}
+
+/* Header CTA + in-grid join card */
+.inv-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.inv-header-cta {
+  white-space: nowrap;
+}
+
+.inv-join-card {
+  background: var(--color-brand-tint);
+  border-color: var(--color-accent-warm);
+  display: flex;
+}
+
+.inv-join-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+.inv-join-kicker {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 650;
+  color: var(--color-brand);
+  margin: 0;
+}
+
+.inv-join-body h3 {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.inv-join-copy {
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+
+.inv-join-body .btn {
+  align-self: flex-start;
+}

@@ -1,5 +1,5 @@
-const axios = require("axios");
-require("dotenv").config();
+import axios from "axios";
+import "dotenv/config";
 
 // PRIMARY lead store: Supabase. The publishable key below is intentionally
 // committed — it is public by design (like any client-side API key) and the
@@ -28,7 +28,7 @@ const MIN_FILL_TIME_MS = 2000;
 const SINK_TIMEOUT_MS = 3500;
 const PG_INT4_MAX = 2147483647;
 
-exports.handler = async (event, context) => {
+export const handler = async (event, context) => {
   // Allow only POST requests
   if (event.httpMethod !== "POST") {
     return {

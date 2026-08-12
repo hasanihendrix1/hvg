@@ -1,0 +1,465 @@
+---
+import Base from "../layouts/Base.astro";
+import VideoCard from "../components/VideoCard.astro";
+import { Image } from "astro:assets";
+import headshot from "../assets/hasani-headshot.jpg";
+import { fetchDeals, quarterLabel } from "../data/deals";
+import { testimonials, videoSchema } from "../data/testimonials";
+
+// ⚑ purchase count pending owner verification of the displayable
+// transaction set (plan §16.2) — sourced live from the Sanity deal records.
+const deals = await fetchDeals();
+const galleryDeals = deals.filter((d) => d.image).slice(0, 6);
+const featured = testimonials[0];
+const moreStories = testimonials.slice(1);
+const site = Astro.site?.href ?? "https://hendrixventures.com/";
+---
+
+<Base
+  title="Sell Your House for Cash in Atlanta | Hendrix Ventures Group"
+  description="We buy Atlanta houses as-is, for cash — no fees, no commissions, no repairs. A real local buyer with documented purchases. Get a free, no-obligation offer."
+  path="/"
+  schema={[videoSchema(featured, site)]}
+>
+  <!-- 1. HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <h1>We buy Atlanta houses as&#8209;is — and we show our work.</h1>
+        <p class="hero-sub">
+          A cash offer on your schedule. No fees, no repairs, no obligation —
+          from a real Atlanta buyer with purchases documented right here on
+          this site.
+        </p>
+        <!-- Zero-JS quick start: hands the address to the form island on
+             /get-offer, which fires the partial capture and opens step 2 -->
+        <form class="hero-quickstart" method="get" action="/get-offer">
+          <label class="sr-only" for="hero-address">Property address</label>
+          <input
+            type="text"
+            id="hero-address"
+            name="address"
+            autocomplete="street-address"
+            placeholder="Enter your property address"
+          />
+          <button type="submit" class="btn btn-primary">
+            Get my cash offer
+          </button>
+        </form>
+        <p class="hero-microcopy">
+          Takes about 2 minutes · No obligation · Your info stays private ·
+          Prefer to talk?
+          <a href="tel:+16787105786">Call or text (678) 710-5786</a>
+        </p>
+        <ul class="trust-strip" role="list">
+          <li>Georgia LLC</li>
+          <li>Closings by independent GA closing attorneys</li>
+          <li>You pick the closing date</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. PROOF BAR -->
+  <section class="proof-bar" aria-label="Track record">
+    <div class="container">
+      <p>
+        <span class="stat">Documented purchases</span> across metro Atlanta and
+        Georgia <span class="stat">since 2020</span> — Lithonia, Smyrna, Sandy
+        Springs, Mableton, Douglasville, Cartersville and more.
+        <a href="/houses-weve-bought">See the record</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- 2b. FEATURED SELLER STORY -->
+  <section class="featured-story">
+    <div class="container featured-story-grid">
+      <div class="featured-story-copy">
+        <h2>Don't take our word for it</h2>
+        <p>
+          Mike had a contract with another buyer who backed out at the last
+          minute. We talked on a Monday and closed that Thursday. Here's the
+          story in his own words — matched to the documented transaction on
+          <a href="/houses-weve-bought">our record page</a>.
+        </p>
+        <p>
+          <a href="/reviews">All seller stories →</a>
+        </p>
+      </div>
+      <VideoCard t={featured} />
+    </div>
+  </section>
+
+  <!-- 3. HOW IT WORKS -->
+  <section class="process" id="how-it-works">
+    <div class="container">
+      <h2>How it works</h2>
+      <ol class="steps" role="list">
+        <li>
+          <h3><span class="step-num" aria-hidden="true">1</span> Tell us about the house</h3>
+          <p>
+            Two minutes online, or one phone call. Address and how to reach
+            you — that's all we ask up front.
+          </p>
+        </li>
+        <li>
+          <h3><span class="step-num" aria-hidden="true">2</span> Get a written offer</h3>
+          <p>
+            We visit or video-walk the property and put a real offer in
+            writing — usually within 24 hours of the walkthrough. Take it to
+            your attorney; we encourage it.
+          </p>
+        </li>
+        <li>
+          <h3><span class="step-num" aria-hidden="true">3</span> Pick your closing date</h3>
+          <p>
+            Close in days or months out — your schedule. An independent
+            Georgia closing attorney handles everything, and your funds flow
+            through the attorney's escrow, never through us.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. IN GOOD HANDS -->
+  <section class="economics">
+    <div class="container-narrow">
+      <h2>You're in good hands here</h2>
+      <ul class="hands-list" role="list">
+        <li>
+          <strong>A written offer that doesn't move.</strong> The number we
+          put in writing is the number at closing — no renegotiating at the
+          table, ever.
+        </li>
+        <li>
+          <strong>Never a dollar out of your pocket.</strong> No fees, no
+          commissions, no closing costs — we take on the repairs, the
+          cleanout, and the risk, and make our profit on the resale. That's
+          how we can charge you nothing.
+        </li>
+        <li>
+          <strong>A Georgia attorney guards every closing.</strong> Your
+          money flows through the attorney's escrow — never through us — and
+          every signature is supervised, as Georgia law requires.
+        </li>
+        <li>
+          <strong>Straight answers, even when they cost us.</strong> If your
+          house is in great shape and you have time, listing it can net you
+          more — and if that's your situation, we'll say so on the phone.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. FOUNDER NOTE -->
+  <section class="founder">
+    <div class="container-narrow founder-grid">
+      <Image
+        src={headshot}
+        alt="Hasani Hendrix, owner of Hendrix Ventures Group"
+        width={280}
+        densities={[1, 2]}
+        class="founder-photo"
+      />
+      <div>
+      <h2>You'll talk to me, not a call center</h2>
+      <p>
+        I'm Hasani Hendrix. I've been buying Georgia houses since 2020 —
+        you can see documented purchases on this site, and three of my
+        sellers tell their own story on camera. If we talk, you'll get a
+        straight answer about whether selling to us makes sense for your
+        situation, even when the answer is no.
+      </p>
+      <p class="founder-sig">
+        Hasani Hendrix · Hendrix Ventures Group LLC, Atlanta
+      </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5b. RECENT PURCHASES GALLERY -->
+  <section class="gallery">
+    <div class="container">
+      <h2>Recent purchases</h2>
+      <ul class="gallery-grid" role="list">
+        {
+          galleryDeals.map((deal) => (
+            <li class="gallery-card">
+              <img
+                src={`${deal.image}?w=480&fit=max&auto=format`}
+                alt={`Property at ${deal.address}`}
+                width="480"
+                height="270"
+                loading="lazy"
+              />
+              <p class="gallery-meta">
+                {deal.address.split(",")[0]} ·{" "}
+                <span class="stat">{quarterLabel(deal.timestamp)}</span>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+      <p><a href="/houses-weve-bought">See the full record →</a></p>
+    </div>
+  </section>
+
+  <!-- 5c. MORE SELLER STORIES -->
+  <section class="more-stories">
+    <div class="container">
+      <h2>More sellers, in their own words</h2>
+      <div class="more-stories-grid">
+        {moreStories.map((t) => <VideoCard t={t} headingLevel="h3" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. FINAL CTA -->
+  <section class="final-cta">
+    <div class="container-narrow">
+      <h2>Get your no-obligation cash offer</h2>
+      <p>
+        Free, in writing, and it expires on your schedule — not ours. Say no
+        by text if you'd rather not have the conversation.
+      </p>
+      <div class="hero-actions">
+        <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
+        <a href="tel:+16787105786" class="btn btn-secondary"
+          >Call or text (678) 710-5786</a
+        >
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .hero-copy {
+    max-width: 46rem;
+  }
+
+  .hero-sub {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+    max-width: 54ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-block: var(--space-5) var(--space-3);
+  }
+
+  .hero-quickstart {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-block: var(--space-5) var(--space-3);
+    max-width: 34rem;
+  }
+
+  .hero-quickstart input {
+    flex: 1;
+    min-width: 14rem;
+    font: inherit;
+    font-size: var(--text-base);
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    padding: 0.65em 0.8em;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .hero-microcopy {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .trust-strip {
+    display: flex;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .trust-strip li {
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--color-accent-warm);
+  }
+
+  .proof-bar {
+    background: var(--color-brand-tint);
+    border-block: 1px solid var(--color-line);
+    padding-block: var(--space-5);
+  }
+
+  .proof-bar p {
+    margin: 0;
+    max-width: 70ch;
+  }
+
+  .process,
+  .economics,
+  .founder,
+  .final-cta {
+    padding-block: var(--space-8);
+  }
+
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 780px) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7em;
+    height: 1.7em;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.7em;
+    margin-right: var(--space-2);
+    vertical-align: 0.1em;
+  }
+
+  .economics {
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+
+  .hands-list {
+    list-style: none;
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .hands-list li {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--color-accent-warm);
+    line-height: 1.7;
+  }
+
+  .featured-story {
+    padding-block: var(--space-8);
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+
+  .featured-story-grid {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (max-width: 860px) {
+    .featured-story-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .founder-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    .founder-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .founder-photo {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
+    height: auto;
+  }
+
+  .gallery {
+    padding-block: var(--space-8);
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+
+  .gallery-grid {
+    list-style: none;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .gallery-card img {
+    border-radius: var(--radius);
+    border: 1px solid var(--color-line);
+    width: 100%;
+    height: auto;
+  }
+
+  .gallery-meta {
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    margin-top: var(--space-2);
+  }
+
+  .more-stories {
+    padding-block: var(--space-8);
+  }
+
+  .more-stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 460px));
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+
+  .founder-sig {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--color-ink);
+  }
+
+  .final-cta {
+    text-align: left;
+  }
+</style>
