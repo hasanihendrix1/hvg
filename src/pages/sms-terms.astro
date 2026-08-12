@@ -1,12 +1,74 @@
 ---
 import Base from "../layouts/Base.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+// ⚖ ATTORNEY REVIEW BEFORE LAUNCH (plan §12.1). Written to match the actual
+// consent flow in OfferForm.tsx / submit-lead.js (version 2026-08-12.1).
 ---
 
 <Base
-  title={"SMS & Communications Terms | Hendrix Ventures Group"}
-  description={"SMS and communications terms for Hendrix Ventures Group LLC: message frequency, rates, and how to opt out."}
-  path={"/sms-terms"}
+  title="SMS & Communications Terms | Hendrix Ventures Group"
+  description="Hendrix Ventures Group LLC's text messaging terms: what you'll receive, message frequency, rates, and how to opt out at any time."
+  path="/sms-terms"
 >
-  <PagePlaceholder heading={"SMS & Communications"} lede={"By opting in to texts from Hendrix Ventures Group LLC you agree to receive messages about your request. Message frequency varies; message and data rates may apply. Reply STOP at any time to opt out, or HELP for help. The complete policy is in legal review and will be published here."} />
+  <section class="legal">
+    <div class="container-narrow">
+      <h1>SMS &amp; Communications Terms</h1>
+      <p class="legal-effective">Effective August 12, 2026</p>
+
+      <h2>The program</h2>
+      <p>
+        Hendrix Ventures Group LLC sends text messages and makes calls about
+        property offers and transactions. There are two kinds, and you choose
+        each separately on our forms — neither is ever required to receive an
+        offer:
+      </p>
+      <ul>
+        <li>
+          <strong>About your request:</strong> replies, scheduling, your
+          offer, and transaction updates for the property you asked about.
+        </li>
+        <li>
+          <strong>Optional marketing:</strong> occasional messages about
+          buying or selling property, only if you checked that optional box.
+          Consent to marketing messages is not a condition of receiving an
+          offer or of any purchase.
+        </li>
+      </ul>
+
+      <h2>The fine print that matters</h2>
+      <ul>
+        <li>Message frequency varies. Message and data rates may apply.</li>
+        <li>
+          Reply <strong>STOP</strong> at any time to stop receiving texts —
+          we treat STOP as a full opt-out across our messaging and honor it
+          promptly. You may receive one final message confirming the opt-out.
+        </li>
+        <li>Reply <strong>HELP</strong> for help, or contact us below.</li>
+        <li>
+          You can also opt out or change preferences any time by emailing
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >
+          or calling <a href="tel:+16787105786">(678) 710-5786</a>.
+        </li>
+        <li>
+          Carriers are not liable for delayed or undelivered messages.
+        </li>
+        <li>
+          Mobile numbers and SMS consent are never shared with third parties
+          or affiliates for marketing. See our
+          <a href="/privacy">Privacy Policy</a>.
+        </li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p>
+        Hendrix Ventures Group LLC · 1700 Northside Dr NW, Suite A7 #813,
+        Atlanta, GA 30318 ·
+        <a href="tel:+16787105786">(678) 710-5786</a> ·
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+      </p>
+    </div>
+  </section>
 </Base>

@@ -1,12 +1,141 @@
 ---
 import Base from "../layouts/Base.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+// ⚖ ATTORNEY REVIEW BEFORE LAUNCH (plan §12.1). Drafted to describe the
+// site's actual data practices as built — update this page AND bump the
+// consent version in submit-lead.js if practices change.
 ---
 
 <Base
-  title={"Privacy Policy | Hendrix Ventures Group"}
-  description={"How Hendrix Ventures Group LLC collects, uses, and protects your information."}
-  path={"/privacy"}
+  title="Privacy Policy | Hendrix Ventures Group"
+  description="How Hendrix Ventures Group LLC collects, uses, stores, and protects your information — in plain English."
+  path="/privacy"
 >
-  <PagePlaceholder heading={"Privacy Policy"} lede={"Our full first-party privacy policy is in legal review and will be published here. Meanwhile: we use the information you submit only to respond to your request. We never sell your personal information, and mobile numbers and SMS consent are never shared with third parties for marketing."} />
+  <section class="legal">
+    <div class="container-narrow">
+      <h1>Privacy Policy</h1>
+      <p class="legal-effective">Effective August 12, 2026</p>
+      <p>
+        This policy describes how Hendrix Ventures Group LLC ("we," "us")
+        handles your information on hendrixventures.com. The short version:
+        we collect what you give us to respond to your request, we protect
+        it, we don't sell it, and we don't run third-party ad trackers.
+      </p>
+
+      <h2>What we collect</h2>
+      <ul>
+        <li>
+          <strong>What you submit:</strong> when you request an offer we
+          collect the property address and, if you continue, your name, phone
+          number, and optionally your email and selling timeline. Investor
+          signups collect name, phone, and email.
+        </li>
+        <li>
+          <strong>Consent records:</strong> when you submit a form we record
+          the date and time, your IP address, your browser type, the exact
+          consent language shown to you, and which consent boxes you did or
+          didn't check. We keep these records to honor — and prove we honor —
+          your communication choices.
+        </li>
+        <li>
+          <strong>Basic site analytics:</strong> we record page views and
+          clicks (such as taps on our phone number) using our own
+          first-party system. It uses <strong>no cookies</strong>, no
+          fingerprinting, and no third-party analytics or advertising
+          services. IP addresses in these records are used for spam
+          prevention.
+        </li>
+      </ul>
+
+      <h2>How we use it</h2>
+      <p>
+        To respond to your request, evaluate the property, communicate with
+        you about your transaction, honor your communication preferences, and
+        understand how the site is used. That's it. We do not use your
+        information for third-party advertising.
+      </p>
+
+      <h2>What we never do</h2>
+      <ul>
+        <li>We do not sell your personal information.</li>
+        <li>
+          No mobile telephone numbers or SMS consent information are shared
+          with third parties or affiliates for marketing or promotional
+          purposes.
+        </li>
+        <li>We do not run advertising pixels or cross-site trackers.</li>
+      </ul>
+
+      <h2>Who processes it for us</h2>
+      <p>
+        Like nearly every website, we rely on service providers that process
+        data on our behalf, under their own security programs: our website
+        host (Netlify, which also stores form submission copies), our
+        database provider (Supabase, where submissions and consent records
+        are stored), our video hosting provider (Mux, which serves the
+        testimonial videos), and our text-messaging provider. Service
+        providers may process your information only to provide their service
+        to us.
+      </p>
+
+      <h2>How long we keep it</h2>
+      <p>
+        Lead and transaction records are retained for our business records;
+        consent and opt-out records are retained for at least five years, as
+        telemarketing rules expect. Analytics events contain no name or
+        contact information.
+      </p>
+
+      <h2>Your choices</h2>
+      <ul>
+        <li>
+          Reply <strong>STOP</strong> to any text from us to stop texts —
+          effective across our messaging.
+        </li>
+        <li>
+          Email
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >
+          to ask what we have about you, to correct it, or to request
+          deletion (we may retain what the law requires us to keep, such as
+          opt-out records).
+        </li>
+      </ul>
+
+      <h2>Children</h2>
+      <p>
+        This site is for adults dealing in real estate; we do not knowingly
+        collect information from children under 13.
+      </p>
+
+      <h2>Changes &amp; contact</h2>
+      <p>
+        If we change this policy we'll change the date at the top. Questions:
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+        · (678) 710-5786 · Hendrix Ventures Group LLC, 1700 Northside Dr NW,
+        Suite A7 #813, Atlanta, GA 30318.
+      </p>
+    </div>
+  </section>
 </Base>
+
+<style is:global>
+  .legal {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .legal h2 {
+    font-size: var(--text-xl);
+    margin-top: var(--space-6);
+  }
+  .legal ul {
+    padding-left: 1.2em;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .legal-effective {
+    color: var(--color-ink-soft);
+    font-size: var(--text-sm);
+  }
+</style>

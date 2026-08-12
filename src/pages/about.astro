@@ -1,12 +1,155 @@
 ---
 import Base from "../layouts/Base.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
+import { Image } from "astro:assets";
+import headshot from "../assets/hasani-headshot.jpg";
 ---
 
 <Base
-  title={"About Us | Hendrix Ventures Group"}
-  description={"Hendrix Ventures Group LLC is a real estate investment company owned by Hasani Hendrix, buying houses across metro Atlanta since 2020."}
-  path={"/about"}
+  title="About Us | Hendrix Ventures Group"
+  description="Hendrix Ventures Group LLC is an Atlanta real estate investment company owned and run by Hasani Hendrix, buying Georgia houses since 2020. When you call, you talk to the owner."
+  path="/about"
 >
-  <PagePlaceholder heading={"About Hendrix Ventures Group"} lede={"Hendrix Ventures Group LLC is an Atlanta real estate investment company owned and run by Hasani Hendrix, buying Georgia houses since 2020. When you call, you talk to Hasani \u2014 not a call center."} />
+  <section class="about-hero">
+    <div class="container-narrow about-grid">
+      <Image
+        src={headshot}
+        alt="Hasani Hendrix, owner of Hendrix Ventures Group"
+        width={320}
+        densities={[1, 2]}
+        class="about-photo"
+      />
+      <div>
+        <h1>I'm Hasani. This is my company.</h1>
+        <p class="lede">
+          Hendrix Ventures Group is a small Atlanta real estate investment
+          company — deliberately small. I've been buying Georgia houses since
+          2020, and every documented purchase is on
+          <a href="/houses-weve-bought">this site</a> with photos and dates.
+          When you call, you talk to me.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-story">
+    <div class="container-narrow">
+      <h2>How I work</h2>
+      <p>
+        Most people who call me aren't having their best month. An inherited
+        house three states away, a rental that's become a burden, repairs
+        that stopped being worth it, a timeline that won't wait for a
+        traditional listing. My job is to give you one honest option: a real
+        written offer, explained plainly, that closes when you need it to.
+      </p>
+      <p>
+        Sometimes that offer is the right answer, and we close — a Georgia
+        closing attorney supervises everything and your money never passes
+        through my hands. Sometimes it isn't the right answer, and I'll tell
+        you that too. Mike, one of the sellers on our
+        <a href="/reviews">reviews page</a>, put it better than I could:
+        "Everything that you said has been a hundred percent truthful. You
+        tell me we're gonna close on this day — we're here that day."
+      </p>
+
+      <h2>What we don't do</h2>
+      <ul class="dont-list" role="list">
+        <li>We don't list houses — we're not agents and don't pretend to be.</li>
+        <li>We never charge you anything. Not a fee, not a commission, ever.</li>
+        <li>We don't renegotiate at the closing table.</li>
+        <li>
+          We don't pressure. The offer is free, in writing, and no is a
+          complete answer.
+        </li>
+        <li>
+          We don't claim to be a giant company. Small is why you get the
+          owner on the phone.
+        </li>
+      </ul>
+
+      <h2>The company, on paper</h2>
+      <!-- ⚑ Registry link (ecorp.sos.ga.gov) added once the annual
+           registration is current (plan §10.4) -->
+      <ul class="facts-list" role="list">
+        <li><strong>Legal name:</strong> Hendrix Ventures Group LLC</li>
+        <li><strong>What we are:</strong> a Georgia real estate investment company — a principal buyer, not a brokerage</li>
+        <li>
+          <strong>Address:</strong> 1700 Northside Dr NW, Suite A7 #813,
+          Atlanta, GA 30318
+        </li>
+        <li>
+          <strong>Phone:</strong>
+          <a href="tel:+16787105786">(678) 710-5786</a> ·
+          <strong>Email:</strong>
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >
+        </li>
+        <li>
+          <strong>Closings:</strong> conducted by independent Georgia closing
+          attorneys, as Georgia law requires
+        </li>
+      </ul>
+
+      <div class="cta-row">
+        <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
+        <a href="tel:+16787105786" class="btn btn-secondary"
+          >Call or text (678) 710-5786</a
+        >
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .about-hero {
+    padding-block: var(--space-7) var(--space-5);
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-6);
+    align-items: center;
+  }
+  @media (max-width: 700px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .about-photo {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
+    height: auto;
+  }
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+  }
+  .about-story {
+    padding-block: var(--space-5) var(--space-8);
+  }
+  .about-story h2 {
+    margin-top: var(--space-6);
+  }
+  .dont-list,
+  .facts-list {
+    list-style: none;
+    margin: var(--space-4) 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .dont-list li {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--color-accent-warm);
+  }
+  .facts-list li {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--color-line);
+  }
+  .cta-row {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-top: var(--space-6);
+  }
+</style>

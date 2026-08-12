@@ -38,7 +38,9 @@ export async function fetchDeals(): Promise<Deal[]> {
   }
   const data = await res.json();
   const deals: Deal[] = data.result || [];
+  // Georgia transactions only. (Also excludes the St. Louis record, which
+  // never closed — owner directive 2026-08-12; pending deletion in Sanity.)
   return deals
-    .filter((d) => d.address)
+    .filter((d) => d.address && /\bGA\b/.test(d.address))
     .sort((a, b) => quarterValue(b.timestamp) - quarterValue(a.timestamp));
 }

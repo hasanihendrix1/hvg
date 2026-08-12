@@ -1,12 +1,269 @@
 ---
 import Base from "../layouts/Base.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
 ---
 
 <Base
-  title={"How It Works | Hendrix Ventures Group"}
-  description={"How selling your Atlanta house to Hendrix Ventures Group works: a written offer after one walkthrough, you pick the closing date, an independent Georgia attorney closes."}
-  path={"/how-it-works"}
+  title="How It Works | Hendrix Ventures Group"
+  description="How selling your Atlanta house to Hendrix Ventures Group works: a written offer after one walkthrough, how the offer is calculated, an honest comparison with listing, and a Georgia attorney at every closing."
+  path="/how-it-works"
 >
-  <PagePlaceholder heading={"How it works"} lede={"Tell us about the house, get a written offer \u2014 usually within 24 hours of a walkthrough \u2014 and pick your closing date. Every closing is handled by an independent Georgia closing attorney, as Georgia law requires. The full page, including our offer math and an honest comparison with listing, is on its way."} />
+  <section class="hiw-intro">
+    <div class="container-narrow">
+      <h1>How it works</h1>
+      <p class="lede">
+        Three steps, no surprises — and enough detail on this page that you
+        know exactly what happens before you ever talk to us.
+      </p>
+    </div>
+  </section>
+
+  <section class="hiw-steps">
+    <div class="container-narrow">
+      <ol class="hiw-list" role="list">
+        <li>
+          <h2>1 · Tell us about the house</h2>
+          <p>
+            Two minutes on <a href="/get-offer">the offer form</a>, or one
+            phone call to <a href="tel:+16787105786">(678) 710-5786</a>. All we
+            need up front is the address and how to reach you. You'll talk to
+            Hasani — not a call center, not a script.
+          </p>
+        </li>
+        <li>
+          <h2>2 · We look at the house and put an offer in writing</h2>
+          <p>
+            We visit in person or do a quick video walkthrough — whichever you
+            prefer. Don't clean, don't repair, don't apologize for the house;
+            we've bought houses in every condition. You'll usually have a
+            written offer within 24 hours of the walkthrough.
+          </p>
+          <p>
+            The offer is free, it's in writing, and it doesn't expire on our
+            schedule. Take it to your attorney or a licensed agent — we
+            genuinely encourage it.
+          </p>
+        </li>
+        <li>
+          <h2>3 · You pick the closing date</h2>
+          <p>
+            Close in days, or months out — whatever your situation needs.
+            Georgia law requires every real-estate closing to be conducted by
+            a licensed closing attorney, and that protects you: the attorney
+            verifies the title, supervises every signature, and your money
+            flows through the attorney's escrow account — never through us.
+            You get paid at closing.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="hiw-math">
+    <div class="container-narrow">
+      <h2>How we calculate an offer</h2>
+      <p>
+        No mystery, no algorithm theater. Every offer is built the same way:
+      </p>
+      <ul class="math-list" role="list">
+        <li>
+          <strong>What the house will be worth</strong> after it's fully
+          repaired, based on real sales near you
+        </li>
+        <li>
+          <strong>minus the cost of repairs</strong> — the work you're
+          choosing not to do
+        </li>
+        <li>
+          <strong>minus our costs</strong> — closing, holding, and selling
+          costs we take on
+        </li>
+        <li>
+          <strong>minus our profit</strong> — we're a business, and we'd
+          rather say that plainly than hide it
+        </li>
+      </ul>
+      <p>
+        That math means our offer is below full retail value. What you get in
+        exchange is real: no repairs, no cleanouts, no showings, no
+        commissions, no fees, no financing fall-throughs, and a closing date
+        you control. For some situations that trade is exactly right. For
+        others it isn't — which is what the next table is for.
+      </p>
+    </div>
+  </section>
+
+  <section class="hiw-compare">
+    <div class="container">
+      <h2>Selling to us vs. listing — honestly</h2>
+      <div class="table-scroll">
+        <table>
+          <caption class="sr-only">
+            Comparison of selling to Hendrix Ventures Group versus listing
+            with an agent
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Sell to us</th>
+              <th scope="col">List with an agent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Likely price</th>
+              <td>Below full market value — that's the honest trade</td>
+              <td><strong>Usually the most money</strong> if the house shows
+                well and you can wait</td>
+            </tr>
+            <tr>
+              <th scope="row">Repairs &amp; cleanout</th>
+              <td>None — we buy as-is, leave what you don't want</td>
+              <td>Typically needed before showings</td>
+            </tr>
+            <tr>
+              <th scope="row">Commissions &amp; fees</th>
+              <td>None</td>
+              <td>Commonly around 5–6% plus concessions</td>
+            </tr>
+            <tr>
+              <th scope="row">Showings</th>
+              <td>One walkthrough</td>
+              <td>Ongoing until it sells</td>
+            </tr>
+            <tr>
+              <th scope="row">Timeline</th>
+              <td>You pick the date — days or months</td>
+              <td>Often 1–3+ months, plus buyer financing time</td>
+            </tr>
+            <tr>
+              <th scope="row">Certainty</th>
+              <td>Written offer; the number doesn't change at the table</td>
+              <td>Buyer financing and inspections can reopen or end the deal</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="compare-honesty">
+        <strong>Our honest advice:</strong> if your house is in good shape and
+        you have a few months, list it — you'll likely net more. We're the
+        right call when the house needs work, the timeline is short, or you
+        just want it done without the circus. If you call us and listing is
+        your better option, we'll say so.
+      </p>
+    </div>
+  </section>
+
+  <section class="hiw-cta">
+    <div class="container-narrow">
+      <h2>See your number</h2>
+      <p>
+        Free, written, no obligation — and no is always an acceptable answer.
+      </p>
+      <div class="cta-row">
+        <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
+        <a href="tel:+16787105786" class="btn btn-secondary"
+          >Call or text (678) 710-5786</a
+        >
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .hiw-intro {
+    padding-block: var(--space-7) var(--space-4);
+  }
+  .lede {
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+  }
+  .hiw-steps {
+    padding-block: var(--space-5);
+  }
+  .hiw-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+  .hiw-list h2 {
+    font-size: var(--text-xl);
+  }
+  .hiw-math {
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+    padding-block: var(--space-7);
+  }
+  .math-list {
+    list-style: none;
+    margin: var(--space-4) 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .math-list li {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--color-accent-warm);
+  }
+  .hiw-compare {
+    padding-block: var(--space-7);
+  }
+  .table-scroll {
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 56rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+  }
+  th,
+  td {
+    text-align: left;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+  }
+  tbody th {
+    color: var(--color-ink-soft);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .compare-honesty {
+    max-width: 56rem;
+    margin-top: var(--space-5);
+    background: var(--color-brand-tint);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+  .hiw-cta {
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .cta-row {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

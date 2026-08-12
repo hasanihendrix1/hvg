@@ -1,12 +1,33 @@
 ---
 import Base from "../layouts/Base.astro";
-import PagePlaceholder from "../components/PagePlaceholder.astro";
 ---
 
 <Base
-  title={"Accessibility | Hendrix Ventures Group"}
-  description={"Hendrix Ventures Group's commitment to an accessible website for all visitors."}
-  path={"/accessibility"}
+  title="Accessibility | Hendrix Ventures Group"
+  description="Hendrix Ventures Group's commitment to an accessible website — and how to reach us directly if anything here is hard for you to use."
+  path="/accessibility"
 >
-  <PagePlaceholder heading={"Accessibility"} lede={"We're building this site to WCAG 2.2 AA. If anything here is hard for you to use, please tell us \u2014 call or text (678) 710-5786 or email hasani@hendrixventures.com and we'll fix it and help you directly."} />
+  <section class="legal">
+    <div class="container-narrow">
+      <h1>Accessibility</h1>
+      <p>
+        Selling a house is stressful enough without a website getting in the
+        way. We build this site to the Web Content Accessibility Guidelines
+        (WCAG) 2.2 Level AA: real headings and landmarks, full keyboard
+        operation, visible focus, strong color contrast, labeled forms with
+        announced errors, captions and transcripts on every video, and
+        respect for reduced-motion settings.
+      </p>
+      <p>
+        If anything here is hard for you to use — with a screen reader, by
+        keyboard, on a phone, in any way — please tell us and we'll fix it.
+        And you never need the website at all:
+        <a href="tel:+16787105786">call or text (678) 710-5786</a> or email
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+        and we'll handle everything personally.
+      </p>
+    </div>
+  </section>
 </Base>
