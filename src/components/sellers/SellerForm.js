@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useId } from "react";
 import "../../styles/components/sellers/SellerForm.css";
 import headshot from "../../assets/logos/PNG-02.png";
 
@@ -8,57 +8,58 @@ const SellerForm = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const uid = useId();
 
   useEffect(() => {
     setStartTime(Date.now());
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
 
-    const formData = new FormData(e.target);
-    let data = Object.fromEntries(formData.entries());
-    // Format the timestamp into a readable string
-    data.timestamp = new Date(Number(data.timestamp)).toLocaleString();
+    const form = e.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    // Fill time measured entirely on the client clock — immune to clock skew
+    data.fillTimeMs = Date.now() - startTime;
 
-    // Phone number validation using a regex for typical 10-digit numbers
-    const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-    if (!phoneRegex.test(data.phone)) {
+    // Accepts 10-digit US numbers, with or without a +1/1 prefix
+    const phoneRegex =
+      /^(?:\+?1[-. ]?)?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    if (!phoneRegex.test(data.phone.trim())) {
       setErrorMessage(
-        "Please enter a valid phone number (e.g., 123-456-7890)."
+        "Please enter a valid phone number (e.g., (404) 555-0142)."
       );
       setSuccessMessage("");
       return;
     }
 
     setLoading(true);
-
-    fetch("/.netlify/functions/sendLead", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-.then((response) => {
-  setSuccessMessage("Your offer request was sent successfully!");
-});
-        setSuccessMessage("Your offer request was sent successfully!");
-        setErrorMessage("");
-        e.target.reset();
-        setStartTime(Date.now());
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error submitting form:", error);
-        setErrorMessage(
-          "There was an error submitting your request. Please try again."
-        );
-        setSuccessMessage("");
-        setLoading(false);
+    try {
+      const res = await fetch("/.netlify/functions/sendLead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        throw new Error(`sendLead responded with status ${res.status}`);
+      }
+      setSuccessMessage("Your offer request was sent successfully!");
+      setErrorMessage("");
+      form.reset();
+      setStartTime(Date.now());
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setErrorMessage(
+        "There was an error submitting your request. Please try again, or call or text us at (678) 710-5786."
+      );
+      setSuccessMessage("");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,37 +77,90 @@ const SellerForm = () => {
       </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="name">Full Name</label>
-          <input type="text" id="name" name="name" required />
+          <label htmlFor={`${uid}-name`}>Full Name</label>
+          <input
+            type="text"
+            id={`${uid}-name`}
+            name="name"
+            autoComplete="name"
+            required
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="phone">Phone</label>
-          <input type="tel" id="phone" name="phone" required />
+          <label htmlFor={`${uid}-phone`}>Phone</label>
+          <input
+            type="tel"
+            id={`${uid}-phone`}
+            name="phone"
+            autoComplete="tel"
+            required
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="address">Property Address</label>
-          <input type="text" id="address" name="address" required />
+          <label htmlFor={`${uid}-address`}>Property Address</label>
+          <input
+            type="text"
+            id={`${uid}-address`}
+            name="address"
+            autoComplete="street-address"
+            required
+          />
         </div>
 
-        {/* Honeypot Field */}
-        <div className="form-group honeypot" style={{ display: "none" }}>
-          <label htmlFor="website">Website</label>
-          <input type="text" id="website" name="website" autoComplete="off" />
+        {/* Honeypot field — hidden from real users and assistive tech.
+            Named "fax" so password managers won't autofill it (they target
+            "website"/"url" fields), while bots still fill every input. */}
+        <div
+          className="form-group honeypot"
+          style={{ display: "none" }}
+          aria-hidden="true"
+        >
+          <label htmlFor={`${uid}-fax`}>Fax</label>
+          <input
+            type="text"
+            id={`${uid}-fax`}
+            name="fax"
+            tabIndex={-1}
+            autoComplete="off"
+          />
         </div>
 
-        {/* Hidden timestamp field */}
-        <input type="hidden" name="timestamp" value={startTime} />
-
-        <button type="submit" className="cta-button">
+        <button type="submit" className="cta-button" disabled={loading}>
           {loading ? "Submitting..." : "Get My Offer Now!"}
         </button>
       </form>
       {loading && <div className="loading-spinner"></div>}
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
-      <p className="disclaimer">
+      <div aria-live="polite" role="status">
+        {successMessage && <p className="success-message">{successMessage}</p>}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+      </div>
+      <p className="form-consent">
         By submitting this form, you agree to receive text, email, and phone
-        communications from us.
+        communications from us. Message &amp; data rates may apply. See our{" "}
+        <a
+          href="https://hendrixventuresgroup.h.trustco.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          SMS Policy
+        </a>
+        ,{" "}
+        <a
+          href="https://hendrixventuresgroup.h.trustco.ai/#termsArea"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Terms &amp; Conditions
+        </a>
+        , and{" "}
+        <a
+          href="https://hendrixventuresgroup.h.trustco.ai/#privacyArea"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Privacy Policy
+        </a>
+        .
       </p>
     </section>
   );

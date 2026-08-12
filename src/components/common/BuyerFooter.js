@@ -10,6 +10,39 @@ const BuyerFooter = () => {
         <img src={Logo} alt="Hendrix Ventures Logo" className="footer-logo" />
       </div>
 
+      <div className="footer-compliance-links">
+        <p>
+          <strong>Connect Via Text:</strong>{" "}
+          <a
+            href="https://hendrixventuresgroup.h.trustco.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            hendrixventuresgroup.h.trustco.ai
+          </a>
+        </p>
+        <p>
+          <strong>Messaging T&amp;Cs:</strong>{" "}
+          <a
+            href="https://hendrixventuresgroup.h.trustco.ai/#termsArea"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Terms
+          </a>
+        </p>
+        <p>
+          <strong>Messaging Privacy Policy:</strong>{" "}
+          <a
+            href="https://hendrixventuresgroup.h.trustco.ai/#privacyArea"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Privacy Policy
+          </a>
+        </p>
+      </div>
+
       <div className="footer-description">
         <p>
           We are a trusted real estate solutions firm, helping communities

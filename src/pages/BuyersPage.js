@@ -19,7 +19,7 @@ const BuyersPage = () => {
             </p>
             <p className="hero-phone-number">
               <strong>Questions? </strong>
-              <a href="tel:+4703051065">(470) 305-1065</a>
+              <a href="tel:+16787105786">(678) 710-5786</a>
             </p>
           </div>
         </div>

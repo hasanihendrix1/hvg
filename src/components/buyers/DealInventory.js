@@ -51,25 +51,19 @@ const DealInventory = ({ filterStatus }) => {
     fetchDeals();
   }, []);
 
-  console.log(
-    "All deals status values:",
-    deals.map((d) => d.status)
-  ); // Debugging output
+  // Snap back to page 1 whenever the filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus]);
 
   const filteredDeals = filterStatus
-    ? filterStatus.toLowerCase() === "closed"
-      ? deals.filter((deal) => {
-          const status = deal.status.toLowerCase().trim();
-          return status === "assigned" || status === "sold";
-        })
-      : deals.filter(
-          (deal) => deal.status.toLowerCase() === filterStatus.toLowerCase()
-        )
+    ? deals.filter(
+        (deal) =>
+          (deal.status || "").toLowerCase().trim() ===
+          filterStatus.toLowerCase()
+      )
     : deals;
 
-  console.log("Filtered Deals:", filteredDeals); // Debugging the final filtered result
-
-  debugger;
   const indexOfLastDeal = currentPage * dealsPerPage;
   const indexOfFirstDeal = indexOfLastDeal - dealsPerPage;
   const currentDeals = filteredDeals.slice(indexOfFirstDeal, indexOfLastDeal);

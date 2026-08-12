@@ -5,11 +5,11 @@ import { formatPrice } from "../../utils/common"; // Adjust the path as needed
 const DealCard = ({ deal }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+  const rawStatus = (deal.status || "").toLowerCase().trim();
   const normalizedStatus =
-    deal.status.toLowerCase() === "pending" ||
-    deal.status.toLowerCase() === "under contract"
+    rawStatus === "pending" || rawStatus === "under contract"
       ? "Under Contract"
-      : deal.status;
+      : deal.status || "—";
 
   const handleCardClick = () => {
     setIsPopupOpen(true);
@@ -22,7 +22,11 @@ const DealCard = ({ deal }) => {
   return (
     <>
       <div className="deal-card" onClick={handleCardClick}>
-        <img src={deal.image} alt={deal.title} className="deal-card-image" />
+        <img
+          src={deal.image}
+          alt={deal.address ? `Property at ${deal.address}` : "Property photo"}
+          className="deal-card-image"
+        />
         <div className="deal-card-info">
           <p className="deal-card-price">{formatPrice(deal.price)}</p>
           <p className="deal-card-details">
