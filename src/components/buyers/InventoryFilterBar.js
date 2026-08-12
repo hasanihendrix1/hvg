@@ -15,7 +15,6 @@ const InventoryFilterBar = ({ onFilterChange }) => {
         onChange={(e) => onFilterChange(e.target.value)}
       >
         <option value="">All Statuses</option>
-        <option value="Available">Available</option>
         <option value="Assigned">Assigned</option>
         <option value="Sold">Sold</option>
       </select>
