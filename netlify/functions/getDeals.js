@@ -30,10 +30,15 @@ exports.handler = async () => {
       params: { query },
     });
 
-    // Return the response as JSON
+    // Georgia deals only (the St. Louis record never closed — owner
+    // directive 2026-08-12; excluded here until deleted in Sanity)
+    const deals = (response.data.result || []).filter(
+      (d) => d.address && /\bGA\b/.test(d.address)
+    );
+
     return {
       statusCode: 200,
-      body: JSON.stringify(response.data.result),
+      body: JSON.stringify(deals),
     };
   } catch (error) {
     console.error("Error fetching deals from Sanity:", error);
