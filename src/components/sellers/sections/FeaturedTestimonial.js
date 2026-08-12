@@ -2,7 +2,7 @@ import React from "react";
 import "../../../styles/components/sellers/sections/FeaturedTestimonial.css";
 import sellerImage from "../../../assets/logos/seller_closing.jpg";
 
-const FeaturedTestimonial = ({}) => {
+const FeaturedTestimonial = () => {
   return (
     <section className="testimonial-section">
       <div className="testimonial-container">

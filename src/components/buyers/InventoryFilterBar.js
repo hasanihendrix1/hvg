@@ -11,12 +11,13 @@ const InventoryFilterBar = ({ onFilterChange }) => {
       <p className="center-title">Inventory</p> {/* Centered Title */}
       <select
         className="filter-dropdown"
+        aria-label="Filter deals by status"
         onChange={(e) => onFilterChange(e.target.value)}
       >
         <option value="">All Statuses</option>
         <option value="Available">Available</option>
-        <option value="Pending">Pending</option>
-        <option value="Closed">Closed</option>
+        <option value="Assigned">Assigned</option>
+        <option value="Sold">Sold</option>
       </select>
     </div>
   );
