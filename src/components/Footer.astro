@@ -1,0 +1,143 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-identity">
+        <p class="footer-wordmark">Hendrix <span>Ventures Group</span></p>
+        <address>
+          Hendrix Ventures Group LLC<br />
+          1700 Northside Dr NW, Suite A7 #813<br />
+          Atlanta, GA 30318
+        </address>
+        <p>
+          <a href="tel:+16787105786">(678) 710-5786</a><br />
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >
+        </p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer">
+        <ul>
+          <li><a href="/how-it-works">How It Works</a></li>
+          <li><a href="/houses-weve-bought">Houses We've Bought</a></li>
+          <li><a href="/reviews">Reviews</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/faq">FAQ</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/investors">For Investors</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-legal-nav" aria-label="Legal">
+        <ul>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Use</a></li>
+          <li><a href="/sms-terms">SMS &amp; Communications</a></li>
+          <li><a href="/accessibility">Accessibility</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-disclosure">
+      <!-- ⚖ Wording drafted per plan §12.5; flagged for attorney review before launch -->
+      <p>
+        Hendrix Ventures Group LLC is a real estate investment company. We buy
+        property as a principal, for our own account. We are not licensed real
+        estate brokers or agents, and we do not represent you in any
+        transaction. Our purchase agreements may be assigned to another buyer,
+        and we may earn a profit on assignment or resale. Any offer we make
+        reflects our investment criteria and may be below fair market value.
+        You are never under any obligation, and we encourage you to consult
+        your own attorney or a licensed real estate agent. Every closing is
+        handled by an independent Georgia closing attorney, as Georgia law
+        requires.
+      </p>
+    </div>
+
+    <p class="footer-copyright">
+      © {year} Hendrix Ventures Group LLC. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+    margin-top: var(--space-9);
+    padding-block: var(--space-7) var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    /* Keep clear of the mobile sticky bar */
+    padding-bottom: calc(var(--space-6) + 72px);
+  }
+
+  @media (min-width: 861px) {
+    .site-footer {
+      padding-bottom: var(--space-6);
+    }
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 700px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .footer-wordmark {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .footer-wordmark span {
+    color: var(--color-brand);
+  }
+
+  address {
+    font-style: normal;
+    margin-bottom: var(--space-4);
+  }
+
+  .footer-nav ul,
+  .footer-legal-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .site-footer a {
+    color: var(--color-ink-soft);
+  }
+
+  .site-footer a:hover {
+    color: var(--color-ink);
+  }
+
+  .footer-disclosure {
+    border-top: 1px solid var(--color-line);
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    max-width: 72ch;
+  }
+
+  .footer-copyright {
+    margin-top: var(--space-5);
+    font-size: var(--text-xs);
+  }
+</style>
