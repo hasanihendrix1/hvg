@@ -14,6 +14,13 @@ const SUPABASE_PUBLISHABLE_KEY =
 const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_APPS_SCRIPT_URL_LEAD;
 const NETLIFY_FORMS_ORIGIN = process.env.URL || "https://hendrixventures.com";
 
+// MIRROR 3 (opportunistic ONLY): dotato's inbound-lead webhook. Full URL
+// including its path token; unset = feature off. Complete submissions only —
+// dotato declines partials by design. Never counts toward the success
+// decision: the website's own store is the source of truth, and dotato
+// ingestion is idempotent on submissionId, so retries are safe.
+const DOTATO_LEADS_WEBHOOK_URL = process.env.DOTATO_LEADS_WEBHOOK_URL;
+
 const MIN_FILL_TIME_MS = 2000;
 const SINK_TIMEOUT_MS = 3500;
 const PG_INT4_MAX = 2147483647;
@@ -136,6 +143,29 @@ export const handler = async (event) => {
         }
       );
 
+    const postDotato = () =>
+      axios.post(
+        DOTATO_LEADS_WEBHOOK_URL,
+        {
+          stage: "complete",
+          submissionId: payload.submissionId || null,
+          address: payload.address,
+          name: payload.name,
+          phone: payload.phone,
+          email: requiredString(payload.email) ? payload.email : null,
+          timeline: requiredString(payload.timeline) ? payload.timeline : null,
+          consentTransactional: payload.consentTransactional === true,
+          consentMarketing: payload.consentMarketing === true,
+          consentVersion: CONSENT_VERSION,
+          pageUrl: payload.pageUrl || null,
+          receivedAt: new Date().toISOString(),
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          timeout: SINK_TIMEOUT_MS,
+        }
+      );
+
     const [storeResult, sheetResult] = await Promise.allSettled([
       insert({
         ...common,
@@ -151,6 +181,7 @@ export const handler = async (event) => {
       }),
       GOOGLE_SCRIPT_URL ? postSheet() : Promise.resolve("skipped"),
       postNetlifyForm(),
+      DOTATO_LEADS_WEBHOOK_URL ? postDotato() : Promise.resolve("skipped"),
     ]);
 
     const stored = storeResult.status === "fulfilled";

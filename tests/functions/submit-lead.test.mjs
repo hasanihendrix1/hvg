@@ -145,3 +145,72 @@ test("returns 500 when every verifiable destination fails", async () => {
   const res = await post(completeLead());
   expect(res.statusCode).toBe(500);
 });
+
+test("mirrors complete leads to dotato when the webhook is configured — excluded from success", async () => {
+  vi.resetModules();
+  process.env.DOTATO_LEADS_WEBHOOK_URL =
+    "https://dotato.example/api/webhooks/hvg-leads/TESTTOKEN";
+  try {
+    const freshAxios = (await import("axios")).default;
+    freshAxios.post.mockReset();
+    freshAxios.post.mockImplementation((url) =>
+      url.includes("dotato.example")
+        ? Promise.reject(new Error("dotato down"))
+        : Promise.resolve({ data: { ok: true } })
+    );
+    const fresh = await import("../../netlify/functions/submit-lead.js");
+    const res = await fresh.handler(
+      { httpMethod: "POST", headers: {}, body: JSON.stringify(completeLead()) },
+      {}
+    );
+    // dotato down must never fail the seller
+    expect(res.statusCode).toBe(200);
+    const dotatoCalls = freshAxios.post.mock.calls.filter(([url]) =>
+      url.includes("dotato.example")
+    );
+    expect(dotatoCalls).toHaveLength(1);
+    const [, body] = dotatoCalls[0];
+    expect(body).toMatchObject({
+      stage: "complete",
+      name: "Test Seller",
+      consentTransactional: true,
+      consentMarketing: false,
+    });
+  } finally {
+    delete process.env.DOTATO_LEADS_WEBHOOK_URL;
+    vi.resetModules();
+  }
+});
+
+test("partial captures never reach dotato", async () => {
+  vi.resetModules();
+  process.env.DOTATO_LEADS_WEBHOOK_URL =
+    "https://dotato.example/api/webhooks/hvg-leads/TESTTOKEN";
+  try {
+    const freshAxios = (await import("axios")).default;
+    freshAxios.post.mockReset();
+    freshAxios.post.mockResolvedValue({ data: { ok: true } });
+    const fresh = await import("../../netlify/functions/submit-lead.js");
+    await fresh.handler(
+      {
+        httpMethod: "POST",
+        headers: {},
+        body: JSON.stringify({
+          stage: "partial",
+          submissionId: "11111111-2222-3333-4444-555555555555",
+          address: "123 Main St NW, Atlanta, GA",
+          fax: "",
+        }),
+      },
+      {}
+    );
+    const dotatoCalls = freshAxios.post.mock.calls.filter(([url]) =>
+      url.includes("dotato.example")
+    );
+    expect(dotatoCalls).toHaveLength(0);
+  } finally {
+    delete process.env.DOTATO_LEADS_WEBHOOK_URL;
+    vi.resetModules();
+  }
+});
+
