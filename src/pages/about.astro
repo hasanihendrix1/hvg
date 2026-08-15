@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import { Image } from "astro:assets";
+import Logo from "../components/Logo.astro";
 import headshot from "../assets/hasani-headshot.jpg";
 ---
 
@@ -66,7 +67,14 @@ import headshot from "../assets/hasani-headshot.jpg";
         </li>
       </ul>
 
-      <h2>The company, on paper</h2>
+      {/* The one place the mark runs large enough for the HVG script on the
+          wall to actually read (Logo switches to the full artwork at 56px).
+          It belongs here rather than in the hero: this is the section that
+          states who the entity is and invites you to verify it, so the mark
+          reads as letterhead. Decorative — the legal name is right below. */}
+      <div class="company-mark"><Logo size={96} /></div>
+
+      <h2 class="company-heading">The company, on paper</h2>
       <ul class="facts-list" role="list">
         <li>
           <strong>Legal name:</strong> Hendrix Ventures Group LLC — Georgia
@@ -158,5 +166,19 @@ import headshot from "../assets/hasani-headshot.jpg";
     gap: var(--space-4);
     flex-wrap: wrap;
     margin-top: var(--space-6);
+  }
+
+  /* Letterhead moment: the mark sits centred over the entity facts with room
+     to breathe, and the heading tucks up under it as one block. No frame, no
+     shadow — the restraint is the point. */
+  .company-mark {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
+
+  .company-heading {
+    text-align: center;
+    margin-top: var(--space-3);
   }
 </style>
