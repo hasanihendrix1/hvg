@@ -1,23 +1,26 @@
 ---
 /**
- * The Hendrix Ventures Group mark — the real vector from the brand assets
- * (Brand Assets › Logo Assets › HVG Logos › "Vector FIle-02.svg"), not a
- * redrawing. Two changes from the source file, both deliberate:
+ * The Hendrix Ventures Group mark.
  *
- *  1. The viewBox is tightened to the artwork's measured bounding box
- *     (326 130 1267 820 of the original 1920×1080 canvas). The source is
- *     art-boarded for print, so at header size the untrimmed file renders a
- *     small mark adrift in empty padding.
- *  2. `fill: maroon` (the CSS keyword, #800000) becomes `currentColor`, so
- *     the mark takes --color-brand wherever it sits. That token IS #800000:
- *     the owner confirmed the logo's own red as canonical (2026-08-15) and
- *     the site palette moved to it, rather than the mark being recolored to
- *     match the site. currentColor keeps the two from drifting apart again.
+ * Cut directly from the official artwork — the same file that lives in
+ * Brand Assets › Logo Assets › HVG Logos (PNG-01, byte-for-byte the
+ * `HVentures-Logo2` asset the previous site already shipped). It is the
+ * complete mark: arc, birds, shingled roof, banner, and the HVG script on
+ * the wall.
  *
- * Inlined rather than an <img> so it inherits color and needs no request.
- * Decorative by default: the surrounding link carries the accessible name.
+ * Deliberately NOT built from that folder's "Vector FIle" SVGs. Two of them
+ * are simplified icon exports that silently drop the banner, the roof
+ * shingles, and the HVG script — they render as a plainer house that reads
+ * as the logo at a glance but is not it. The raster crop is provably the
+ * real artwork; the vectors were not worth the fidelity risk.
+ *
+ * Its ink is #800000 — measured off the artwork, and the same value as
+ * --color-brand, which is where the site's palette was taken from.
+ *
+ * Decorative: the surrounding link carries the accessible name.
  */
-import mark from "../assets/hvg-mark.svg?raw";
+import { Image } from "astro:assets";
+import mark from "../assets/hvg-mark.png";
 
 interface Props {
   /** Rendered height; the mark keeps its own aspect ratio. */
@@ -27,21 +30,17 @@ interface Props {
 const { size = "2rem", class: className } = Astro.props;
 ---
 
-<span
-  class:list={["hvg-mark", className]}
-  style={`--mark-size:${size}`}
-  aria-hidden="true"
-  set:html={mark}
-/>
+<span class:list={["hvg-mark", className]} style={`--mark-size:${size}`}>
+  <Image src={mark} alt="" aria-hidden="true" densities={[1, 2, 3]} />
+</span>
 
 <style>
   .hvg-mark {
     display: inline-flex;
     flex-shrink: 0;
-    color: var(--color-brand);
   }
 
-  .hvg-mark :global(svg) {
+  .hvg-mark :global(img) {
     height: var(--mark-size);
     width: auto;
     display: block;
