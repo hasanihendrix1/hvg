@@ -1,4 +1,6 @@
 ---
+import Logo from "./Logo.astro";
+
 const year = new Date().getFullYear();
 ---
 
@@ -6,7 +8,12 @@ const year = new Date().getFullYear();
   <div class="container">
     <div class="footer-grid">
       <div class="footer-identity">
-        <p class="footer-wordmark">Hendrix <span>Ventures Group</span></p>
+        <p class="footer-wordmark">
+          <Logo size={40} />
+          <span class="footer-wordmark-text"
+            >Hendrix <span>Ventures Group</span></span
+          >
+        </p>
         <address>
           Hendrix Ventures Group LLC<br />
           1700 Northside Dr NW, Suite A7 #813<br />
@@ -95,13 +102,16 @@ const year = new Date().getFullYear();
   }
 
   .footer-wordmark {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     font-family: var(--font-display);
     font-size: var(--text-lg);
     font-weight: 700;
     color: var(--color-ink);
   }
 
-  .footer-wordmark span {
+  .footer-wordmark-text span {
     color: var(--color-brand);
   }
 

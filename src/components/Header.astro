@@ -1,4 +1,6 @@
 ---
+import Logo from "./Logo.astro";
+
 // Slim, warm-neutral header (plan §7.1) — not a full-saturation brand bar.
 const nav = [
   { href: "/how-it-works", label: "How It Works" },
@@ -13,7 +15,8 @@ const current = Astro.url.pathname;
 <header class="site-header">
   <div class="container header-inner">
     <a href="/" class="wordmark" aria-label="Hendrix Ventures Group — home">
-      Hendrix <span>Ventures Group</span>
+      <Logo size={36} />
+      <span class="wordmark-text">Hendrix <span>Ventures Group</span></span>
     </a>
     <nav aria-label="Main">
       <ul>
@@ -55,6 +58,9 @@ const current = Astro.url.pathname;
   }
 
   .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     font-family: var(--font-display);
     font-size: var(--text-lg);
     font-weight: 700;
@@ -63,8 +69,17 @@ const current = Astro.url.pathname;
     white-space: nowrap;
   }
 
-  .wordmark span {
+  .wordmark-text span {
     color: var(--color-brand);
+  }
+
+  /* Under ~480px the mark carries the identity alone — the full name plus a
+     phone and a CTA cannot share one row without the header wrapping (the
+     overflow this header was already fixed for once). */
+  @media (max-width: 480px) {
+    .wordmark-text {
+      display: none;
+    }
   }
 
   nav {
