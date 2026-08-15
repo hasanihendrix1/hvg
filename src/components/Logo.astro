@@ -9,9 +9,10 @@
  *     art-boarded for print, so at header size the untrimmed file renders a
  *     small mark adrift in empty padding.
  *  2. `fill: maroon` (the CSS keyword, #800000) becomes `currentColor`, so
- *     the mark takes the site's own brand maroon (--color-brand, #8a0e40)
- *     wherever it sits. The two reds are visibly different side by side, and
- *     one source of truth beats two nearly-matching maroons.
+ *     the mark takes --color-brand wherever it sits. That token IS #800000:
+ *     the owner confirmed the logo's own red as canonical (2026-08-15) and
+ *     the site palette moved to it, rather than the mark being recolored to
+ *     match the site. currentColor keeps the two from drifting apart again.
  *
  * Inlined rather than an <img> so it inherits color and needs no request.
  * Decorative by default: the surrounding link carries the accessible name.

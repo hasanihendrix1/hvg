@@ -12,9 +12,13 @@
   --color-paper: #faf7f3; /* page background */
   --color-surface: #ffffff; /* cards, form fields */
   --color-line: #e7ddd3; /* hairline rules, borders */
-  --color-brand: #8a0e40; /* deep maroon — CTAs & key accents ONLY */
-  --color-brand-hover: #6f0b33;
-  --color-brand-tint: #f7ecef; /* subtle brand-tinted backgrounds */
+  /* The logo's own maroon, owner-confirmed 2026-08-15 as the canonical
+     brand red. The palette moved to the mark, not the other way round —
+     src/assets/hvg-mark.svg carries this exact value, so the mark inherits
+     the token via currentColor and the two can never drift apart. */
+  --color-brand: #800000; /* deep maroon — CTAs & key accents ONLY */
+  --color-brand-hover: #660000;
+  --color-brand-tint: #f7eded; /* subtle brand-tinted backgrounds */
   --color-accent-warm: #d5b5a3; /* legacy tan, demoted to rules/details */
   --color-success: #2e6e46;
   --color-error: #9c2b1f;
