@@ -1,0 +1,48 @@
+---
+/**
+ * The Hendrix Ventures Group mark — the real vector from the brand assets
+ * (Brand Assets › Logo Assets › HVG Logos › "Vector FIle-02.svg"), not a
+ * redrawing. Two changes from the source file, both deliberate:
+ *
+ *  1. The viewBox is tightened to the artwork's measured bounding box
+ *     (326 130 1267 820 of the original 1920×1080 canvas). The source is
+ *     art-boarded for print, so at header size the untrimmed file renders a
+ *     small mark adrift in empty padding.
+ *  2. `fill: maroon` (the CSS keyword, #800000) becomes `currentColor`, so
+ *     the mark takes the site's own brand maroon (--color-brand, #8a0e40)
+ *     wherever it sits. The two reds are visibly different side by side, and
+ *     one source of truth beats two nearly-matching maroons.
+ *
+ * Inlined rather than an <img> so it inherits color and needs no request.
+ * Decorative by default: the surrounding link carries the accessible name.
+ */
+import mark from "../assets/hvg-mark.svg?raw";
+
+interface Props {
+  /** Rendered height; the mark keeps its own aspect ratio. */
+  size?: string;
+  class?: string;
+}
+const { size = "2rem", class: className } = Astro.props;
+---
+
+<span
+  class:list={["hvg-mark", className]}
+  style={`--mark-size:${size}`}
+  aria-hidden="true"
+  set:html={mark}
+/>
+
+<style>
+  .hvg-mark {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: var(--color-brand);
+  }
+
+  .hvg-mark :global(svg) {
+    height: var(--mark-size);
+    width: auto;
+    display: block;
+  }
+</style>
