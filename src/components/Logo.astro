@@ -1,36 +1,43 @@
 ---
 /**
- * The Hendrix Ventures Group mark.
+ * The Hendrix Ventures Group mark, in two optical sizes.
  *
- * Cut directly from the official artwork — the same file that lives in
- * Brand Assets › Logo Assets › HVG Logos (PNG-01, byte-for-byte the
- * `HVentures-Logo2` asset the previous site already shipped). It is the
- * complete mark: arc, birds, shingled roof, banner, and the HVG script on
- * the wall.
+ * Both are cut from the official artwork — PNG-01 in Brand Assets › Logo
+ * Assets › HVG Logos, byte-for-byte the `HVentures-Logo2` asset the previous
+ * site already shipped. Nothing here is redrawn.
  *
- * Deliberately NOT built from that folder's "Vector FIle" SVGs. Two of them
- * are simplified icon exports that silently drop the banner, the roof
- * shingles, and the HVG script — they render as a plainer house that reads
- * as the logo at a glance but is not it. The raster crop is provably the
- * real artwork; the vectors were not worth the fidelity risk.
+ *   full     — the complete mark: arc, birds, shingled roof, banner, and the
+ *              HVG script on the wall.
+ *   compact  — the same artwork with ONLY the HVG script filled back into the
+ *              wall. Measured at 28–48px that script resolves to a grey
+ *              smudge in the corner: it reads as dirt, not as letters, and
+ *              draws the eye to the one thing that isn't legible. Everything
+ *              that carries the identity at small size — silhouette, arc,
+ *              birds, banner, roof texture — is untouched.
  *
- * Its ink is #800000 — measured off the artwork, and the same value as
- * --color-brand, which is where the site's palette was taken from.
- *
- * Decorative: the surrounding link carries the accessible name.
+ * The threshold is where the script starts to actually read. Below it the
+ * detail is a liability; at and above it, it's the logo. This is the whole
+ * reason the brand folder ships a simplified icon variant of its own — but
+ * that export also drops the banner and the shingles, so it loses the
+ * silhouette to save the script. This keeps the silhouette instead.
  */
 import { Image } from "astro:assets";
-import mark from "../assets/hvg-mark.png";
+import markFull from "../assets/hvg-mark.png";
+import markCompact from "../assets/hvg-mark-compact.png";
+
+/** Below this rendered height the HVG script is noise rather than a mark. */
+const SCRIPT_LEGIBLE_AT = 56;
 
 interface Props {
-  /** Rendered height; the mark keeps its own aspect ratio. */
-  size?: string;
+  /** Rendered height in px; the mark keeps its own aspect ratio. */
+  size?: number;
   class?: string;
 }
-const { size = "2rem", class: className } = Astro.props;
+const { size = 36, class: className } = Astro.props;
+const mark = size >= SCRIPT_LEGIBLE_AT ? markFull : markCompact;
 ---
 
-<span class:list={["hvg-mark", className]} style={`--mark-size:${size}`}>
+<span class:list={["hvg-mark", className]} style={`--mark-size:${size}px`}>
   <Image src={mark} alt="" aria-hidden="true" densities={[1, 2, 3]} />
 </span>
 
