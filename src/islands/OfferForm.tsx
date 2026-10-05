@@ -223,6 +223,10 @@ export default function OfferForm() {
           <p className="offer-microcopy">
             Takes about 2 minutes · No obligation · Your info stays private
           </p>
+          <p className="offer-microcopy">
+            Next we ask for your phone, with an optional box for texts.{" "}
+            <a href="/text-consent">How texting works</a>
+          </p>
           {fieldError && (
             <p className="offer-error" role="alert">
               {fieldError}
