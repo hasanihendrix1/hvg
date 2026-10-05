@@ -95,12 +95,13 @@
   margin: var(--space-4) 0;
 }
 
-.offer-consent-row {
+/* Scoped under .offer-form to outrank `.offer-form label` (block, bold) */
+.offer-form .offer-consent-row {
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
   font-weight: 400;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: 1.6;
   color: var(--color-ink-soft);
   margin-bottom: var(--space-3);

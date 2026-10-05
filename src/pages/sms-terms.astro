@@ -1,7 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
 // ⚖ ATTORNEY REVIEW BEFORE LAUNCH (plan §12.1). Written to match the actual
-// consent flow in OfferForm.tsx / submit-lead.js (version 2026-08-12.1).
+// consent flow in src/data/consent.ts / submit-lead.js (version 2026-10-05.1)
+// and /text-consent. One program, no marketing (A2P 10DLC registration).
 ---
 
 <Base
@@ -12,27 +13,23 @@ import Base from "../layouts/Base.astro";
   <section class="legal">
     <div class="container-narrow">
       <h1>SMS &amp; Communications Terms</h1>
-      <p class="legal-effective">Effective August 12, 2026</p>
+      <p class="legal-effective">Effective October 5, 2026</p>
 
       <h2>The program</h2>
       <p>
-        Hendrix Ventures Group LLC sends text messages and makes calls about
-        property offers and transactions. There are two kinds, and you choose
-        each separately on our forms — neither is ever required to receive an
-        offer:
+        Hendrix Ventures Group LLC texts homeowners about one thing: the
+        property they asked us about. Messages cover replies to your request,
+        scheduling a walkthrough, your offer, and updates on the sale if you
+        go ahead. We send no marketing or promotional texts, and we never text
+        numbers from purchased lists.
       </p>
-      <ul>
-        <li>
-          <strong>About your request:</strong> replies, scheduling, your
-          offer, and transaction updates for the property you asked about.
-        </li>
-        <li>
-          <strong>Optional marketing:</strong> occasional messages about
-          buying or selling property, only if you checked that optional box.
-          Consent to marketing messages is not a condition of receiving an
-          offer or of any purchase.
-        </li>
-      </ul>
+      <p>
+        We text you only after you agree — by checking the optional box on our
+        offer form, by saying yes when we ask on a phone call, or by texting us
+        first. Agreeing to texts is never required to get an offer. See
+        <a href="/text-consent">how you agree to texts</a> for each of these,
+        word for word.
+      </p>
 
       <h2>The fine print that matters</h2>
       <ul>
@@ -54,9 +51,9 @@ import Base from "../layouts/Base.astro";
           Carriers are not liable for delayed or undelivered messages.
         </li>
         <li>
-          Mobile numbers and SMS consent are never shared with third parties
-          or affiliates for marketing. See our
-          <a href="/privacy">Privacy Policy</a>.
+          No mobile telephone numbers or SMS consent information are shared
+          with third parties or affiliates for marketing or promotional
+          purposes. See our <a href="/privacy">Privacy Policy</a>.
         </li>
       </ul>
 

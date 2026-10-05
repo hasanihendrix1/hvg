@@ -1,0 +1,146 @@
+---
+import Base from "../layouts/Base.astro";
+import { CONSENT_TEXT } from "../data/consent";
+// ⚖ The public record of every way a homeowner opts in to texts, for the
+// A2P 10DLC campaign review. The phone script and the first-text reply must
+// match what is actually said and sent; the form wording comes from
+// src/data/consent.ts so it can't drift from the live box.
+const CALL_SCRIPT =
+  "Can I text you the offer and next steps at this number? It's Hendrix Ventures Group; message frequency varies, msg & data rates may apply, and you can reply STOP anytime to opt out.";
+const FIRST_REPLY =
+  "Hendrix Ventures Group: Thanks for reaching out! You'll get texts about selling your property. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to opt out.";
+---
+
+<Base
+  title="How you agree to texts | Hendrix Ventures Group"
+  description="The three ways a homeowner agrees to texts from Hendrix Ventures Group LLC — on our website, on a phone call, or by texting us first — word for word."
+  path="/text-consent"
+>
+  <section class="legal text-consent">
+    <div class="container-narrow">
+      <h1>How you agree to texts</h1>
+      <p class="legal-effective">Effective October 5, 2026</p>
+      <p>
+        Hendrix Ventures Group LLC texts homeowners only about selling their
+        own property, and only after they agree. We send no marketing or
+        promotional texts, and we never text numbers from purchased lists.
+        There are three ways to agree — here is each one, word for word.
+      </p>
+
+      <h2>1. On our website</h2>
+      <p>
+        Our offer form at <a href="/get-offer">hendrixventures.com/get-offer</a>
+        has two steps. Step 1 asks only for the property address. Step 2 asks
+        for your name and mobile number (email and timeline are optional) and
+        shows the text-message box, just above the submit button:
+      </p>
+      <figure class="consent-shot">
+        <img
+          src="/text-consent-form-step-2.webp"
+          width="1044"
+          height="1704"
+          loading="lazy"
+          decoding="async"
+          alt="Step 2 of the Hendrix Ventures Group offer form, filled in with sample details: name, mobile phone, optional email and timeline, then an unchecked checkbox reading “I agree to receive text messages from Hendrix Ventures Group LLC about selling my property…”, above the submit button."
+        />
+        <figcaption>
+          Step 2 of the offer form, with sample details. The text-message box
+          starts unchecked.
+        </figcaption>
+      </figure>
+      <p>The box reads:</p>
+      <blockquote class="consent-quote">{CONSENT_TEXT}</blockquote>
+      <p>
+        The box is optional and unchecked until you check it. You don't need
+        to check it to submit the form or to get an offer — leave it unchecked
+        and we'll reach you by phone or email instead. When you submit, we
+        record the date and time, the exact wording shown, and whether you
+        checked the box.
+      </p>
+
+      <h2>2. On a phone call</h2>
+      <p>
+        When we're on the phone with you about your property, we ask before
+        sending any text:
+      </p>
+      <blockquote class="consent-quote">{CALL_SCRIPT}</blockquote>
+      <p>
+        We text you only after you say yes, and we log the date and time of
+        your yes. If you say no, we don't text.
+      </p>
+
+      <h2>3. If you text us first</h2>
+      <p>
+        If you text <a href="sms:+16787105786">(678) 710-5786</a>, the first
+        reply you get is:
+      </p>
+      <blockquote class="consent-quote">{FIRST_REPLY}</blockquote>
+      <p>After that, we text you only about your property.</p>
+
+      <h2>Stopping texts, or getting help</h2>
+      <ul>
+        <li>
+          Reply <strong>STOP</strong> to any text to opt out. We stop texting
+          that number, and you may get one final message confirming it.
+        </li>
+        <li>
+          Reply <strong>HELP</strong> for help, or call
+          <a href="tel:+16787105786">(678) 710-5786</a> or email
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >.
+        </li>
+        <li>Message frequency varies. Message and data rates may apply.</li>
+        <li>Carriers are not liable for delayed or undelivered messages.</li>
+        <li>
+          No mobile telephone numbers or SMS consent information are shared
+          with third parties or affiliates for marketing or promotional
+          purposes.
+        </li>
+      </ul>
+      <p>
+        See our <a href="/privacy">Privacy Policy</a> and
+        <a href="/sms-terms">SMS &amp; Communications Terms</a>.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Hendrix Ventures Group LLC · 1700 Northside Dr NW, Suite A7 #813,
+        Atlanta, GA 30318 ·
+        <a href="tel:+16787105786">(678) 710-5786</a> ·
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .consent-shot {
+    margin: var(--space-5) 0;
+  }
+  .consent-shot img {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+  .consent-shot figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+  .consent-quote {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface);
+    border-left: 3px solid var(--color-brand);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+</style>

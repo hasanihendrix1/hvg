@@ -10,7 +10,11 @@ import axios from "axios";
 import {
   handler,
   CONSENT_VERSION,
+  CONSENT_TEXT,
 } from "../../netlify/functions/submit-lead.js";
+
+const SMS_CONSENT_WORDING =
+  "I agree to receive text messages from Hendrix Ventures Group LLC about selling my property, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not required to get an offer.";
 
 const SUPABASE_PATH = "/rest/v1/seller_leads";
 
@@ -29,7 +33,6 @@ const completeLead = (overrides = {}) => ({
   email: "seller@example.com",
   timeline: "Within 30 days",
   consentTransactional: true,
-  consentMarketing: false,
   fax: "",
   fillTimeMs: 12_000,
   pageUrl: "https://hendrixventures.com/get-offer",
@@ -85,14 +88,25 @@ test("complete lead stores consent evidence with version stamp", async () => {
     consent_marketing: false,
     consent_version: CONSENT_VERSION,
   });
-  expect(typeof body.consent_text).toBe("string");
-  expect(body.consent_text).toContain("STOP");
+  expect(CONSENT_VERSION).toBe("2026-10-05.1");
+  // The stored evidence is exactly the one box the seller saw — no marketing
+  expect(JSON.parse(body.consent_text)).toEqual({
+    transactional: SMS_CONSENT_WORDING,
+  });
+  expect(CONSENT_TEXT).toEqual({ transactional: SMS_CONSENT_WORDING });
   expect(body.utm).toEqual({ utm_source: "test" });
+});
+
+test("marketing consent is never recorded, even if a client sends it", async () => {
+  const res = await post(completeLead({ consentMarketing: true }));
+  expect(res.statusCode).toBe(200);
+  const [, body] = callsTo(SUPABASE_PATH)[0];
+  expect(body.consent_marketing).toBe(false);
 });
 
 test("consent checkboxes are NOT required for submission", async () => {
   const res = await post(
-    completeLead({ consentTransactional: false, consentMarketing: false })
+    completeLead({ consentTransactional: false })
   );
   expect(res.statusCode).toBe(200);
   const [, body] = callsTo(SUPABASE_PATH)[0];
@@ -170,11 +184,14 @@ test("mirrors complete leads to dotato when the webhook is configured — exclud
     );
     expect(dotatoCalls).toHaveLength(1);
     const [, body] = dotatoCalls[0];
+    // dotato reads consentTransactional as the SMS opt-in and still parses
+    // consentMarketing, so the field stays — pinned false
     expect(body).toMatchObject({
       stage: "complete",
       name: "Test Seller",
       consentTransactional: true,
       consentMarketing: false,
+      consentVersion: "2026-10-05.1",
     });
   } finally {
     delete process.env.DOTATO_LEADS_WEBHOOK_URL;

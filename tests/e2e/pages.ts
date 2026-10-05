@@ -12,5 +12,6 @@ export const ALL_PAGES = [
   "/privacy/",
   "/terms/",
   "/sms-terms/",
+  "/text-consent/",
   "/accessibility/",
 ] as const;
