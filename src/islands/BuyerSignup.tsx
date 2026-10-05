@@ -148,12 +148,13 @@ export default function BuyerSignup() {
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
         />
+        {/* TODO(investor texting): texts dropped 2026-10-05 so the site has
+            one texting program for the homeowner A2P campaign. Texting buyers
+            needs its own A2P campaign + opt-in before "texts" comes back here. */}
         <span>
-          I agree to receive calls, texts, and emails from Hendrix Ventures
-          Group LLC about investment inventory. Msg frequency varies. Msg
-          &amp; data rates may apply. Reply STOP to opt out. See our{" "}
-          <a href="/privacy">Privacy Policy</a> and{" "}
-          <a href="/sms-terms">SMS Terms</a>.
+          I agree to receive calls and emails from Hendrix Ventures Group LLC
+          about investment inventory. See our{" "}
+          <a href="/privacy">Privacy Policy</a>.
         </span>
       </label>
       <button

@@ -68,3 +68,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## TODO
+
+- **Investor texting.** The buyer-list signup (`src/islands/BuyerSignup.tsx`) asks for calls and email only, since 2026-10-05, so the site carries a single texting program: the homeowner A2P campaign. Before texting buyers, register a separate A2P campaign for investor inventory. It runs on the same approved brand and needs its own opt-in box and SMS terms. Then add "texts" back to the signup.
