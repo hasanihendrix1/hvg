@@ -27,13 +27,13 @@ const PG_INT4_MAX = 2147483647;
 
 // ⚖ Consent language lives here so every stored lead records exactly which
 // version the seller saw. Bump the version whenever the text changes.
-// Keep in sync with src/islands/OfferForm.tsx.
-export const CONSENT_VERSION = "2026-08-12.1";
+// Keep in sync with src/data/consent.ts (tests/consent-sync.test.mjs).
+// One optional SMS box; no marketing program, so marketing consent is always
+// recorded as false whatever a client sends.
+export const CONSENT_VERSION = "2026-10-05.1";
 export const CONSENT_TEXT = {
   transactional:
-    "I agree to receive calls and text messages from Hendrix Ventures Group LLC about my request at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help.",
-  marketing:
-    "(Optional) I'd also like occasional updates about buying or selling property. I agree to receive recurring marketing calls and text messages (including via automated technology) from Hendrix Ventures Group LLC at the number provided. Consent is not a condition of receiving an offer or of any purchase.",
+    "I agree to receive text messages from Hendrix Ventures Group LLC about selling my property, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not required to get an offer.",
 };
 
 const requiredString = (v) => typeof v === "string" && v.trim() !== "";
@@ -155,7 +155,7 @@ export const handler = async (event) => {
           email: requiredString(payload.email) ? payload.email : null,
           timeline: requiredString(payload.timeline) ? payload.timeline : null,
           consentTransactional: payload.consentTransactional === true,
-          consentMarketing: payload.consentMarketing === true,
+          consentMarketing: false,
           consentVersion: CONSENT_VERSION,
           pageUrl: payload.pageUrl || null,
           receivedAt: new Date().toISOString(),
@@ -174,7 +174,7 @@ export const handler = async (event) => {
         timeline: requiredString(payload.timeline) ? payload.timeline : null,
         fill_time_ms: Math.min(Math.round(fillTimeMs), PG_INT4_MAX),
         consent_transactional: payload.consentTransactional === true,
-        consent_marketing: payload.consentMarketing === true,
+        consent_marketing: false,
         consent_version: CONSENT_VERSION,
         consent_text: JSON.stringify(CONSENT_TEXT),
         raw: payload,

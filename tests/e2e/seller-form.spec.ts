@@ -29,7 +29,17 @@ test("two-step journey: address, details, consent optional, success", async ({
 
   await page.getByLabel("Your name").fill("Playwright Seller");
   await page.getByLabel("Mobile phone").fill("(404) 555-0142");
-  // Consent boxes stay UNCHECKED — submission must still succeed
+  // Exactly one consent box, texts only, unchecked by default
+  const boxes = page.getByRole("checkbox");
+  await expect(boxes).toHaveCount(1);
+  await expect(boxes).not.toBeChecked();
+  await expect(
+    page.getByLabel(
+      "I agree to receive text messages from Hendrix Ventures Group LLC about selling my property, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not required to get an offer."
+    )
+  ).toBeVisible();
+  await expect(page.locator("fieldset")).not.toContainText(/marketing/i);
+  // It stays UNCHECKED — submission must still succeed
   await page
     .getByRole("button", { name: /Get my cash offer — free/ })
     .click();
@@ -44,10 +54,33 @@ test("two-step journey: address, details, consent optional, success", async ({
   expect(stages).toContain("complete");
   const complete = submissions.find((s) => s.stage === "complete");
   expect(complete.consentTransactional).toBe(false);
-  expect(complete.consentMarketing).toBe(false);
+  expect(complete).not.toHaveProperty("consentMarketing");
   expect(complete.submissionId).toBe(
     submissions.find((s) => s.stage === "partial").submissionId
   );
+});
+
+test("checking the box sends SMS consent", async ({ page }) => {
+  const submissions: any[] = [];
+  await page.route("**/.netlify/functions/submit-lead", async (route) => {
+    submissions.push(route.request().postDataJSON());
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await page.goto("/get-offer/");
+  await page.getByLabel("Property address").fill("123 E2E Way, Atlanta, GA");
+  await page.getByRole("button", { name: "Get my cash offer" }).click();
+  await page.getByLabel("Your name").fill("Playwright Seller");
+  await page.getByLabel("Mobile phone").fill("(404) 555-0142");
+  await page.getByRole("checkbox").check();
+  await page
+    .getByRole("button", { name: /Get my cash offer — free/ })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: /what happens next/ })
+  ).toBeVisible();
+  const complete = submissions.find((s) => s.stage === "complete");
+  expect(complete.consentTransactional).toBe(true);
+  expect(complete).not.toHaveProperty("consentMarketing");
 });
 
 test("backend failure shows honest error with phone fallback", async ({

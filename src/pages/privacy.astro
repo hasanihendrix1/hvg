@@ -13,7 +13,7 @@ import Base from "../layouts/Base.astro";
   <section class="legal">
     <div class="container-narrow">
       <h1>Privacy Policy</h1>
-      <p class="legal-effective">Effective August 12, 2026</p>
+      <p class="legal-effective">Effective October 5, 2026</p>
       <p>
         This policy describes how Hendrix Ventures Group LLC ("we," "us")
         handles your information on hendrixventures.com. The short version:
@@ -32,9 +32,10 @@ import Base from "../layouts/Base.astro";
         <li>
           <strong>Consent records:</strong> when you submit a form we record
           the date and time, your IP address, your browser type, the exact
-          consent language shown to you, and which consent boxes you did or
-          didn't check. We keep these records to honor — and prove we honor —
-          your communication choices.
+          consent language shown to you, and whether you checked the
+          text-message box. When you agree to texts on a phone call, we log
+          the date and time of your yes. We keep these records to honor — and
+          prove we honor — your communication choices.
         </li>
         <li>
           <strong>Basic site analytics:</strong> we record page views and
@@ -52,6 +53,17 @@ import Base from "../layouts/Base.astro";
         you about your transaction, honor your communication preferences, and
         understand how the site is used. That's it. We do not use your
         information for third-party advertising.
+      </p>
+
+      <h2>Text messages</h2>
+      <p>
+        We text homeowners only about the property they asked us about —
+        replies to your request, scheduling, your offer, and updates on the
+        sale — and only after you agree. We send no marketing or promotional
+        texts. Message frequency varies; message and data rates may apply.
+        Carriers are not liable for delayed or undelivered messages. See
+        <a href="/text-consent">how you agree to texts</a> and our
+        <a href="/sms-terms">SMS &amp; Communications Terms</a>.
       </p>
 
       <h2>What we never do</h2>
@@ -123,21 +135,3 @@ import Base from "../layouts/Base.astro";
   </section>
 </Base>
 
-<style is:global>
-  .legal {
-    padding-block: var(--space-7) var(--space-8);
-  }
-  .legal h2 {
-    font-size: var(--text-xl);
-    margin-top: var(--space-6);
-  }
-  .legal ul {
-    padding-left: 1.2em;
-    display: grid;
-    gap: var(--space-2);
-  }
-  .legal-effective {
-    color: var(--color-ink-soft);
-    font-size: var(--text-sm);
-  }
-</style>

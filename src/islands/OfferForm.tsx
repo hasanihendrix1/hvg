@@ -1,12 +1,6 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import "../styles/offer-form.css";
-
-// ⚖ Consent language — keep in sync with netlify/functions/submit-lead.js
-// (CONSENT_VERSION "2026-08-12.1"). Flagged for attorney review pre-launch.
-const CONSENT_TRANSACTIONAL =
-  "I agree to receive calls and text messages from Hendrix Ventures Group LLC about my request at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help.";
-const CONSENT_MARKETING =
-  "I'd also like occasional updates about buying or selling property. I agree to receive recurring marketing calls and text messages (including via automated technology) from Hendrix Ventures Group LLC at the number provided. Consent is not a condition of receiving an offer or of any purchase.";
+import { CONSENT_TEXT } from "../data/consent";
 
 const PHONE_REGEX =
   /^(?:\+?1[-. ]?)?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
@@ -59,7 +53,6 @@ export default function OfferForm() {
   const [email, setEmail] = useState("");
   const [timeline, setTimeline] = useState("");
   const [consentTransactional, setConsentTransactional] = useState(false);
-  const [consentMarketing, setConsentMarketing] = useState(false);
   const [fax, setFax] = useState(""); // honeypot
   const [status, setStatus] = useState<Status>("idle");
   const [fieldError, setFieldError] = useState("");
@@ -160,7 +153,6 @@ export default function OfferForm() {
           email: email.trim(),
           timeline,
           consentTransactional,
-          consentMarketing,
           fax,
           fillTimeMs: Date.now() - startTime.current,
           pageUrl: window.location.href,
@@ -230,6 +222,10 @@ export default function OfferForm() {
           </button>
           <p className="offer-microcopy">
             Takes about 2 minutes · No obligation · Your info stays private
+          </p>
+          <p className="offer-microcopy">
+            Next we ask for your phone, with an optional box for texts.{" "}
+            <a href="/text-consent">How texting works</a>
           </p>
           {fieldError && (
             <p className="offer-error" role="alert">
@@ -315,29 +311,20 @@ export default function OfferForm() {
           </div>
 
           <fieldset className="offer-consent">
-            <legend className="sr-only">Communication preferences</legend>
+            <legend className="sr-only">Text messages</legend>
             <label className="offer-consent-row">
               <input
                 type="checkbox"
+                name="consentText"
                 checked={consentTransactional}
                 onChange={(e) => setConsentTransactional(e.target.checked)}
               />
-              <span>{CONSENT_TRANSACTIONAL}</span>
-            </label>
-            <label className="offer-consent-row">
-              <input
-                type="checkbox"
-                checked={consentMarketing}
-                onChange={(e) => setConsentMarketing(e.target.checked)}
-              />
-              <span>
-                <em>(Optional)</em> {CONSENT_MARKETING}
-              </span>
+              <span>{CONSENT_TEXT}</span>
             </label>
             <p className="offer-consent-links">
-              Neither box is required to get your offer. See our{" "}
-              <a href="/privacy">Privacy Policy</a> and{" "}
-              <a href="/sms-terms">SMS &amp; Communications Terms</a>.
+              See our <a href="/privacy">Privacy Policy</a>,{" "}
+              <a href="/sms-terms">SMS &amp; Communications Terms</a>, and{" "}
+              <a href="/text-consent">how you agree to texts</a>.
             </p>
           </fieldset>
 
