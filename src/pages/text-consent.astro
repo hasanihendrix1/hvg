@@ -6,7 +6,11 @@ import { CONSENT_TEXT } from "../data/consent";
 // match what is actually said and sent; the form wording comes from
 // src/data/consent.ts so it can't drift from the live box.
 const CALL_SCRIPT =
-  "Can I text you the offer and next steps at this number? It's Hendrix Ventures Group; message frequency varies, msg & data rates may apply, and you can reply STOP anytime to opt out.";
+  "Would you like me to text you the offer and updates about selling your property at this number? The texts come from Hendrix Ventures Group. Message frequency varies, and message and data rates may apply. You can reply STOP at any time to opt out, or HELP for help. You don't have to agree to get an offer. Is that okay?";
+// Sent the moment a verbal yes is logged, before any other text, so every
+// phone opt-in is confirmed in writing to the number that agreed.
+const CALL_CONFIRMATION =
+  "Hendrix Ventures Group: Thanks for agreeing on our call to get texts about selling your property. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to opt out.";
 const FIRST_REPLY =
   "Hendrix Ventures Group: Thanks for reaching out! You'll get texts about selling your property. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to opt out.";
 ---
@@ -62,13 +66,16 @@ const FIRST_REPLY =
       <h2>2. On a phone call</h2>
       <p>
         When we're on the phone with you about your property, we ask before
-        sending any text:
+        sending any text. The caller reads this script word for word:
       </p>
       <blockquote class="consent-quote">{CALL_SCRIPT}</blockquote>
       <p>
-        We text you only after you say yes, and we log the date and time of
-        your yes. If you say no, we don't text.
+        We text you only after a clear yes. Our system records the date and
+        time, the number, and that this script was read. If you say no, or
+        don't answer, we don't text — and you still get your offer.
       </p>
+      <p>Right after your yes, the first text you get confirms it:</p>
+      <blockquote class="consent-quote">{CALL_CONFIRMATION}</blockquote>
 
       <h2>3. If you text us first</h2>
       <p>
