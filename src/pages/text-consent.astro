@@ -6,7 +6,7 @@ import { CONSENT_TEXT } from "../data/consent";
 // match what is actually said and sent; the form wording comes from
 // src/data/consent.ts so it can't drift from the live box.
 const CALL_SCRIPT =
-  "Would you like me to text you the offer and updates about selling your property at this number? The texts come from Hendrix Ventures Group. Message frequency varies, and message and data rates may apply. You can reply STOP at any time to opt out, or HELP for help. You don't have to agree to get an offer. Is that okay?";
+  "Okay, and is this the best number to call back or text? [If yes] Great — I'll text you updates from Hendrix Ventures Group, msg frequency varies, rates may apply, reply STOP anytime.";
 // Sent the moment a verbal yes is logged, before any other text, so every
 // phone opt-in is confirmed in writing to the number that agreed.
 const CALL_CONFIRMATION =
@@ -65,14 +65,14 @@ const FIRST_REPLY =
 
       <h2>2. On a phone call</h2>
       <p>
-        When we're on the phone with you about your property, we ask before
-        sending any text. The caller reads this script word for word:
+        Near the end of a call about your property, before we send any text,
+        we say this:
       </p>
       <blockquote class="consent-quote">{CALL_SCRIPT}</blockquote>
       <p>
-        We text you only after a clear yes. Our system records the date and
-        time, the number, and that this script was read. If you say no, or
-        don't answer, we don't text — and you still get your offer.
+        We text you only after a clear yes to that. Our system records the
+        date and time, the number, and that consent was given. If you say no,
+        or it never comes up, we don't text — and you still get your offer.
       </p>
       <p>Right after your yes, the first text you get confirms it:</p>
       <blockquote class="consent-quote">{CALL_CONFIRMATION}</blockquote>
