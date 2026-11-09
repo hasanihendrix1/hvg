@@ -171,6 +171,7 @@ test("what a buyer types before the form hydrates is still submitted", async ({
   await page.getByLabel("Mobile phone").fill("(404) 555-0142");
   await page.getByRole("textbox", { name: "Email" }).fill("early@example.com");
   await page.getByRole("radio", { name: "Both" }).check();
+  await page.getByRole("checkbox", { name: /calls and emails/ }).check();
   await expect(
     page.locator("astro-island:has(.buyer-form)[ssr]")
   ).toHaveCount(1);
@@ -184,5 +185,6 @@ test("what a buyer types before the form hydrates is still submitted", async ({
     number: "(404) 555-0142",
     email: "early@example.com",
     buyerType: "Both",
+    consentMarketing: true,
   });
 });
