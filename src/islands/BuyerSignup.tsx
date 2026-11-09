@@ -19,6 +19,25 @@ export default function BuyerSignup() {
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [fieldError, setFieldError] = useState("");
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  // Typed or autofilled before hydration, a value is on screen but not in
+  // state, and the first re-render would wipe it; adopt it instead.
+  React.useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const adopt = (suffix: string, set: (v: string) => void) => {
+      const v = (document.getElementById(`${uid}-${suffix}`) as HTMLInputElement | null)?.value;
+      if (v) set(v);
+    };
+    adopt("first", setFirstName);
+    adopt("last", setLastName);
+    adopt("phone", setPhone);
+    adopt("email", setEmail);
+    const picked = form.querySelector<HTMLInputElement>('input[type="radio"]:checked');
+    if (picked) setBuyerType(picked.value);
+    if (form.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked) setConsent(true);
+  }, [uid]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +96,7 @@ export default function BuyerSignup() {
   }
 
   return (
-    <form className="buyer-form" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="buyer-form" onSubmit={handleSubmit} noValidate>
       <h2>Get first look at new deals</h2>
       <div className="buyer-row">
         <div className="form-group">
