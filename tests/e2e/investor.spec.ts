@@ -64,6 +64,8 @@ test("buyer signup validates and submits the legacy-compatible payload", async (
     await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
   });
   await page.goto("/investors/");
+  // Text typed before the island hydrates never reaches React state
+  await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
   await page.getByLabel("First name").fill("Playwright");
   await page.getByLabel("Last name").fill("Investor");
   await page.getByLabel("Mobile phone").fill("(404) 555-0142");
@@ -73,4 +75,68 @@ test("buyer signup validates and submits the legacy-compatible payload", async (
   await expect(page.getByText("You're on the list")).toBeVisible();
   expect(payload.number).toBe("(404) 555-0142"); // legacy field name
   expect(payload.consentMarketing).toBe(false);
+});
+
+test("hand-entered gaps and typos never reach a card", async ({ page }) => {
+  await page.unroute("**/.netlify/functions/getDeals");
+  await page.route("**/.netlify/functions/getDeals", (route) =>
+    route.fulfill({
+      status: 200,
+      body: JSON.stringify([
+        {
+          _id: "gap-1",
+          timestamp: "2026-Q4",
+          price: null,
+          status: "",
+          address: "1 Gap St, Atlanta, GA 30310",
+          bedrooms: 3,
+          bathrooms: -2,
+          sqft: 1154,
+          image: null,
+        },
+      ]),
+    })
+  );
+  await page.goto("/investors/");
+  const card = page.locator(".inv-card", { hasText: "1 Gap St" });
+  await expect(card).toBeVisible();
+  await expect(card.locator(".inv-details")).toHaveText("3 beds · 1,154 sq ft");
+  await expect(card).not.toContainText("$0");
+  await expect(card.locator(".inv-status")).toHaveCount(0);
+});
+
+test("what a buyer types before the form hydrates is still submitted", async ({
+  page,
+}) => {
+  let release!: () => void;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route("**/_astro/BuyerSignup*.js", async (route) => {
+    await held;
+    await route.continue();
+  });
+  let payload: any = null;
+  await page.route("**/.netlify/functions/newBuyer", async (route) => {
+    payload = route.request().postDataJSON();
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await page.goto("/investors/", { waitUntil: "domcontentloaded" });
+  await page.getByLabel("First name").fill("Early");
+  await page.getByLabel("Last name").fill("Typist");
+  await page.getByLabel("Mobile phone").fill("(404) 555-0142");
+  await page.getByRole("textbox", { name: "Email" }).fill("early@example.com");
+  await page.getByRole("radio", { name: "Both" }).check();
+  await expect(
+    page.locator("astro-island:has(.buyer-form)[ssr]")
+  ).toHaveCount(1);
+  release();
+  await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
+  await page.getByRole("button", { name: "Join the buyer list" }).click();
+  await expect(page.getByText("You're on the list")).toBeVisible();
+  expect(payload).toMatchObject({
+    firstName: "Early",
+    lastName: "Typist",
+    number: "(404) 555-0142",
+    email: "early@example.com",
+    buyerType: "Both",
+  });
 });

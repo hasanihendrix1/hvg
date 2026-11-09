@@ -19,6 +19,25 @@ export default function BuyerSignup() {
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [fieldError, setFieldError] = useState("");
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  // Typed or autofilled before hydration, a value is on screen but not in
+  // state, and the first re-render would wipe it; adopt it instead.
+  React.useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const adopt = (suffix: string, set: (v: string) => void) => {
+      const v = (document.getElementById(`${uid}-${suffix}`) as HTMLInputElement | null)?.value;
+      if (v) set(v);
+    };
+    adopt("first", setFirstName);
+    adopt("last", setLastName);
+    adopt("phone", setPhone);
+    adopt("email", setEmail);
+    const picked = form.querySelector<HTMLInputElement>('input[type="radio"]:checked');
+    if (picked) setBuyerType(picked.value);
+    if (form.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked) setConsent(true);
+  }, [uid]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +83,7 @@ export default function BuyerSignup() {
   if (status === "success") {
     return (
       <div className="buyer-form buyer-success" role="status">
-        <h3>You're on the list</h3>
+        <h2>You're on the list</h2>
         <p>
           You'll hear from us when new inventory fits what you buy. Questions
           in the meantime:{" "}
@@ -77,8 +96,8 @@ export default function BuyerSignup() {
   }
 
   return (
-    <form className="buyer-form" onSubmit={handleSubmit} noValidate>
-      <h3>Get first look at new deals</h3>
+    <form ref={formRef} className="buyer-form" onSubmit={handleSubmit} noValidate>
+      <h2>Get first look at new deals</h2>
       <div className="buyer-row">
         <div className="form-group">
           <label htmlFor={`${uid}-first`}>First name</label>
@@ -129,18 +148,20 @@ export default function BuyerSignup() {
       </div>
       <fieldset className="buyer-types">
         <legend>What do you buy?</legend>
-        {["Landlord", "Fix and Flipper", "Both"].map((t) => (
-          <label key={t} className="buyer-type-option">
-            <input
-              type="radio"
-              name={`${uid}-buyerType`}
-              value={t}
-              checked={buyerType === t}
-              onChange={() => setBuyerType(t)}
-            />
-            <span>{t}</span>
-          </label>
-        ))}
+        <div className="buyer-type-options">
+          {["Landlord", "Fix and Flipper", "Both"].map((t) => (
+            <label key={t} className="buyer-type-option">
+              <input
+                type="radio"
+                name={`${uid}-buyerType`}
+                value={t}
+                checked={buyerType === t}
+                onChange={() => setBuyerType(t)}
+              />
+              <span>{t}</span>
+            </label>
+          ))}
+        </div>
       </fieldset>
       <label className="buyer-consent">
         <input
