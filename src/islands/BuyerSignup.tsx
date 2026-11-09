@@ -64,7 +64,7 @@ export default function BuyerSignup() {
   if (status === "success") {
     return (
       <div className="buyer-form buyer-success" role="status">
-        <h3>You're on the list</h3>
+        <h2>You're on the list</h2>
         <p>
           You'll hear from us when new inventory fits what you buy. Questions
           in the meantime:{" "}
@@ -78,7 +78,7 @@ export default function BuyerSignup() {
 
   return (
     <form className="buyer-form" onSubmit={handleSubmit} noValidate>
-      <h3>Get first look at new deals</h3>
+      <h2>Get first look at new deals</h2>
       <div className="buyer-row">
         <div className="form-group">
           <label htmlFor={`${uid}-first`}>First name</label>
@@ -129,18 +129,20 @@ export default function BuyerSignup() {
       </div>
       <fieldset className="buyer-types">
         <legend>What do you buy?</legend>
-        {["Landlord", "Fix and Flipper", "Both"].map((t) => (
-          <label key={t} className="buyer-type-option">
-            <input
-              type="radio"
-              name={`${uid}-buyerType`}
-              value={t}
-              checked={buyerType === t}
-              onChange={() => setBuyerType(t)}
-            />
-            <span>{t}</span>
-          </label>
-        ))}
+        <div className="buyer-type-options">
+          {["Landlord", "Fix and Flipper", "Both"].map((t) => (
+            <label key={t} className="buyer-type-option">
+              <input
+                type="radio"
+                name={`${uid}-buyerType`}
+                value={t}
+                checked={buyerType === t}
+                onChange={() => setBuyerType(t)}
+              />
+              <span>{t}</span>
+            </label>
+          ))}
+        </div>
       </fieldset>
       <label className="buyer-consent">
         <input

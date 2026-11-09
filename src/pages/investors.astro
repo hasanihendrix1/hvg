@@ -13,15 +13,18 @@ import BuyerSignup from "../islands/BuyerSignup";
   <section class="inv-intro">
     <div class="container">
       <div class="inv-header">
-        <div>
+        <div class="inv-header-text">
           <h1>Investor inventory</h1>
           <p class="lede">
-            Off-market Georgia deals from our acquisitions pipeline. Questions
-            or offers:
+            Off-market Georgia deals from our acquisitions pipeline.
+          </p>
+          <p class="inv-contact">
+            Questions or offers:
             <a href="mailto:hasani@hendrixventures.com"
               >hasani@hendrixventures.com</a
             >
-            · <a href="tel:+16787105786">(678) 710-5786</a>
+            <span aria-hidden="true">·</span>
+            <a href="tel:+16787105786" class="nowrap">(678) 710-5786</a>
           </p>
         </div>
         <a href="#buyer-list" class="btn btn-primary inv-header-cta"
@@ -34,23 +37,35 @@ import BuyerSignup from "../islands/BuyerSignup";
 
   <section class="inv-signup" id="buyer-list">
     <div class="container">
-      <BuyerSignup client:visible />
+      <BuyerSignup client:load />
     </div>
   </section>
 </Base>
 
 <style>
   .inv-intro {
-    padding-block: var(--space-7) var(--space-6);
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .inv-header-text h1 {
+    margin-bottom: var(--space-3);
   }
   .lede {
     font-size: var(--text-lg);
     color: var(--color-ink-soft);
-    margin-bottom: var(--space-6);
+    max-width: 36rem;
+    margin-bottom: var(--space-2);
+  }
+  .inv-contact {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    margin: 0;
+  }
+  .nowrap {
+    white-space: nowrap;
   }
   .inv-signup {
-    padding-block: var(--space-6) var(--space-8);
-    background: var(--color-surface);
+    padding-block: clamp(var(--space-6), 5vw, var(--space-8)) 0;
     border-top: 1px solid var(--color-line);
+    scroll-margin-top: var(--space-5);
   }
 </style>

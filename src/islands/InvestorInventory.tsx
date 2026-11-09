@@ -30,6 +30,49 @@ const formatPrice = (p: string) => {
     : p;
 };
 
+// Hand-entered history has typos (one record says -2 baths); a fact that
+// can't be right is left out rather than shown.
+const formatDetails = (d: Deal) => {
+  const parts: string[] = [];
+  const count = (n: number, one: string, many: string) =>
+    Number.isFinite(n) && n > 0 ? `${n} ${n === 1 ? one : many}` : null;
+  const beds = count(Number(d.bedrooms), "bed", "beds");
+  const baths = count(Number(d.bathrooms), "bath", "baths");
+  const sqft = Number(d.sqft);
+  if (beds) parts.push(beds);
+  if (baths) parts.push(baths);
+  if (Number.isFinite(sqft) && sqft > 0)
+    parts.push(`${sqft.toLocaleString("en-US")} sq ft`);
+  return parts;
+};
+
+const statusSlug = (s: string) => (s || "").toLowerCase().replace(/\s+/g, "-");
+
+function Skeleton() {
+  return (
+    <div aria-busy="true">
+      <p className="sr-only" role="status">
+        Loading inventory…
+      </p>
+      <div className="inv-toolbar inv-skel-toolbar" aria-hidden="true">
+        <span className="inv-skel-line w-20" />
+      </div>
+      <ul className="inv-grid" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <li key={i} className="inv-skel">
+            <div className="inv-skel-media" />
+            <div className="inv-skel-body">
+              <span className="inv-skel-line w-40" />
+              <span className="inv-skel-line w-80" />
+              <span className="inv-skel-line w-60" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function InvestorInventory() {
   const [deals, setDeals] = useState<Deal[] | null>(null);
   const [error, setError] = useState(false);
@@ -87,25 +130,35 @@ export default function InvestorInventory() {
   }
 
   if (!deals) {
-    return <p className="inv-note">Loading inventory…</p>;
+    return (
+      <div className="inv-results">
+        <Skeleton />
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="inv-results">
+      <h2 className="sr-only">Deals</h2>
       <div className="inv-toolbar">
-        <label htmlFor="inv-status">Filter by status</label>
-        <select
-          id="inv-status"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="">All statuses</option>
-          {statuses.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+        <p className="inv-count" aria-live="polite">
+          {shown.length} {shown.length === 1 ? "deal" : "deals"}
+        </p>
+        <div className="inv-filter">
+          <label htmlFor="inv-status">Filter by status</label>
+          <select
+            id="inv-status"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="">All statuses</option>
+            {statuses.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {shown.length === 0 ? (
@@ -113,42 +166,65 @@ export default function InvestorInventory() {
       ) : (
         <ul className="inv-grid" role="list">
           {shown.flatMap((deal, i) => {
+            const details = formatDetails(deal);
             const card = (
               <li key={deal._id} className="inv-card">
-                {deal.image ? (
-                  <img
-                    src={`${deal.image}?w=640&fit=max&auto=format`}
-                    alt={`Property at ${deal.address}`}
-                    width={640}
-                    height={360}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="inv-noimage" aria-hidden="true" />
-                )}
+                <div className="inv-media">
+                  {deal.image ? (
+                    <img
+                      src={`${deal.image}?w=640&fit=max&auto=format`}
+                      alt={`Property at ${deal.address}`}
+                      width={640}
+                      height={427}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="inv-noimage" aria-hidden="true" />
+                  )}
+                  <span
+                    className={`inv-status inv-status-${statusSlug(deal.status)}`}
+                  >
+                    {deal.status || "—"}
+                  </span>
+                </div>
                 <div className="inv-card-body">
                   <p className="inv-price">{formatPrice(deal.price)}</p>
-                  <p className="inv-details">
-                    {deal.bedrooms} bd · {deal.bathrooms} ba ·{" "}
-                    {Number(deal.sqft).toLocaleString()} sqft
-                  </p>
                   <p className="inv-address">{deal.address}</p>
-                  <p className="inv-meta">
-                    <span
-                      className={`inv-status inv-status-${(deal.status || "").toLowerCase()}`}
-                    >
-                      {deal.status || "—"}
-                    </span>
-                    {deal.mediaLink && (
+                  {details.length > 0 && (
+                    <p className="inv-details">
+                      {details.map((part, j) => (
+                        <React.Fragment key={part}>
+                          {j > 0 && (
+                            <>
+                              {" "}
+                              <span className="inv-sep" aria-hidden="true">
+                                ·
+                              </span>{" "}
+                            </>
+                          )}
+                          {part}
+                        </React.Fragment>
+                      ))}
+                    </p>
+                  )}
+                  {deal.mediaLink && (
+                    <p className="inv-card-foot">
                       <a
                         href={deal.mediaLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Photos &amp; media
+                        <span className="sr-only">
+                          {" "}
+                          for {deal.address} (opens in a new tab)
+                        </span>
+                        <span className="inv-ext" aria-hidden="true">
+                          ↗
+                        </span>
                       </a>
-                    )}
-                  </p>
+                    </p>
+                  )}
                 </div>
               </li>
             );
