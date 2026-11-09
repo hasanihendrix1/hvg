@@ -55,6 +55,51 @@ test("the first-look card guides to the signup form", async ({ page }) => {
   await expect(page.locator("#buyer-list")).toBeInViewport();
 });
 
+test("the calls-and-emails box is required before anything is sent", async ({
+  page,
+}) => {
+  let posted = false;
+  await page.route("**/.netlify/functions/newBuyer", async (route) => {
+    posted = true;
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await page.goto("/investors/");
+  await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
+  await page.getByLabel("First name").fill("Playwright");
+  await page.getByLabel("Last name").fill("Investor");
+  await page.getByLabel("Mobile phone").fill("(404) 555-0142");
+  await page.getByRole("textbox", { name: "Email" }).fill("pw@example.com");
+  await page.getByRole("radio", { name: "Landlord" }).check();
+  await page.getByRole("button", { name: "Join the buyer list" }).click();
+  await expect(page.getByRole("alert")).toHaveText(
+    "Please check the box to agree to calls and emails."
+  );
+  expect(posted).toBe(false);
+});
+
+test("a number no US phone can have is caught on the form", async ({
+  page,
+}) => {
+  let posted = false;
+  await page.route("**/.netlify/functions/newBuyer", async (route) => {
+    posted = true;
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await page.goto("/investors/");
+  await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
+  await page.getByLabel("First name").fill("Playwright");
+  await page.getByLabel("Last name").fill("Investor");
+  await page.getByLabel("Mobile phone").fill("(404) 155-0142");
+  await page.getByRole("textbox", { name: "Email" }).fill("pw@example.com");
+  await page.getByRole("radio", { name: "Landlord" }).check();
+  await page.getByRole("checkbox", { name: /calls and emails/ }).check();
+  await page.getByRole("button", { name: "Join the buyer list" }).click();
+  await expect(page.getByRole("alert")).toHaveText(
+    "Please enter a valid phone number."
+  );
+  expect(posted).toBe(false);
+});
+
 test("buyer signup validates and submits the legacy-compatible payload", async ({
   page,
 }) => {
@@ -71,10 +116,11 @@ test("buyer signup validates and submits the legacy-compatible payload", async (
   await page.getByLabel("Mobile phone").fill("(404) 555-0142");
   await page.getByRole("textbox", { name: "Email" }).fill("pw@example.com");
   await page.getByRole("radio", { name: "Landlord" }).check();
+  await page.getByRole("checkbox", { name: /calls and emails/ }).check();
   await page.getByRole("button", { name: "Join the buyer list" }).click();
   await expect(page.getByText("You're on the list")).toBeVisible();
   expect(payload.number).toBe("(404) 555-0142"); // legacy field name
-  expect(payload.consentMarketing).toBe(false);
+  expect(payload.consentMarketing).toBe(true);
 });
 
 test("hand-entered gaps and typos never reach a card", async ({ page }) => {
