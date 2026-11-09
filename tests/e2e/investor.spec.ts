@@ -55,29 +55,6 @@ test("the first-look card guides to the signup form", async ({ page }) => {
   await expect(page.locator("#buyer-list")).toBeInViewport();
 });
 
-test("buyer signup validates and submits the legacy-compatible payload", async ({
-  page,
-}) => {
-  let payload: any = null;
-  await page.route("**/.netlify/functions/newBuyer", async (route) => {
-    payload = route.request().postDataJSON();
-    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
-  });
-  await page.goto("/investors/");
-  // Text typed before the island hydrates never reaches React state
-  await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
-  await page.getByLabel("First name").fill("Playwright");
-  await page.getByLabel("Last name").fill("Investor");
-  await page.getByLabel("Mobile phone").fill("(404) 555-0142");
-  await page.getByRole("textbox", { name: "Email" }).fill("pw@example.com");
-  await page.getByRole("radio", { name: "Landlord" }).check();
-  await page.getByRole("checkbox", { name: /calls and emails/ }).check();
-  await page.getByRole("button", { name: "Join the buyer list" }).click();
-  await expect(page.getByText("You're on the list")).toBeVisible();
-  expect(payload.number).toBe("(404) 555-0142"); // legacy field name
-  expect(payload.consentMarketing).toBe(true);
-});
-
 test("the calls-and-emails box is required before anything is sent", async ({
   page,
 }) => {
@@ -98,4 +75,25 @@ test("the calls-and-emails box is required before anything is sent", async ({
     "Please check the box to agree to calls and emails."
   );
   expect(posted).toBe(false);
+});
+
+test("buyer signup validates and submits the legacy-compatible payload", async ({
+  page,
+}) => {
+  let payload: any = null;
+  await page.route("**/.netlify/functions/newBuyer", async (route) => {
+    payload = route.request().postDataJSON();
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await page.goto("/investors/");
+  await page.getByLabel("First name").fill("Playwright");
+  await page.getByLabel("Last name").fill("Investor");
+  await page.getByLabel("Mobile phone").fill("(404) 555-0142");
+  await page.getByRole("textbox", { name: "Email" }).fill("pw@example.com");
+  await page.getByRole("radio", { name: "Landlord" }).check();
+  await page.getByRole("checkbox", { name: /calls and emails/ }).check();
+  await page.getByRole("button", { name: "Join the buyer list" }).click();
+  await expect(page.getByText("You're on the list")).toBeVisible();
+  expect(payload.number).toBe("(404) 555-0142"); // legacy field name
+  expect(payload.consentMarketing).toBe(true);
 });
