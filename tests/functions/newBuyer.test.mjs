@@ -7,7 +7,7 @@ vi.mock("axios", () => {
 });
 
 import axios from "axios";
-import { handler } from "../../netlify/functions/newBuyer.js";
+import { handler, BUYER_CONSENT_TEXT } from "../../netlify/functions/newBuyer.js";
 
 const SUPABASE_PATH = "/rest/v1/investor_signups";
 
@@ -17,8 +17,9 @@ const post = (payload) =>
     {}
   );
 
-// EXACTLY the payload BuyerForm.handleSubmit constructed on the legacy site:
-// the phone arrives as `number`, there is no `contact` and no `market` field.
+// The legacy BuyerForm's payload (the phone arrives as `number`, there is no
+// `contact` and no `market` field) plus the consent yes, required since
+// 2026-11-09.
 const realBuyerFormPayload = (overrides = {}) => ({
   firstName: "Test",
   lastName: "Investor",
@@ -27,15 +28,19 @@ const realBuyerFormPayload = (overrides = {}) => ({
   number: "(404) 555-0142",
   buyerType: "Cash Buyer",
   level: "Potential Buyer",
+  consentMarketing: true,
   ...overrides,
 });
 
 const callsTo = (fragment) =>
   axios.post.mock.calls.filter(([url]) => url.includes(fragment));
 
+const DOTATO_URL = "https://dotato.example/api/webhooks/hvg-buyers/tok";
+
 beforeEach(() => {
   axios.post.mockReset();
   axios.post.mockResolvedValue({ data: { ok: true } });
+  vi.unstubAllEnvs();
 });
 
 test("rejects non-POST requests", async () => {
@@ -79,4 +84,51 @@ test("returns 500 when every destination fails", async () => {
   axios.post.mockRejectedValue(new Error("everything down"));
   const res = await post(realBuyerFormPayload());
   expect(res.statusCode).toBe(500);
+});
+
+test("refuses a signup without the calls-and-emails consent, before any sink", async () => {
+  for (const consentMarketing of [false, undefined, "true"]) {
+    const res = await post(realBuyerFormPayload({ consentMarketing }));
+    expect(res.statusCode).toBe(400);
+    expect(JSON.parse(res.body).missing).toContain("consent");
+  }
+  expect(axios.post).not.toHaveBeenCalled();
+});
+
+test("mirrors a signup to dotato's buyer webhook when it is configured", async () => {
+  vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
+  const res = await post(realBuyerFormPayload({ buyerType: "Landlord" }));
+  expect(res.statusCode).toBe(200);
+  const [[, sent]] = callsTo("/hvg-buyers/");
+  expect(sent).toMatchObject({
+    firstName: "Test",
+    lastName: "Investor",
+    phone: "(404) 555-0142",
+    email: "test@example.com",
+    buyerType: "Landlord",
+    consentCallsEmail: true,
+    consentText: BUYER_CONSENT_TEXT,
+  });
+  expect(sent.submissionId).toMatch(/^[0-9a-f-]{36}$/);
+  // The website's own record carries the same id, so the two can be matched.
+  const [[, stored]] = callsTo(SUPABASE_PATH);
+  expect(stored.raw.submissionId).toBe(sent.submissionId);
+});
+
+test("sends nothing to dotato while the webhook is not configured", async () => {
+  await post(realBuyerFormPayload());
+  expect(callsTo("/hvg-buyers/")).toHaveLength(0);
+});
+
+test("dotato is best-effort: its failure never fails a saved signup, and it never stands in for the store", async () => {
+  vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
+  axios.post.mockImplementation((url) =>
+    url.includes("/hvg-buyers/") ? Promise.reject(new Error("dotato down")) : Promise.resolve({ data: { ok: true } })
+  );
+  expect((await post(realBuyerFormPayload())).statusCode).toBe(200);
+
+  axios.post.mockImplementation((url) =>
+    url.includes("/hvg-buyers/") ? Promise.resolve({ data: { ok: true } }) : Promise.reject(new Error("store down"))
+  );
+  expect((await post(realBuyerFormPayload())).statusCode).toBe(500);
 });

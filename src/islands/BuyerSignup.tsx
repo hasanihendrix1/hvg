@@ -1,5 +1,6 @@
 import React, { useId, useState } from "react";
 import "../styles/investor.css";
+import { BUYER_CONSENT_TEXT } from "../data/consent";
 
 // ⚖ Consent line mirrors the seller form's pattern (plan §12); the old
 // buyer form collected phone + email with no consent language at all.
@@ -33,6 +34,10 @@ export default function BuyerSignup() {
     }
     if (!/.+@.+\..+/.test(email.trim())) {
       setFieldError("Please enter a valid email address.");
+      return;
+    }
+    if (!consent) {
+      setFieldError("Please check the box to agree to calls and emails.");
       return;
     }
     setFieldError("");
@@ -147,14 +152,13 @@ export default function BuyerSignup() {
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
+          required
         />
         {/* TODO(investor texting): texts dropped 2026-10-05 so the site has
             one texting program for the homeowner A2P campaign. Texting buyers
             needs its own A2P campaign + opt-in before "texts" comes back here. */}
         <span>
-          I agree to receive calls and emails from Hendrix Ventures Group LLC
-          about investment inventory. See our{" "}
-          <a href="/privacy">Privacy Policy</a>.
+          {BUYER_CONSENT_TEXT} See our <a href="/privacy">Privacy Policy</a>.
         </span>
       </label>
       <button

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { randomUUID } from "node:crypto";
 import "dotenv/config";
 
 // PRIMARY store: Supabase. Publishable key is committed on purpose — it is
@@ -15,6 +16,12 @@ const GOOGLE_SCRIPT_URL = process.env.REACT_APP_GOOGLE_APPS_SCRIPT_URL_BUYER;
 const NETLIFY_FORMS_ORIGIN = process.env.URL || "https://hendrixventures.com";
 
 const SINK_TIMEOUT_MS = 3500;
+
+// ⚖ The buyer form's required box, as shown by src/islands/BuyerSignup.tsx
+// (tests/consent-sync.test.mjs fails if they differ). Calls and emails only:
+// texting investors needs its own A2P campaign first (README TODO).
+export const BUYER_CONSENT_TEXT =
+  "I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.";
 
 export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -42,12 +49,19 @@ export const handler = async (event) => {
     if (!requiredString(buyerData.lastName)) missing.push("lastName");
     if (!requiredString(contact)) missing.push("number");
     if (!requiredString(buyerData.email)) missing.push("email");
+    if (buyerData.consentMarketing !== true) missing.push("consent");
     if (missing.length > 0) {
       return {
         statusCode: 400,
         body: JSON.stringify({ message: "Invalid buyer data", missing }),
       };
     }
+
+    // Shared by the website's record and dotato's, so the two can be matched;
+    // dotato also uses it to recognise a redelivery.
+    const submissionId = randomUUID();
+    // Read per call so a deploy can switch it on without a code change.
+    const dotatoUrl = process.env.DOTATO_BUYERS_WEBHOOK_URL;
 
     const postSupabase = () =>
       axios.post(
@@ -61,7 +75,7 @@ export const handler = async (event) => {
           buyer_type: buyerData.buyerType || null,
           user_agent: event.headers["user-agent"] || null,
           ip: event.headers["x-nf-client-connection-ip"] || null,
-          raw: buyerData,
+          raw: { ...buyerData, submissionId },
         },
         {
           headers: {
@@ -97,11 +111,40 @@ export const handler = async (event) => {
         }
       );
 
-    const [storeResult, sheetResult] = await Promise.allSettled([
+    // Opportunistic like the Netlify form: never part of the success decision,
+    // because the website's own store is the source of truth.
+    const postDotato = () =>
+      axios.post(
+        dotatoUrl,
+        {
+          submissionId,
+          firstName: buyerData.firstName,
+          lastName: buyerData.lastName,
+          phone: contact,
+          email: buyerData.email,
+          buyerType: buyerData.buyerType || null,
+          consentCallsEmail: true,
+          consentText: BUYER_CONSENT_TEXT,
+          receivedAt: new Date().toISOString(),
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          timeout: SINK_TIMEOUT_MS,
+        }
+      );
+
+    const [storeResult, sheetResult, , dotatoResult] = await Promise.allSettled([
       postSupabase(),
       GOOGLE_SCRIPT_URL ? postSheet() : Promise.resolve("skipped"),
       postNetlifyForm(),
+      dotatoUrl ? postDotato() : Promise.resolve("skipped"),
     ]);
+    if (dotatoResult.status === "rejected") {
+      console.warn(
+        "dotato buyer mirror failed:",
+        dotatoResult.reason && dotatoResult.reason.message
+      );
+    }
 
     const stored = storeResult.status === "fulfilled";
     if (!stored) {
