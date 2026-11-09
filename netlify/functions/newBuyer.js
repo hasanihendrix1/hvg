@@ -75,7 +75,7 @@ export const handler = async (event) => {
           buyer_type: buyerData.buyerType || null,
           user_agent: event.headers["user-agent"] || null,
           ip: event.headers["x-nf-client-connection-ip"] || null,
-          raw: { ...buyerData, submissionId },
+          raw: { ...buyerData, submissionId, consentText: BUYER_CONSENT_TEXT },
         },
         {
           headers: {

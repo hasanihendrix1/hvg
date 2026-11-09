@@ -115,6 +115,12 @@ test("mirrors a signup to dotato's buyer webhook when it is configured", async (
   expect(stored.raw.submissionId).toBe(sent.submissionId);
 });
 
+test("the website's own record keeps the wording the buyer agreed to, dotato or not", async () => {
+  await post(realBuyerFormPayload());
+  const [[, stored]] = callsTo(SUPABASE_PATH);
+  expect(stored.raw.consentText).toBe(BUYER_CONSENT_TEXT);
+});
+
 test("sends nothing to dotato while the webhook is not configured", async () => {
   await post(realBuyerFormPayload());
   expect(callsTo("/hvg-buyers/")).toHaveLength(0);

@@ -2,11 +2,10 @@ import React, { useId, useState } from "react";
 import "../styles/investor.css";
 import { BUYER_CONSENT_TEXT } from "../data/consent";
 
-// ⚖ Consent line mirrors the seller form's pattern (plan §12); the old
-// buyer form collected phone + email with no consent language at all.
-
+// Area code and exchange never start with 0 or 1, so a typo here is caught
+// on the form rather than reaching dotato as an undialable number.
 const PHONE_REGEX =
-  /^(?:\+?1[-. ]?)?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+  /^(?:\+?1[-. ]?)?\(?([2-9][0-9]{2})\)?[-. ]?([2-9][0-9]{2})[-. ]?([0-9]{4})$/;
 
 type Status = "idle" | "submitting" | "success" | "error";
 
