@@ -252,7 +252,7 @@
   color: var(--color-brand);
 }
 
-/* In-grid "first look" card: same chrome as a deal, no image, no tint */
+/* In-grid "first look" card: same chrome as a deal card */
 .inv-join-card {
   justify-content: center;
 }

@@ -66,6 +66,13 @@ import BuyerSignup from "../islands/BuyerSignup";
   .inv-signup {
     padding-block: clamp(var(--space-6), 5vw, var(--space-8)) 0;
     border-top: 1px solid var(--color-line);
-    scroll-margin-top: var(--space-5);
+    /* With the top padding, clears the sticky header (61-68px tall) */
+    scroll-margin-top: var(--space-7);
+  }
+  /* The header's nav wraps here and the header grows to 95-139px */
+  @media (min-width: 861px) and (max-width: 1179px) {
+    .inv-signup {
+      scroll-margin-top: 7.5rem;
+    }
   }
 </style>

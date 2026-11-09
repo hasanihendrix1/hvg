@@ -19,15 +19,18 @@ const quarterValue = (t: string) => {
   return Number(y) * 4 + (Number(q) || 0);
 };
 
-const formatPrice = (p: string) => {
+// A missing price would otherwise render as "$0"
+const formatPrice = (p: string | null | undefined) => {
+  if (p == null || String(p).trim() === "") return null;
   const n = Number(p);
-  return Number.isFinite(n)
+  if (!Number.isFinite(n)) return p;
+  return n > 0
     ? n.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
         maximumFractionDigits: 0,
       })
-    : p;
+    : null;
 };
 
 // Hand-entered history has typos (one record says -2 baths); a fact that
@@ -50,7 +53,7 @@ const statusSlug = (s: string) => (s || "").toLowerCase().replace(/\s+/g, "-");
 
 function Skeleton() {
   return (
-    <div aria-busy="true">
+    <>
       <p className="sr-only" role="status">
         Loading inventory…
       </p>
@@ -69,7 +72,7 @@ function Skeleton() {
           </li>
         ))}
       </ul>
-    </div>
+    </>
   );
 }
 
@@ -167,6 +170,7 @@ export default function InvestorInventory() {
         <ul className="inv-grid" role="list">
           {shown.flatMap((deal, i) => {
             const details = formatDetails(deal);
+            const price = formatPrice(deal.price);
             const card = (
               <li key={deal._id} className="inv-card">
                 <div className="inv-media">
@@ -181,14 +185,16 @@ export default function InvestorInventory() {
                   ) : (
                     <div className="inv-noimage" aria-hidden="true" />
                   )}
-                  <span
-                    className={`inv-status inv-status-${statusSlug(deal.status)}`}
-                  >
-                    {deal.status || "—"}
-                  </span>
+                  {deal.status && (
+                    <span
+                      className={`inv-status inv-status-${statusSlug(deal.status)}`}
+                    >
+                      {deal.status}
+                    </span>
+                  )}
                 </div>
                 <div className="inv-card-body">
-                  <p className="inv-price">{formatPrice(deal.price)}</p>
+                  {price && <p className="inv-price">{price}</p>}
                   <p className="inv-address">{deal.address}</p>
                   {details.length > 0 && (
                     <p className="inv-details">
