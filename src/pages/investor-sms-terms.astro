@@ -4,8 +4,8 @@ import { BUYER_LINE } from "../data/consent";
 // ⚖ ATTORNEY REVIEW BEFORE LAUNCH (plan §12.1). The investor deal-texts A2P
 // 10DLC campaign's terms. Buyer-only on purpose: that campaign cites the
 // investor pages, and the homeowner campaign keeps /sms-terms. Written to
-// match the optional box in src/data/consent.ts (BUYER_TEXT_CONSENT_VERSION),
-// newBuyer.js and /investor-text-consent.
+// match the two optional texting boxes in src/data/consent.ts, newBuyer.js
+// and /investor-text-consent.
 ---
 
 <Base
@@ -17,7 +17,7 @@ import { BUYER_LINE } from "../data/consent";
   <section class="legal">
     <div class="container-narrow">
       <h1>Investor SMS Terms</h1>
-      <p class="legal-effective">Effective November 10, 2026</p>
+      <p class="legal-effective">Effective November 11, 2026</p>
 
       <h2>The program</h2>
       <p>
@@ -25,20 +25,23 @@ import { BUYER_LINE } from "../data/consent";
         alerts about investment properties we have available (area, size,
         condition and price), and updates on deals you respond to, such as
         walkthrough times, the status of your offer and next steps to close.
-        Deal alerts are promotional texts. We send them only to investors who
-        opt in, and we never text numbers from purchased or third-party lists.
+        Deal alerts are promotional texts. On our buyer-list form, deal alerts
+        and deal updates each have their own optional box. We send texts only
+        to investors who opt in, and we never text numbers from purchased or
+        third-party lists.
       </p>
 
       <h2>How you opt in</h2>
       <p>
-        Check the optional texting box when you join our buyer list at
-        <a href="/investors">hendrixventures.com/investors</a>{
+        Check either or both optional texting boxes when you join our buyer
+        list at <a href="/investors">hendrixventures.com/investors</a>{
           // One line on purpose: Astro renders line breaks inside a fragment.
           BUYER_LINE && (
-            <>, or text <strong>DEALS</strong> to our buyer line, <a href={BUYER_LINE.sms} style="white-space: nowrap">{BUYER_LINE.display}</a></>
+            <>, text <strong>DEALS</strong> to our buyer line, <a href={BUYER_LINE.sms} style="white-space: nowrap">{BUYER_LINE.display}</a></>
           )
-        }. The box is unchecked until you check it. Texts are optional and not
-        required to join the buyer list. Your first text confirms that you
+        }, or ask us in writing: a text or email to us, or a signed buyer form.
+        The boxes are unchecked until you check them. Texts are optional and
+        not required to join the buyer list. Your first text confirms that you
         opted in. See
         <a href="/investor-text-consent">how investors agree to texts</a>, word
         for word.
@@ -48,9 +51,10 @@ import { BUYER_LINE } from "../data/consent";
       <ul>
         <li>Message frequency varies. Message and data rates may apply.</li>
         <li>
-          Reply <strong>STOP</strong> at any time to stop receiving texts. We
-          honor it promptly, and you may receive one final message confirming
-          the opt-out. Reply <strong>START</strong> to opt back in.
+          Reply <strong>STOP</strong> at any time to stop receiving texts, deal
+          alerts and deal updates alike. We honor it promptly, and you may
+          receive one final message confirming the opt-out. Reply
+          <strong>START</strong> to opt back in.
         </li>
         <li>Reply <strong>HELP</strong> for help, or contact us below.</li>
         <li>

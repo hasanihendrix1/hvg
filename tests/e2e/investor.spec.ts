@@ -1,8 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import {
   BUYER_CONSENT_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_TEXT,
+  BUYER_DEAL_UPDATES_CONSENT_TEXT,
   BUYER_LINE,
-  BUYER_TEXT_CONSENT_TEXT,
 } from "../../src/data/consent";
 
 const MOCK_DEALS = [
@@ -177,7 +178,8 @@ test("what a buyer types before the form hydrates is still submitted", async ({
   await page.getByRole("textbox", { name: "Email" }).fill("early@example.com");
   await page.getByRole("radio", { name: "Both" }).check();
   await page.getByRole("checkbox", { name: /calls and emails/ }).check();
-  await page.getByRole("checkbox", { name: /recurring text messages/ }).check();
+  await page.getByRole("checkbox", { name: /deal alerts about/ }).check();
+  await page.getByRole("checkbox", { name: /updates on deals/ }).check();
   await expect(
     page.locator("astro-island:has(.buyer-form)[ssr]")
   ).toHaveCount(1);
@@ -192,12 +194,14 @@ test("what a buyer types before the form hydrates is still submitted", async ({
     email: "early@example.com",
     buyerType: "Both",
     consentMarketing: true,
-    consentTexts: true,
+    consentDealAlerts: true,
+    consentDealUpdates: true,
   });
 });
 
-// The investor deal-texts opt-in (A2P 10DLC): optional, unchecked, the
-// registered wording in full, and never needed to join.
+// The investor deal-texts opt-ins (src/data/consent.ts says why there are
+// two): each optional, unchecked, the registered wording in full, and never
+// needed to join.
 const fillBuyer = async (page: Page) => {
   await page.goto("/investors/");
   await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
@@ -209,7 +213,12 @@ const fillBuyer = async (page: Page) => {
   await page.getByRole("checkbox", { name: /calls and emails/ }).check();
 };
 
-test("the texting box is optional: unchecked, fully worded, and joining works without it", async ({
+const TEXT_BOXES = {
+  consentDealAlerts: BUYER_DEAL_ALERTS_CONSENT_TEXT,
+  consentDealUpdates: BUYER_DEAL_UPDATES_CONSENT_TEXT,
+} as const;
+
+test("both texting boxes are optional: unchecked, fully worded, and joining works with neither ticked", async ({
   page,
 }) => {
   let payload: any = null;
@@ -218,45 +227,74 @@ test("the texting box is optional: unchecked, fully worded, and joining works wi
     await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
   });
   await fillBuyer(page);
-  const textBox = page.getByRole("checkbox", {
-    name: BUYER_TEXT_CONSENT_TEXT,
-    exact: true,
-  });
-  await expect(textBox).toBeVisible();
-  await expect(textBox).not.toBeChecked();
+  for (const wording of Object.values(TEXT_BOXES)) {
+    const box = page.getByRole("checkbox", { name: wording, exact: true });
+    await expect(box).toBeVisible();
+    await expect(box).not.toBeChecked();
+  }
+  // Calls-and-emails plus the two texting boxes, and nothing else.
+  await expect(page.locator(".buyer-form").getByRole("checkbox")).toHaveCount(3);
   await page.getByRole("button", { name: "Join the buyer list" }).click();
   await expect(page.getByText("You're on the list")).toBeVisible();
   expect(payload.consentMarketing).toBe(true);
-  expect(payload.consentTexts).toBe(false);
+  expect(payload.consentDealAlerts).toBe(false);
+  expect(payload.consentDealUpdates).toBe(false);
 });
 
-test("ticking the texting box sends a yes to texts", async ({ page }) => {
-  let payload: any = null;
-  await page.route("**/.netlify/functions/newBuyer", async (route) => {
-    payload = route.request().postDataJSON();
-    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+for (const [field, wording] of Object.entries(TEXT_BOXES)) {
+  test(`ticking only the ${field} box sends a yes to that box alone`, async ({
+    page,
+  }) => {
+    let payload: any = null;
+    await page.route("**/.netlify/functions/newBuyer", async (route) => {
+      payload = route.request().postDataJSON();
+      await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+    });
+    await fillBuyer(page);
+    await page.getByRole("checkbox", { name: wording, exact: true }).check();
+    await page.getByRole("button", { name: "Join the buyer list" }).click();
+    await expect(page.getByText("You're on the list")).toBeVisible();
+    for (const other of Object.keys(TEXT_BOXES)) {
+      expect(payload[other]).toBe(other === field);
+    }
   });
-  await fillBuyer(page);
-  await page
-    .getByRole("checkbox", { name: BUYER_TEXT_CONSENT_TEXT, exact: true })
-    .check();
-  await page.getByRole("button", { name: "Join the buyer list" }).click();
-  await expect(page.getByText("You're on the list")).toBeVisible();
-  expect(payload.consentTexts).toBe(true);
-});
+}
 
-test("/investor-text-consent shows both boxes word for word, with the form screenshot", async ({
+test("/investor-text-consent shows all three boxes word for word, with the form screenshot", async ({
   page,
 }) => {
   await page.goto("/investor-text-consent/");
   const quotes = page.locator(".consent-quote");
-  await expect(quotes.filter({ hasText: BUYER_CONSENT_TEXT })).toHaveCount(1);
-  await expect(quotes.filter({ hasText: BUYER_TEXT_CONSENT_TEXT })).toHaveCount(1);
+  for (const wording of [
+    BUYER_CONSENT_TEXT,
+    BUYER_DEAL_ALERTS_CONSENT_TEXT,
+    BUYER_DEAL_UPDATES_CONSENT_TEXT,
+  ]) {
+    await expect(quotes.filter({ hasText: wording })).toHaveCount(1);
+  }
   const shot = page.locator(".consent-shot img");
   await shot.scrollIntoViewIfNeeded();
   await expect
     .poll(() => shot.evaluate((img: HTMLImageElement) => img.naturalWidth))
     .toBeGreaterThan(0);
+});
+
+// The third door (dotato's "Agreed to deal texts" box on the buyer card), in
+// the registration's message-flow words. It needs no buyer line.
+test("/investor-text-consent describes the written-request door", async ({
+  page,
+}) => {
+  await page.goto("/investor-text-consent/");
+  const door = page.locator("section.legal");
+  await expect(
+    door.getByRole("heading", { name: /asking us in writing/ })
+  ).toBeVisible();
+  await expect(door).toContainText(
+    "a text or email to us, or a signed buyer form"
+  );
+  await expect(door).toContainText(
+    "A spoken request is never recorded as an opt-in."
+  );
 });
 
 // Until the buyer line is bought, no page may invite anyone to text DEALS.
@@ -323,6 +361,42 @@ for (const path of ["/privacy/", "/sms-terms/", "/text-consent/", "/get-offer/"]
   });
 }
 
+// A box ticked before hydration must be adopted as that box, never the other:
+// a swap would record a yes the buyer never gave.
+for (const [field, wording] of Object.entries(TEXT_BOXES)) {
+  test(`ticking only the ${field} box before hydration sends a yes to that box alone`, async ({
+    page,
+  }) => {
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    await page.route("**/_astro/BuyerSignup*.js", async (route) => {
+      await held;
+      await route.continue();
+    });
+    let payload: any = null;
+    await page.route("**/.netlify/functions/newBuyer", async (route) => {
+      payload = route.request().postDataJSON();
+      await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+    });
+    await page.goto("/investors/", { waitUntil: "domcontentloaded" });
+    await page.getByLabel("First name").fill("Early");
+    await page.getByLabel("Last name").fill("Typist");
+    await page.getByLabel("Mobile phone").fill("(404) 555-0142");
+    await page.getByRole("textbox", { name: "Email" }).fill("early@example.com");
+    await page.getByRole("radio", { name: "Both" }).check();
+    await page.getByRole("checkbox", { name: /calls and emails/ }).check();
+    await page.getByRole("checkbox", { name: wording, exact: true }).check();
+    await expect(page.locator("astro-island:has(.buyer-form)[ssr]")).toHaveCount(1);
+    release();
+    await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
+    await page.getByRole("button", { name: "Join the buyer list" }).click();
+    await expect(page.getByText("You're on the list")).toBeVisible();
+    for (const other of Object.keys(TEXT_BOXES)) {
+      expect(payload[other]).toBe(other === field);
+    }
+  });
+}
+
 test("ticking only the calls box before hydration is never read as a yes to texts", async ({
   page,
 }) => {
@@ -349,5 +423,6 @@ test("ticking only the calls box before hydration is never read as a yes to text
   await page.getByRole("button", { name: "Join the buyer list" }).click();
   await expect(page.getByText("You're on the list")).toBeVisible();
   expect(payload.consentMarketing).toBe(true);
-  expect(payload.consentTexts).toBe(false);
+  expect(payload.consentDealAlerts).toBe(false);
+  expect(payload.consentDealUpdates).toBe(false);
 });

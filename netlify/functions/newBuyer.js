@@ -22,12 +22,16 @@ const SINK_TIMEOUT_MS = 3500;
 export const BUYER_CONSENT_TEXT =
   "I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.";
 
-// ⚖ The optional texting box below it, the investor deal-texts campaign.
-// Same rule: a copy of src/data/consent.ts, so the record names the exact
-// wording and version the buyer saw, ticked or not.
-export const BUYER_TEXT_CONSENT_VERSION = "2026-11-10.1";
-export const BUYER_TEXT_CONSENT_TEXT =
-  "I agree to receive recurring text messages from Hendrix Ventures Group LLC with alerts about investment properties and updates on deals I respond to, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Texts are optional and not required to join the buyer list.";
+// ⚖ The two optional texting boxes below it, the investor deal-texts
+// campaign: deal alerts (marketing) and deal updates (informational). Same
+// rule: copies of src/data/consent.ts, so the record names the exact wording
+// and version the buyer saw for each box, ticked or not.
+export const BUYER_DEAL_ALERTS_CONSENT_VERSION = "2026-11-11.1";
+export const BUYER_DEAL_ALERTS_CONSENT_TEXT =
+  "I agree to receive recurring promotional text messages from Hendrix Ventures Group LLC with deal alerts about investment properties we have available, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal alerts are optional and not required to join the buyer list.";
+export const BUYER_DEAL_UPDATES_CONSENT_VERSION = "2026-11-11.1";
+export const BUYER_DEAL_UPDATES_CONSENT_TEXT =
+  "I agree to receive text messages from Hendrix Ventures Group LLC with updates on deals I respond to, such as walkthrough times and offer status, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal updates are optional and not required to join the buyer list.";
 
 export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -68,12 +72,15 @@ export const handler = async (event) => {
     const submissionId = randomUUID();
     // Read per call so a deploy can switch it on without a code change.
     const dotatoUrl = process.env.DOTATO_BUYERS_WEBHOOK_URL;
-    // Only a literal true is a yes to texts. The same three fields go to both
+    // Only a literal true is a yes, box by box. The same fields go to both
     // records, so the website's row and dotato's card can be compared.
-    const textConsent = {
-      consentTexts: buyerData.consentTexts === true,
-      textConsentVersion: BUYER_TEXT_CONSENT_VERSION,
-      textConsentText: BUYER_TEXT_CONSENT_TEXT,
+    const textConsents = {
+      consentDealAlerts: buyerData.consentDealAlerts === true,
+      dealAlertsConsentVersion: BUYER_DEAL_ALERTS_CONSENT_VERSION,
+      dealAlertsConsentText: BUYER_DEAL_ALERTS_CONSENT_TEXT,
+      consentDealUpdates: buyerData.consentDealUpdates === true,
+      dealUpdatesConsentVersion: BUYER_DEAL_UPDATES_CONSENT_VERSION,
+      dealUpdatesConsentText: BUYER_DEAL_UPDATES_CONSENT_TEXT,
     };
 
     const postSupabase = () =>
@@ -92,7 +99,7 @@ export const handler = async (event) => {
             ...buyerData,
             submissionId,
             consentText: BUYER_CONSENT_TEXT,
-            ...textConsent,
+            ...textConsents,
           },
         },
         {
@@ -108,7 +115,11 @@ export const handler = async (event) => {
     const postSheet = () =>
       axios.post(
         GOOGLE_SCRIPT_URL,
-        { ...buyerData, consentTexts: textConsent.consentTexts },
+        {
+          ...buyerData,
+          consentDealAlerts: textConsents.consentDealAlerts,
+          consentDealUpdates: textConsents.consentDealUpdates,
+        },
         {
           headers: { "Content-Type": "application/json" },
           timeout: SINK_TIMEOUT_MS,
@@ -147,7 +158,14 @@ export const handler = async (event) => {
           buyerType: buyerData.buyerType || null,
           consentCallsEmail: true,
           consentText: BUYER_CONSENT_TEXT,
-          ...textConsent,
+          ...textConsents,
+          // dotato's ingest (lib/hvg-buyers/ingest.ts) reads one
+          // texting box from these three fields and records a tick as a yes.
+          // They carry the deal-alerts box only, so a deal-updates yes is never
+          // filed as a yes to marketing. Drop them once dotato reads both boxes.
+          consentTexts: textConsents.consentDealAlerts,
+          textConsentVersion: BUYER_DEAL_ALERTS_CONSENT_VERSION,
+          textConsentText: BUYER_DEAL_ALERTS_CONSENT_TEXT,
           receivedAt: new Date().toISOString(),
         },
         {

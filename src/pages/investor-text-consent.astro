@@ -2,13 +2,17 @@
 import Base from "../layouts/Base.astro";
 import {
   BUYER_CONSENT_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_TEXT,
+  BUYER_DEAL_UPDATES_CONSENT_TEXT,
   BUYER_LINE,
-  BUYER_TEXT_CONSENT_TEXT,
 } from "../data/consent";
 // ⚖ Evidence page for the investor A2P campaign: every line here must match
 // what is actually shown, said, emailed and sent. Box wording comes from
-// src/data/consent.ts, the call line and confirmation from the registration
-// draft. The DEALS door renders only once BUYER_LINE is set.
+// src/data/consent.ts; the call line, the written-request door and the
+// confirmation from the registration draft's message flow. The DEALS door
+// renders only once BUYER_LINE is set. The written-request door is dotato's
+// "Agreed to deal texts" box on the buyer card
+// (https://linear.app/hendrixventures/issue/DOT-496).
 const CALL_LINE =
   "If you want our deals by text, text DEALS to this number and you'll get a confirmation. Message frequency varies, rates may apply, and you can reply STOP anytime.";
 // Not in the draft yet: the one-to-one email's template must use these words.
@@ -22,48 +26,49 @@ const CONFIRMATION =
 
 <Base
   title="How investors agree to texts | Hendrix Ventures Group"
-  description="How a real estate investor opts in to deal texts from Hendrix Ventures Group LLC, word for word: the optional box on our buyer-list form, and the confirmation text that follows."
+  description="How a real estate investor opts in to deal texts from Hendrix Ventures Group LLC, word for word: the two optional boxes on our buyer-list form, a written request, and the confirmation text that follows."
   path="/investor-text-consent"
   sticky="investor"
 >
   <section class="legal text-consent">
     <div class="container-narrow">
       <h1>How investors agree to texts</h1>
-      <p class="legal-effective">Effective November 10, 2026</p>
+      <p class="legal-effective">Effective November 11, 2026</p>
       <p>
-        Hendrix Ventures Group LLC texts real estate investors alerts about
-        investment properties we have available, and updates on deals they
-        respond to, such as walkthrough times, the status of their offer and
-        next steps to close. We text only investors who opt in, in writing.
-        This program is for investors only: we never text homeowners from it,
-        and we never text numbers from purchased or third-party lists.
+        Hendrix Ventures Group LLC sends real estate investors two kinds of
+        texts: deal alerts, our promotional texts about investment properties
+        we have available; and deal updates, about deals an investor responds
+        to, such as walkthrough times, the status of their offer and next steps
+        to close. We text only investors who opt in, in writing. This program
+        is for investors only: we never text homeowners from it, and we never
+        text numbers from purchased or third-party lists.
         {
           BUYER_LINE
-            ? "There are two ways to opt in. Here is each one, word for word."
-            : "Here is how to opt in, word for word."
+            ? "There are three ways to opt in. Here is each one, word for word."
+            : "There are two ways to opt in. Here is each one, word for word."
         }
       </p>
 
-      <h2>{BUYER_LINE ? "1. On our website" : "On our website"}</h2>
+      <h2>1. On our website</h2>
       <p>
         Our buyer-list form at
         <a href="/investors">hendrixventures.com/investors</a> asks for your
         first and last name, mobile phone, email, and whether you buy as a
-        landlord, a fix-and-flipper or both, then shows two separate
+        landlord, a fix-and-flipper or both, then shows three separate
         checkboxes, just above the submit button:
       </p>
       <figure class="consent-shot">
         <img
           src="/investor-text-consent-form.webp"
-          width="1144"
-          height="1330"
+          width="1152"
+          height="1662"
           loading="lazy"
           decoding="async"
-          alt="The Hendrix Ventures Group buyer-list form, filled in with sample details: first and last name, mobile phone, email and buyer type, then two unchecked checkboxes. The first reads “I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.” The second reads “I agree to receive recurring text messages from Hendrix Ventures Group LLC with alerts about investment properties…”, above the Join the buyer list button."
+          alt="The Hendrix Ventures Group buyer-list form, filled in with sample details: first and last name, mobile phone, email and buyer type, then three unchecked checkboxes. The first reads “I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.” The second reads “I agree to receive recurring promotional text messages from Hendrix Ventures Group LLC with deal alerts about investment properties…”. The third reads “I agree to receive text messages from Hendrix Ventures Group LLC with updates on deals I respond to…”, above the Join the buyer list button."
         />
         <figcaption>
-          The buyer-list form as it appears on our site (captured November 10,
-          2026), with sample details. Both boxes start unchecked.
+          The buyer-list form as it appears on our site (captured November 11,
+          2026), with sample details. All three boxes start unchecked.
         </figcaption>
       </figure>
       <p>
@@ -72,16 +77,20 @@ const CONFIRMATION =
       </p>
       <blockquote class="consent-quote">{BUYER_CONSENT_TEXT}</blockquote>
       <p>
-        The second box is the only way to opt in to texts on the form. It
-        reads:
+        The second and third boxes are the only ways to opt in to texts on the
+        form, one box for each kind of text. The second box is for deal alerts,
+        our promotional texts. It reads:
       </p>
-      <blockquote class="consent-quote">{BUYER_TEXT_CONSENT_TEXT}</blockquote>
+      <blockquote class="consent-quote">{BUYER_DEAL_ALERTS_CONSENT_TEXT}</blockquote>
+      <p>The third box is for deal updates on deals you respond to. It reads:</p>
+      <blockquote class="consent-quote">{BUYER_DEAL_UPDATES_CONSENT_TEXT}</blockquote>
       <p>
-        The texting box is optional and unchecked until you check it. You
-        don't need to check it to join the buyer list: leave it unchecked and
-        we'll reach you by phone and email only. When you submit, we record the
-        date and time, your IP address, the exact wording shown and its
-        version, and whether you checked the box.
+        Both texting boxes are optional and unchecked until you check them.
+        You can check either one, both or neither, and you don't need to check
+        either to join the buyer list: leave them unchecked and we'll reach you
+        by phone and email only. When you submit, we record the date and time,
+        your IP address, the exact wording of each box shown and its version,
+        and whether you checked each one.
       </p>
 
       {
@@ -90,7 +99,7 @@ const CONFIRMATION =
             <h2>2. By texting DEALS</h2>
             <p>
               Text the keyword <strong>DEALS</strong> to our buyer line,
-              {BUYER_LINE.display}. Beside the box on our website we say:
+              {BUYER_LINE.display}. Beside the boxes on our website we say:
             </p>
             <blockquote class="consent-quote">
               Or text DEALS to <a href={BUYER_LINE.sms}>{BUYER_LINE.display}</a>
@@ -120,22 +129,25 @@ const CONFIRMATION =
         )
       }
 
-      <h2>Your first text</h2>
+      <h2>{BUYER_LINE ? "3." : "2."} By asking us in writing</h2>
       <p>
-        {
-          BUYER_LINE
-            ? "Whichever way you opt in, the first text we send you confirms it:"
-            : "After you check the box, the first text we send you confirms it:"
-        }
+        You can ask us in writing to send our deals by text: a text or email to
+        us, or a signed buyer form. We keep your message, and record in our CRM
+        that you agreed in writing, for which number, when, and who recorded
+        it. A spoken request is never recorded as an opt-in.
       </p>
+
+      <h2>Your first text</h2>
+      <p>Whichever way you opt in, the first text we send you confirms it:</p>
       <blockquote class="consent-quote">{CONFIRMATION}</blockquote>
 
       <h2>Stopping texts, or getting help</h2>
       <ul>
         <li>
           Reply <strong>STOP</strong> to any text to opt out. We stop texting
-          that number, and you may get one final message confirming it. Reply
-          <strong>START</strong> to opt back in.
+          that number, deal alerts and deal updates alike, and you may get one
+          final message confirming it. Reply <strong>START</strong> to opt back
+          in.
         </li>
         <li>
           Reply <strong>HELP</strong> for help, or call

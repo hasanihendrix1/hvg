@@ -475,7 +475,7 @@
   accent-color: var(--color-brand);
 }
 
-/* The optional texting box sits tight above its links. */
+/* The last texting box sits tight above its links. */
 .buyer-consent-texts {
   margin-bottom: var(--space-2);
 }

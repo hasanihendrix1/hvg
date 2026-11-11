@@ -5,15 +5,19 @@ import {
 } from "../netlify/functions/submit-lead.js";
 import {
   BUYER_CONSENT_TEXT as BUYER_SERVER_TEXT,
-  BUYER_TEXT_CONSENT_TEXT as BUYER_TEXT_SERVER_TEXT,
-  BUYER_TEXT_CONSENT_VERSION as BUYER_TEXT_SERVER_VERSION,
+  BUYER_DEAL_ALERTS_CONSENT_TEXT as ALERTS_SERVER_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_VERSION as ALERTS_SERVER_VERSION,
+  BUYER_DEAL_UPDATES_CONSENT_TEXT as UPDATES_SERVER_TEXT,
+  BUYER_DEAL_UPDATES_CONSENT_VERSION as UPDATES_SERVER_VERSION,
 } from "../netlify/functions/newBuyer.js";
 import {
   BUYER_CONSENT_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_VERSION,
+  BUYER_DEAL_UPDATES_CONSENT_TEXT,
+  BUYER_DEAL_UPDATES_CONSENT_VERSION,
   BUYER_LINE,
   BUYER_LINE_E164,
-  BUYER_TEXT_CONSENT_TEXT,
-  BUYER_TEXT_CONSENT_VERSION,
   CONSENT_TEXT,
   CONSENT_VERSION,
   buyerLine,
@@ -34,7 +38,7 @@ test("the one SMS box carries the required disclosures and no marketing", () => 
 });
 
 // The buyer form's required box: calls and emails only. Texts have their own
-// optional box below. The function sends its copy to dotato as the evidence.
+// optional boxes below. The function sends its copy to dotato as the evidence.
 test("the buyer form's consent wording matches what the server sends to dotato", () => {
   expect(BUYER_SERVER_TEXT).toBe(BUYER_CONSENT_TEXT);
   expect(BUYER_CONSENT_TEXT).toBe(
@@ -43,29 +47,53 @@ test("the buyer form's consent wording matches what the server sends to dotato",
   expect(BUYER_CONSENT_TEXT.toLowerCase()).not.toContain("text");
 });
 
-// The optional texting box (investor deal-texts campaign). The A2P message
-// flow quotes this wording, so the form, /investor-text-consent, the stored
-// record and the registration must all say the same thing.
-test("the buyer texting box's wording matches what the server records", () => {
-  expect(BUYER_TEXT_SERVER_VERSION).toBe(BUYER_TEXT_CONSENT_VERSION);
-  expect(BUYER_TEXT_SERVER_TEXT).toBe(BUYER_TEXT_CONSENT_TEXT);
+// The two optional texting boxes (investor deal-texts campaign). The A2P
+// message flow quotes this wording, so the form, /investor-text-consent, the
+// stored record and the registration must all say the same thing.
+test("each buyer texting box's wording matches what the server records", () => {
+  expect(ALERTS_SERVER_VERSION).toBe(BUYER_DEAL_ALERTS_CONSENT_VERSION);
+  expect(ALERTS_SERVER_TEXT).toBe(BUYER_DEAL_ALERTS_CONSENT_TEXT);
+  expect(UPDATES_SERVER_VERSION).toBe(BUYER_DEAL_UPDATES_CONSENT_VERSION);
+  expect(UPDATES_SERVER_TEXT).toBe(BUYER_DEAL_UPDATES_CONSENT_TEXT);
 });
 
-test("the buyer texting box is the registered wording, with every disclosure", () => {
-  expect(BUYER_TEXT_CONSENT_TEXT).toBe(
-    "I agree to receive recurring text messages from Hendrix Ventures Group LLC with alerts about investment properties and updates on deals I respond to, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Texts are optional and not required to join the buyer list."
+const EVERY_DISCLOSURE = [
+  "Hendrix Ventures Group LLC",
+  "Msg frequency varies.",
+  "Msg & data rates may apply.",
+  "Reply STOP to opt out",
+  "HELP for help",
+  "not required to join the buyer list",
+];
+
+test("the deal-alerts box is the registered marketing wording, with every disclosure", () => {
+  expect(BUYER_DEAL_ALERTS_CONSENT_TEXT).toBe(
+    "I agree to receive recurring promotional text messages from Hendrix Ventures Group LLC with deal alerts about investment properties we have available, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal alerts are optional and not required to join the buyer list."
   );
-  for (const disclosure of [
-    "Hendrix Ventures Group LLC",
-    "Msg frequency varies.",
-    "Msg & data rates may apply.",
-    "Reply STOP to opt out",
-    "HELP for help",
-    "not required to join the buyer list",
-  ]) {
-    expect(BUYER_TEXT_CONSENT_TEXT).toContain(disclosure);
+  for (const d of EVERY_DISCLOSURE) expect(BUYER_DEAL_ALERTS_CONSENT_TEXT).toContain(d);
+});
+
+test("the deal-updates box is the registered informational wording, with every disclosure", () => {
+  expect(BUYER_DEAL_UPDATES_CONSENT_TEXT).toBe(
+    "I agree to receive text messages from Hendrix Ventures Group LLC with updates on deals I respond to, such as walkthrough times and offer status, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal updates are optional and not required to join the buyer list."
+  );
+  for (const d of EVERY_DISCLOSURE) expect(BUYER_DEAL_UPDATES_CONSENT_TEXT).toContain(d);
+});
+
+// Twilio error 30913: one box covering marketing and informational texts
+// gets the campaign rejected. Each box must name only its own kind.
+test("neither texting box covers the other's kind of text", () => {
+  const alerts = BUYER_DEAL_ALERTS_CONSENT_TEXT.toLowerCase();
+  const updates = BUYER_DEAL_UPDATES_CONSENT_TEXT.toLowerCase();
+  for (const word of ["update", "respond", "walkthrough", "offer"]) {
+    expect(alerts).not.toContain(word);
   }
-  expect(BUYER_TEXT_CONSENT_TEXT).not.toBe(CONSENT_TEXT);
+  for (const word of ["alert", "promotional", "marketing", "recurring", "available"]) {
+    expect(updates).not.toContain(word);
+  }
+  for (const box of [BUYER_DEAL_ALERTS_CONSENT_TEXT, BUYER_DEAL_UPDATES_CONSENT_TEXT]) {
+    expect(box).not.toBe(CONSENT_TEXT);
+  }
 });
 
 // A mistyped number would send every DEALS text somewhere else.
