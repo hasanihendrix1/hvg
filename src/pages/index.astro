@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import VideoCard from "../components/VideoCard.astro";
+import StatusTag from "../components/StatusTag.astro";
 import { Image } from "astro:assets";
 import headshot from "../assets/hasani-headshot.jpg";
 import closingPhoto from "../assets/seller-closing.jpg";
@@ -204,6 +205,11 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
   <section class="gallery">
     <div class="container">
       <h2>Houses we've bought</h2>
+      <p class="gallery-legend">
+        <strong>Sold</strong> means we purchased the house ourselves.
+        <strong>Assigned</strong> means we put it under contract and assigned
+        that contract to another buyer, who closed the purchase.
+      </p>
       <ul class="gallery-grid" role="list">
         {
           galleryDeals.map((deal) => (
@@ -219,8 +225,11 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
               />
               <p class="gallery-street">{deal.place.street}</p>
               <p class="gallery-meta">
-                {deal.place.city && `${deal.place.city} · `}
-                <span class="stat">{quarterLabel(deal.timestamp)}</span>
+                <StatusTag status={deal.status} />
+                <span>
+                  {deal.place.city && `${deal.place.city} · `}
+                  <span class="stat">{quarterLabel(deal.timestamp)}</span>
+                </span>
               </p>
             </li>
           ))
@@ -549,10 +558,20 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     margin: var(--space-3) 0 0;
   }
 
+  .gallery-legend {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    max-width: 68ch;
+  }
+
   .gallery-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
     font-size: var(--text-xs);
     color: var(--color-ink-soft);
-    margin: 0;
+    margin: var(--space-1) 0 0;
   }
 
   .more-stories {

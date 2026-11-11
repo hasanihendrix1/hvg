@@ -1,0 +1,36 @@
+---
+// A documented purchase's record status. One definition, so the home page
+// and the record page can never show a deal two different ways.
+interface Props {
+  status?: string;
+}
+const { status } = Astro.props;
+---
+
+{
+  status && (
+    <span class:list={["status-tag", `status-tag-${status.toLowerCase()}`]}>
+      {status}
+    </span>
+  )
+}
+
+<style>
+  .status-tag {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 650;
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    white-space: nowrap;
+  }
+
+  .status-tag-sold {
+    color: var(--color-success);
+  }
+
+  .status-tag-assigned {
+    color: var(--color-ink-soft);
+  }
+</style>

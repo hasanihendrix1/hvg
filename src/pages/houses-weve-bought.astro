@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import VideoCard from "../components/VideoCard.astro";
+import StatusTag from "../components/StatusTag.astro";
 import { fetchDeals, formatAddress, quarterLabel } from "../data/deals";
 import { testimonials, videoSchema } from "../data/testimonials";
 
@@ -69,9 +70,7 @@ const hasStory = (address: string) =>
                   )}
                 </p>
                 <p class="record-meta">
-                  <span class={`record-status record-status-${deal.status?.toLowerCase()}`}>
-                    {deal.status}
-                  </span>
+                  <StatusTag status={deal.status} />
                   <span class="stat">{quarterLabel(deal.timestamp)}</span>
                   {hasStory(deal.address) && (
                     <a href="#seller-stories" class="record-story-link">
@@ -172,23 +171,6 @@ const hasStory = (address: string) =>
     color: var(--color-ink-soft);
     margin: 0;
     flex-wrap: wrap;
-  }
-
-  .record-status {
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: 650;
-    padding: 0.15em 0.6em;
-    border-radius: 999px;
-    border: 1px solid var(--color-line);
-  }
-
-  .record-status-sold {
-    color: var(--color-success);
-  }
-
-  .record-status-assigned {
-    color: var(--color-ink-soft);
   }
 
   .record-story-link {
