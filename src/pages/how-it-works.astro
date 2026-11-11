@@ -101,49 +101,49 @@ import Base from "../layouts/Base.astro";
         role="region"
         aria-label="Selling comparison table"
       >
-        <table>
+        <table role="table">
           <caption class="sr-only">
             Comparison of selling to Hendrix Ventures Group versus listing
             with an agent
           </caption>
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Sell to us</th>
-              <th scope="col">List with an agent</th>
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col" role="columnheader"></th>
+              <th scope="col" role="columnheader">Sell to us</th>
+              <th scope="col" role="columnheader">List with an agent</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Likely price</th>
-              <td>A certain, written number — built for speed and simplicity</td>
-              <td><strong>Usually the most money</strong> if the house shows
+          <tbody role="rowgroup">
+            <tr role="row">
+              <th scope="row" role="rowheader">Likely price</th>
+              <td role="cell" data-label="Sell to us">A certain, written number — built for speed and simplicity</td>
+              <td role="cell" data-label="List with an agent"><strong>Usually the most money</strong> if the house shows
                 well and you can wait</td>
             </tr>
-            <tr>
-              <th scope="row">Repairs &amp; cleanout</th>
-              <td>None — we buy as-is, leave what you don't want</td>
-              <td>Typically needed before showings</td>
+            <tr role="row">
+              <th scope="row" role="rowheader">Repairs &amp; cleanout</th>
+              <td role="cell" data-label="Sell to us">None — we buy as-is, leave what you don't want</td>
+              <td role="cell" data-label="List with an agent">Typically needed before showings</td>
             </tr>
-            <tr>
-              <th scope="row">Commissions &amp; fees</th>
-              <td>None</td>
-              <td>Commonly around 5–6% plus concessions</td>
+            <tr role="row">
+              <th scope="row" role="rowheader">Commissions &amp; fees</th>
+              <td role="cell" data-label="Sell to us">None</td>
+              <td role="cell" data-label="List with an agent">Commonly around 5–6% plus concessions</td>
             </tr>
-            <tr>
-              <th scope="row">Showings</th>
-              <td>One walkthrough</td>
-              <td>Ongoing until it sells</td>
+            <tr role="row">
+              <th scope="row" role="rowheader">Showings</th>
+              <td role="cell" data-label="Sell to us">One walkthrough</td>
+              <td role="cell" data-label="List with an agent">Ongoing until it sells</td>
             </tr>
-            <tr>
-              <th scope="row">Timeline</th>
-              <td>You pick the date — days or months</td>
-              <td>Often 1–3+ months, plus buyer financing time</td>
+            <tr role="row">
+              <th scope="row" role="rowheader">Timeline</th>
+              <td role="cell" data-label="Sell to us">You pick the date — days or months</td>
+              <td role="cell" data-label="List with an agent">Often 1–3+ months, plus buyer financing time</td>
             </tr>
-            <tr>
-              <th scope="row">Certainty</th>
-              <td>Written offer; the number doesn't change at the table</td>
-              <td>Buyer financing and inspections can reopen or end the deal</td>
+            <tr role="row">
+              <th scope="row" role="rowheader">Certainty</th>
+              <td role="cell" data-label="Sell to us">Written offer; the number doesn't change at the table</td>
+              <td role="cell" data-label="List with an agent">Buyer financing and inspections can reopen or end the deal</td>
             </tr>
           </tbody>
         </table>
@@ -217,6 +217,7 @@ import Base from "../layouts/Base.astro";
   .table-scroll {
     overflow-x: auto;
   }
+
   table {
     border-collapse: collapse;
     width: 100%;
@@ -242,6 +243,65 @@ import Base from "../layouts/Base.astro";
     font-weight: 600;
     white-space: nowrap;
   }
+
+  /* Three columns cannot be read at phone width. Each row becomes its label
+     over the two answers side by side, each answer carrying its column name.
+     The table/row/cell roles in the markup keep it a table for screen
+     readers, which otherwise drop the semantics once display changes. */
+  @media (max-width: 640px) {
+    table,
+    tbody {
+      display: block;
+    }
+
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    tbody tr {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--color-line);
+    }
+
+    tbody tr:last-child {
+      border-bottom: 0;
+    }
+
+    tbody th,
+    tbody td {
+      border-bottom: 0;
+      padding-inline: var(--space-3);
+    }
+
+    tbody th {
+      grid-column: 1 / -1;
+      padding-bottom: 0;
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      color: var(--color-ink);
+      white-space: normal;
+    }
+
+    tbody td::before {
+      /* The second value gives the label empty alt text where supported, so
+         it is not read out on top of the real column header. */
+      content: attr(data-label);
+      content: attr(data-label) / "";
+      display: block;
+      margin-bottom: var(--space-1);
+      font-size: 0.6875rem;
+      font-weight: 650;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--color-ink-soft);
+    }
+  }
+
   .compare-honesty {
     max-width: 56rem;
     margin-top: var(--space-5);
@@ -254,11 +314,6 @@ import Base from "../layouts/Base.astro";
   }
   .hiw-cta {
     padding-block: var(--space-7) var(--space-8);
-  }
-  .cta-row {
-    display: flex;
-    gap: var(--space-4);
-    flex-wrap: wrap;
   }
   .sr-only {
     position: absolute;

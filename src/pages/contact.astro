@@ -79,6 +79,12 @@ import Base from "../layouts/Base.astro";
     color: var(--color-ink);
     overflow-wrap: anywhere;
   }
+  /* Sized so the email address stays on one line down to a 320px phone */
+  @media (max-width: 480px) {
+    .contact-big {
+      font-size: min(var(--text-xl), 5.6vw);
+    }
+  }
   .contact-big:hover {
     color: var(--color-brand);
   }

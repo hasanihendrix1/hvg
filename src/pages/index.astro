@@ -3,13 +3,20 @@ import Base from "../layouts/Base.astro";
 import VideoCard from "../components/VideoCard.astro";
 import { Image } from "astro:assets";
 import headshot from "../assets/hasani-headshot.jpg";
-import { fetchDeals, quarterLabel } from "../data/deals";
+import closingPhoto from "../assets/seller-closing.jpg";
+import { fetchDeals, formatAddress, quarterLabel } from "../data/deals";
 import { testimonials, videoSchema } from "../data/testimonials";
 
 // ⚑ purchase count pending owner verification of the displayable
 // transaction set (plan §16.2) — sourced live from the Sanity deal records.
 const deals = await fetchDeals();
-const galleryDeals = deals.filter((d) => d.image).slice(0, 6);
+// Six fills the grid at both its widths (3 across, 2 across) with no orphans.
+const galleryDeals = deals
+  .filter((d) => d.image)
+  .slice(0, 6)
+  .map((d) => ({ ...d, place: formatAddress(d.address) }));
+const galleryPhoto = (image: string, width: number) =>
+  `${image}?w=${width}&h=${Math.round((width * 9) / 16)}&fit=crop&auto=format`;
 const featured = testimonials[0];
 const moreStories = testimonials.slice(1);
 const site = Astro.site?.href ?? "https://hendrixventures.com/";
@@ -57,6 +64,20 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
           <li>You pick the closing date</li>
         </ul>
       </div>
+      <figure class="hero-figure">
+        <Image
+          src={closingPhoto}
+          alt="Hasani Hendrix shaking hands with a seller across the closing table"
+          widths={[520, 780, 1040]}
+          sizes="(min-width: 1140px) 520px, (min-width: 960px) 46vw, calc(100vw - 3rem)"
+          loading="eager"
+          class="hero-photo"
+        />
+        <figcaption>
+          Hasani with Mike at his closing — a Monday phone call, closed that
+          Thursday. <a href="#seller-story">Hear it from Mike</a>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
@@ -73,7 +94,7 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
   </section>
 
   <!-- 2b. FEATURED SELLER STORY -->
-  <section class="featured-story">
+  <section class="featured-story" id="seller-story">
     <div class="container featured-story-grid">
       <div class="featured-story-copy">
         <h2>Don't take our word for it</h2>
@@ -125,7 +146,7 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
 
   <!-- 4. IN GOOD HANDS -->
   <section class="economics">
-    <div class="container-narrow">
+    <div class="container split-grid">
       <h2>You're in good hands here</h2>
       <ul class="hands-list" role="list">
         <li>
@@ -155,15 +176,15 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
 
   <!-- 5. FOUNDER NOTE -->
   <section class="founder">
-    <div class="container-narrow founder-grid">
+    <div class="container split-grid founder-grid">
       <Image
         src={headshot}
         alt="Hasani Hendrix, owner of Hendrix Ventures Group"
-        width={280}
+        width={340}
         densities={[1, 2]}
         class="founder-photo"
       />
-      <div>
+      <div class="founder-note">
       <h2>You'll talk to me, not a call center</h2>
       <p>
         I'm Hasani Hendrix. I've been buying Georgia houses since 2020 —
@@ -179,23 +200,26 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     </div>
   </section>
 
-  <!-- 5b. RECENT PURCHASES GALLERY -->
+  <!-- 5b. PURCHASES GALLERY -->
   <section class="gallery">
     <div class="container">
-      <h2>Recent purchases</h2>
+      <h2>Houses we've bought</h2>
       <ul class="gallery-grid" role="list">
         {
           galleryDeals.map((deal) => (
             <li class="gallery-card">
               <img
-                src={`${deal.image}?w=480&fit=max&auto=format`}
-                alt={`Property at ${deal.address}`}
-                width="480"
-                height="270"
+                src={galleryPhoto(deal.image!, 720)}
+                srcset={`${galleryPhoto(deal.image!, 360)} 360w, ${galleryPhoto(deal.image!, 720)} 720w`}
+                sizes="(min-width: 1140px) 350px, (min-width: 700px) 31vw, 46vw"
+                alt={`Property at ${deal.place.full}`}
+                width="720"
+                height="405"
                 loading="lazy"
               />
+              <p class="gallery-street">{deal.place.street}</p>
               <p class="gallery-meta">
-                {deal.address.split(",")[0]} ·{" "}
+                {deal.place.city && `${deal.place.city} · `}
                 <span class="stat">{quarterLabel(deal.timestamp)}</span>
               </p>
             </li>
@@ -218,17 +242,19 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
 
   <!-- 6. FINAL CTA -->
   <section class="final-cta">
-    <div class="container-narrow">
-      <h2>Get your no-obligation cash offer</h2>
-      <p>
-        Free, in writing, and it expires on your schedule — not ours. Say no
-        by text if you'd rather not have the conversation.
-      </p>
-      <div class="hero-actions">
-        <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
-        <a href="tel:+16787105786" class="btn btn-secondary"
-          >Call or text (678) 710-5786</a
-        >
+    <div class="container">
+      <div class="final-cta-card">
+        <h2>Get your no&#8209;obligation cash offer</h2>
+        <p>
+          Free, in writing, and it expires on your schedule — not ours. Say no
+          by text if you'd rather not have the conversation.
+        </p>
+        <div class="cta-row">
+          <a href="/get-offer" class="btn btn-primary">Get my cash offer</a>
+          <a href="tel:+16787105786" class="btn btn-secondary"
+            >Call or text (678) 710-5786</a
+          >
+        </div>
       </div>
     </div>
   </section>
@@ -239,21 +265,62 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     padding-block: var(--space-8) var(--space-7);
   }
 
+  /* Phones: the address field has to land on the first screen, above the
+     sticky bar. Less air on top and a headline that sets in three lines. */
+  @media (max-width: 560px) {
+    .hero {
+      padding-top: var(--space-6);
+    }
+
+    .hero h1 {
+      font-size: 2.125rem;
+    }
+
+    .hero-quickstart button {
+      width: 100%;
+    }
+  }
+
+  .hero-grid {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    }
+  }
+
   .hero-copy {
     max-width: 46rem;
+  }
+
+  .hero-figure {
+    margin: 0;
+  }
+
+  .hero-photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow);
+  }
+
+  .hero-figure figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
   }
 
   .hero-sub {
     font-size: var(--text-lg);
     color: var(--color-ink-soft);
     max-width: 54ch;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: var(--space-4);
-    flex-wrap: wrap;
-    margin-block: var(--space-5) var(--space-3);
   }
 
   .hero-quickstart {
@@ -293,9 +360,13 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     color: var(--color-ink-soft);
   }
 
+  .hero-microcopy a {
+    white-space: nowrap;
+  }
+
   .trust-strip {
     display: flex;
-    gap: var(--space-5);
+    gap: var(--space-3) var(--space-5);
     flex-wrap: wrap;
     list-style: none;
     padding: 0;
@@ -322,9 +393,28 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
 
   .process,
   .economics,
-  .founder,
-  .final-cta {
+  .founder {
     padding-block: var(--space-8);
+  }
+
+  /* One column grid for every two-part section, so the right-hand content
+     starts on the same line all the way down the page. */
+  .split-grid,
+  .featured-story-grid {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: var(--space-6);
+  }
+
+  .split-grid {
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .split-grid,
+    .featured-story-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .steps {
@@ -364,7 +454,7 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
 
   .hands-list {
     list-style: none;
-    margin: var(--space-5) 0 0;
+    margin: 0;
     padding: 0;
     display: grid;
     gap: var(--space-4);
@@ -380,38 +470,46 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     padding-block: var(--space-8);
     background: var(--color-surface);
     border-block: 1px solid var(--color-line);
+    /* With the top padding, lands the heading clear of the sticky header
+       (61-69px tall) when the hero caption jumps here */
+    scroll-margin-top: var(--space-5);
   }
 
   .featured-story-grid {
-    display: grid;
-    grid-template-columns: 2fr 3fr;
-    gap: var(--space-6);
     align-items: center;
   }
 
-  @media (max-width: 860px) {
-    .featured-story-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
   .founder-grid {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-6);
-    align-items: start;
-  }
-
-  @media (max-width: 640px) {
-    .founder-grid {
-      grid-template-columns: 1fr;
-    }
+    align-items: center;
   }
 
   .founder-photo {
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-line);
     height: auto;
+  }
+
+  /* Tablet keeps the portrait beside the note; a phone stacks it small so
+     the note is not pushed a full screen down by a dark square. */
+  @media (max-width: 860px) {
+    .founder-grid {
+      grid-template-columns: 200px minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .founder-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+
+    .founder-photo {
+      max-width: 160px;
+    }
+  }
+
+  .founder-note {
+    max-width: 60ch;
   }
 
   .gallery {
@@ -422,11 +520,18 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
 
   .gallery-grid {
     list-style: none;
-    margin: 0 0 var(--space-4);
+    margin: var(--space-5) 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: var(--space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5) var(--space-4);
+  }
+
+  @media (min-width: 700px) {
+    .gallery-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-6) var(--space-5);
+    }
   }
 
   .gallery-card img {
@@ -434,12 +539,20 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     border: 1px solid var(--color-line);
     width: 100%;
     height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .gallery-street {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    margin: var(--space-3) 0 0;
   }
 
   .gallery-meta {
     font-size: var(--text-xs);
     color: var(--color-ink-soft);
-    margin-top: var(--space-2);
+    margin: 0;
   }
 
   .more-stories {
@@ -448,7 +561,7 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
 
   .more-stories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 460px));
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: var(--space-5);
     margin-top: var(--space-5);
   }
@@ -459,7 +572,40 @@ const site = Astro.site?.href ?? "https://hendrixventures.com/";
     color: var(--color-ink);
   }
 
-  .final-cta {
-    text-align: left;
+  /* The footer brings its own space above it (7 on phones, 9 wider); with
+     the stories' padding before it, this evens the card's two margins. */
+  @media (min-width: 861px) {
+    .final-cta {
+      padding-top: var(--space-6);
+    }
+  }
+
+  .final-cta-card {
+    background: var(--color-brand-tint);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8) var(--space-5);
+    text-align: center;
+  }
+
+  .final-cta-card p {
+    color: var(--color-ink-soft);
+    max-width: 52ch;
+    margin-inline: auto;
+  }
+
+  .final-cta-card .cta-row {
+    justify-content: center;
+    margin-top: var(--space-5);
+  }
+
+  .final-cta-card .btn-secondary {
+    background: var(--color-surface);
+  }
+
+  @media (max-width: 560px) {
+    .final-cta-card {
+      padding: var(--space-7) var(--space-5);
+    }
   }
 </style>

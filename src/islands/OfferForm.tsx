@@ -73,7 +73,14 @@ export default function OfferForm() {
     const preset = new URLSearchParams(window.location.search).get("address");
     if (preset && preset.trim()) {
       setAddress(preset.trim());
+      return;
     }
+    // Typed or autofilled before hydration, an address is on screen but not
+    // in state, and the first re-render would wipe it; adopt it instead.
+    const typed = (
+      document.getElementById(`${uid}-address`) as HTMLInputElement | null
+    )?.value;
+    if (typed) setAddress(typed);
   }, []);
 
   const onFirstInteraction = () => {

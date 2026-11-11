@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../styles/investor.css";
+import { formatAddress } from "../data/deals";
 
 interface Deal {
   _id: string;
@@ -171,13 +172,14 @@ export default function InvestorInventory() {
           {shown.flatMap((deal, i) => {
             const details = formatDetails(deal);
             const price = formatPrice(deal.price);
+            const address = formatAddress(deal.address).full;
             const card = (
               <li key={deal._id} className="inv-card">
                 <div className="inv-media">
                   {deal.image ? (
                     <img
                       src={`${deal.image}?w=640&fit=max&auto=format`}
-                      alt={`Property at ${deal.address}`}
+                      alt={`Property at ${address}`}
                       width={640}
                       height={427}
                       loading="lazy"
@@ -195,7 +197,7 @@ export default function InvestorInventory() {
                 </div>
                 <div className="inv-card-body">
                   {price && <p className="inv-price">{price}</p>}
-                  <p className="inv-address">{deal.address}</p>
+                  <p className="inv-address">{address}</p>
                   {details.length > 0 && (
                     <p className="inv-details">
                       {details.map((part, j) => (
@@ -223,7 +225,7 @@ export default function InvestorInventory() {
                         Photos &amp; media
                         <span className="sr-only">
                           {" "}
-                          for {deal.address} (opens in a new tab)
+                          for {address} (opens in a new tab)
                         </span>
                         <span className="inv-ext" aria-hidden="true">
                           ↗

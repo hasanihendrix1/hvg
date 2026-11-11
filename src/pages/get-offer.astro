@@ -10,12 +10,15 @@ import OfferForm from "../islands/OfferForm";
 >
   <section class="offer-page">
     <div class="container offer-layout">
-      <div class="offer-intro">
+      <div class="offer-head">
         <h1>Get your cash offer</h1>
         <p class="offer-lede">
           Two minutes, two steps. No obligation, no fees, and your information
           stays private — we only use it to talk to you about this house.
         </p>
+      </div>
+      <div class="offer-slot"><OfferForm client:load /></div>
+      <div class="offer-next">
         <ul class="offer-expectations" role="list">
           <li><strong>1.</strong> Tell us the address and how to reach you</li>
           <li>
@@ -31,7 +34,6 @@ import OfferForm from "../islands/OfferForm";
           <a href="tel:+16787105786">Call or text Hasani: (678) 710-5786</a>
         </p>
       </div>
-      <OfferForm client:load />
     </div>
   </section>
 </Base>
@@ -41,17 +43,24 @@ import OfferForm from "../islands/OfferForm";
     padding-block: var(--space-7) var(--space-8);
   }
 
+  /* Source order is headline, form, what-happens-next: that is the phone
+     layout as written. Wider screens lift the form into its own column. */
   .offer-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-7);
-    align-items: start;
+    gap: var(--space-5);
   }
 
-  @media (max-width: 860px) {
+  @media (min-width: 861px) {
     .offer-layout {
-      grid-template-columns: 1fr;
-      gap: var(--space-5);
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 0 var(--space-7);
+      align-items: start;
+    }
+
+    .offer-slot {
+      grid-column: 2;
+      grid-row: 1 / span 2;
     }
   }
 
@@ -64,7 +73,7 @@ import OfferForm from "../islands/OfferForm";
   .offer-expectations {
     list-style: none;
     padding: 0;
-    margin: var(--space-5) 0;
+    margin: var(--space-4) 0 var(--space-5);
     display: grid;
     gap: var(--space-3);
     color: var(--color-ink-soft);
