@@ -73,7 +73,14 @@ export default function OfferForm() {
     const preset = new URLSearchParams(window.location.search).get("address");
     if (preset && preset.trim()) {
       setAddress(preset.trim());
+      return;
     }
+    // Typed or autofilled before hydration, an address is on screen but not
+    // in state, and the first re-render would wipe it; adopt it instead.
+    const typed = (
+      document.getElementById(`${uid}-address`) as HTMLInputElement | null
+    )?.value;
+    if (typed) setAddress(typed);
   }, []);
 
   const onFirstInteraction = () => {
@@ -106,14 +113,19 @@ export default function OfferForm() {
     }
   };
 
-  const handleStep1 = (e: React.FormEvent) => {
+  const handleStep1 = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!address.trim()) {
+    // Pressed in the instant the form hydrates, this runs before the effect
+    // above has adopted pre-hydration typing: the box has it, state does not.
+    const field = e.currentTarget.elements.namedItem("address");
+    const typed = address || (field as HTMLInputElement | null)?.value || "";
+    if (!typed.trim()) {
       setFieldError("Please enter the property address.");
       return;
     }
+    setAddress(typed);
     setFieldError("");
-    sendPartial(address.trim());
+    sendPartial(typed.trim());
     track("step1_complete");
     setStep(2);
   };

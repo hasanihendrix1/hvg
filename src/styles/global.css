@@ -156,6 +156,20 @@ img {
   color: var(--color-ink);
 }
 
+/* A pair of actions closing a section. On a phone the two labels differ too
+   much in length to sit as a ragged pair, so each takes the full width. */
+.cta-row {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .cta-row .btn {
+    flex: 1 1 100%;
+  }
+}
+
 /* Legal pages (/privacy, /terms, /sms-terms, /text-consent, /accessibility).
    Lived in privacy.astro, which shipped it to /privacy only. */
 .legal {

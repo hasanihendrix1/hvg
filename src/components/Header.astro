@@ -9,7 +9,9 @@ const nav = [
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
 ];
-const current = Astro.url.pathname;
+// Built pages are served as "/about/"; the hrefs above have no trailing slash.
+const current = Astro.url.pathname.replace(/(.)\/$/, "$1");
+const ariaCurrent = (href: string) => (current === href ? "page" : undefined);
 ---
 
 <header class="site-header">
@@ -18,15 +20,12 @@ const current = Astro.url.pathname;
       <Logo size={36} />
       <span class="wordmark-text">Hendrix <span>Ventures Group</span></span>
     </a>
-    <nav aria-label="Main">
+    <nav aria-label="Main" class="site-nav">
       <ul>
         {
           nav.map((item) => (
             <li>
-              <a
-                href={item.href}
-                aria-current={current === item.href ? "page" : undefined}
-              >
+              <a href={item.href} aria-current={ariaCurrent(item.href)}>
                 {item.label}
               </a>
             </li>
@@ -37,6 +36,40 @@ const current = Astro.url.pathname;
     <div class="header-actions">
       <a href="tel:+16787105786" class="header-phone">(678) 710-5786</a>
       <a href="/get-offer" class="btn btn-primary header-cta">Get my offer</a>
+      <!-- The same links for every width they don't fit inline. A native
+           disclosure, so it opens with no script; the script below only adds
+           the ways people expect to close one. -->
+      <details class="site-menu">
+        <summary>
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path class="menu-bars" d="M4 7h16M4 12h16M4 17h16"></path>
+            <path class="menu-cross" d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+          <span class="menu-label">Menu</span>
+        </summary>
+        <nav aria-label="Main" class="site-menu-panel">
+          <ul role="list">
+            {
+              nav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={ariaCurrent(item.href)}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </details>
     </div>
   </div>
 </header>
@@ -73,20 +106,11 @@ const current = Astro.url.pathname;
     color: var(--color-brand);
   }
 
-  /* Under ~480px the mark carries the identity alone — the full name plus a
-     phone and a CTA cannot share one row without the header wrapping (the
-     overflow this header was already fixed for once). */
-  @media (max-width: 480px) {
-    .wordmark-text {
-      display: none;
-    }
-  }
-
-  nav {
+  .site-nav {
     flex: 1;
   }
 
-  nav ul {
+  .site-nav ul {
     display: flex;
     gap: var(--space-4);
     list-style: none;
@@ -95,15 +119,15 @@ const current = Astro.url.pathname;
     flex-wrap: wrap;
   }
 
-  nav a {
+  .site-nav a {
     color: var(--color-ink-soft);
     text-decoration: none;
     font-size: var(--text-sm);
     font-weight: 500;
   }
 
-  nav a:hover,
-  nav a[aria-current="page"] {
+  .site-nav a:hover,
+  .site-nav a[aria-current="page"] {
     color: var(--color-ink);
   }
 
@@ -127,30 +151,191 @@ const current = Astro.url.pathname;
     font-size: var(--text-sm);
   }
 
-  /* Mobile: nav collapses; the sticky bottom bar carries the actions */
-  @media (max-width: 860px) {
-    nav {
+  .site-menu {
+    display: none;
+  }
+
+  .site-menu summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding-inline: var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-ink);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .site-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-menu[open] summary {
+    border-color: var(--color-ink-soft);
+  }
+
+  .menu-cross,
+  .site-menu[open] .menu-bars {
+    display: none;
+  }
+
+  .site-menu[open] .menu-cross {
+    display: inline;
+  }
+
+  /* Phones: a sheet the full width of the header, hanging from its edge. */
+  .site-menu-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+    box-shadow: var(--shadow);
+  }
+
+  .site-menu-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: var(--space-2) var(--space-5);
+  }
+
+  .site-menu-panel li + li {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .site-menu-panel a {
+    display: block;
+    padding-block: var(--space-3);
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .site-menu-panel a[aria-current="page"] {
+    color: var(--color-brand);
+  }
+
+  /* The five links need about 1120px beside the wordmark, phone and button.
+     Short of that they used to wrap and the sticky header grew to 95-139px. */
+  @media (max-width: 1179px) {
+    .site-nav {
       display: none;
     }
-    .header-cta {
-      display: none;
+
+    .site-menu {
+      display: block;
     }
+
     .header-inner {
       justify-content: space-between;
     }
   }
 
-  /* Small phones: shrink the two remaining items so nothing overflows */
-  @media (max-width: 480px) {
+  /* The sticky bottom bar carries "Get my offer" from here down. Tighter
+     padding keeps the header at 61px now that the 44px menu button sets its
+     height. */
+  @media (max-width: 860px) {
+    .header-cta {
+      display: none;
+    }
+
     .header-inner {
+      padding-block: var(--space-2);
+    }
+
+    /* A phone held sideways is shorter than the open menu, and the bottom
+       bar sits over whatever reaches it. Stop above the bar and scroll
+       inside instead: 8.5rem is this header plus the bar, and the bar grows
+       by the home-indicator inset on notched phones. */
+    .site-menu-panel {
+      max-height: calc(100vh - 8.5rem - env(safe-area-inset-bottom, 0px));
+      max-height: calc(100dvh - 8.5rem - env(safe-area-inset-bottom, 0px));
+      overflow-y: auto;
+    }
+  }
+
+  /* Room to spare: the sheet becomes a card under the button instead. */
+  @media (min-width: 640px) {
+    .site-menu {
+      position: relative;
+    }
+
+    .site-menu-panel {
+      top: calc(100% + var(--space-2));
+      left: auto;
+      right: 0;
+      width: 17rem;
+      border: 1px solid var(--color-line);
+      border-radius: var(--radius-lg);
+    }
+  }
+
+  /* Under 640px the mark carries the identity alone — the full name, the
+     phone and the menu button cannot share one row. */
+  @media (max-width: 639px) {
+    .wordmark-text {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header-inner,
+    .header-actions {
       gap: var(--space-3);
+    }
+
+    /* If it ever fails to fit, a second row beats a page that scrolls
+       sideways. */
+    .header-inner {
       flex-wrap: wrap;
     }
-    .wordmark {
-      font-size: var(--text-base);
-    }
+
     .header-phone {
       font-size: var(--text-sm);
     }
   }
+
+  /* The narrowest phones: the icon alone, the word kept for screen readers */
+  @media (max-width: 349px) {
+    .menu-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+  }
 </style>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>(".site-menu");
+  if (menu) {
+    document.addEventListener("click", (event) => {
+      if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && menu.open) {
+        menu.open = false;
+        menu.querySelector("summary")?.focus();
+      }
+    });
+    // Tabbing past the last link would otherwise leave the menu open over
+    // the page behind the reader.
+    menu.addEventListener("focusout", (event) => {
+      const next = event.relatedTarget as Node | null;
+      if (next && !menu.contains(next)) menu.open = false;
+    });
+    // Coming back with the browser's Back button restores the page as it was
+    // left, menu open and all.
+    window.addEventListener("pageshow", () => {
+      menu.open = false;
+    });
+  }
+</script>

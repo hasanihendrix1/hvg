@@ -1,10 +1,14 @@
 ---
 import Base from "../layouts/Base.astro";
 import VideoCard from "../components/VideoCard.astro";
-import { fetchDeals, quarterLabel } from "../data/deals";
+import StatusTag from "../components/StatusTag.astro";
+import { fetchDeals, formatAddress, quarterLabel } from "../data/deals";
 import { testimonials, videoSchema } from "../data/testimonials";
 
-const deals = await fetchDeals();
+const deals = (await fetchDeals()).map((d) => ({
+  ...d,
+  place: formatAddress(d.address),
+}));
 const site = Astro.site?.href ?? "https://hendrixventures.com/";
 const schemas = testimonials.map((t) => videoSchema(t, site));
 
@@ -50,7 +54,7 @@ const hasStory = (address: string) =>
               {deal.image ? (
                 <img
                   src={`${deal.image}?w=640&fit=max&auto=format`}
-                  alt={`Property at ${deal.address}`}
+                  alt={`Property at ${deal.place.full}`}
                   width="640"
                   height="360"
                   loading="lazy"
@@ -59,11 +63,14 @@ const hasStory = (address: string) =>
                 <div class="record-noimage" aria-hidden="true" />
               )}
               <div class="record-card-body">
-                <p class="record-address">{deal.address}</p>
+                <p class="record-address">
+                  {deal.place.street}
+                  {deal.place.locality && (
+                    <span class="record-locality">{deal.place.locality}</span>
+                  )}
+                </p>
                 <p class="record-meta">
-                  <span class={`record-status record-status-${deal.status?.toLowerCase()}`}>
-                    {deal.status}
-                  </span>
+                  <StatusTag status={deal.status} />
                   <span class="stat">{quarterLabel(deal.timestamp)}</span>
                   {hasStory(deal.address) && (
                     <a href="#seller-stories" class="record-story-link">
@@ -150,6 +157,12 @@ const hasStory = (address: string) =>
     margin-bottom: var(--space-2);
   }
 
+  .record-locality {
+    display: block;
+    font-weight: 400;
+    color: var(--color-ink-soft);
+  }
+
   .record-meta {
     display: flex;
     align-items: center;
@@ -160,25 +173,42 @@ const hasStory = (address: string) =>
     flex-wrap: wrap;
   }
 
-  .record-status {
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: 650;
-    padding: 0.15em 0.6em;
-    border-radius: 999px;
-    border: 1px solid var(--color-line);
-  }
-
-  .record-status-sold {
-    color: var(--color-success);
-  }
-
-  .record-status-assigned {
-    color: var(--color-ink-soft);
-  }
-
   .record-story-link {
     margin-left: auto;
+  }
+
+  /* Phones: a photo-left row per house, so the whole record is a few
+     screens rather than ten and the seller videos below it get reached. */
+  @media (max-width: 560px) {
+    .record-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
+
+    .record-card {
+      display: grid;
+      grid-template-columns: 38% minmax(0, 1fr);
+    }
+
+    .record-card img,
+    .record-noimage {
+      height: 100%;
+      aspect-ratio: 4 / 3;
+    }
+
+    .record-card-body {
+      align-self: center;
+      padding: var(--space-3);
+    }
+
+    .record-meta {
+      gap: var(--space-2);
+    }
+
+    .record-story-link {
+      margin-left: 0;
+      flex-basis: 100%;
+    }
   }
 
   .stories {
