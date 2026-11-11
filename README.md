@@ -71,4 +71,6 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ## TODO
 
-- **Investor texting.** The buyer-list signup (`src/islands/BuyerSignup.tsx`) asks for calls and email only, since 2026-10-05, so the site carries a single texting program: the homeowner A2P campaign. Before texting buyers, register a separate A2P campaign for investor inventory. It runs on the same approved brand and needs its own opt-in box and SMS terms. Then add "texts" back to the signup.
+- **Investor texting.** The buyer-list signup (`src/islands/BuyerSignup.tsx`) has the investor deal-texts opt-in (an optional box, its own wording and version in `src/data/consent.ts`), with `/investor-text-consent`, `/privacy` and `/sms-terms` describing it. Still to do before that A2P campaign is submitted (dotato `docs/a2p-buyer-campaign-draft.md`, https://linear.app/hendrixventures/issue/DOT-492):
+  - Once the buyer line is bought and answers DEALS, set `BUYER_LINE_E164` in `src/data/consent.ts`. That turns on "Or text DEALS to …" on `/investors` and the DEALS sections of the investor pages. Before setting it, confirm that every claim those sections make is true: calls come from the buyer line, the call and voicemail script, and the one-to-one email's exact wording (`/investor-text-consent`).
+  - Then re-shoot `public/investor-text-consent-form.webp` from the live form, so the screenshot shows the DEALS line too.

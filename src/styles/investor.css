@@ -463,7 +463,7 @@
   font-size: var(--text-xs);
   color: var(--color-ink-soft);
   line-height: 1.6;
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-3);
   cursor: pointer;
 }
 
@@ -473,6 +473,24 @@
   width: 1.125rem;
   height: 1.125rem;
   accent-color: var(--color-brand);
+}
+
+/* The optional texting box sits tight above its links. */
+.buyer-consent-texts {
+  margin-bottom: var(--space-2);
+}
+
+.buyer-consent-links {
+  font-size: var(--text-xs);
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+  margin: 0 0 var(--space-5);
+  /* Lines up with the box's text: checkbox width + the label's gap. */
+  padding-left: calc(1.125rem + var(--space-3));
+}
+
+.buyer-line {
+  white-space: nowrap;
 }
 
 .buyer-form .btn[type="submit"] {

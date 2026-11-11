@@ -21,10 +21,12 @@ const { variant = "seller" } = Astro.props;
       </>
     ) : (
       <>
+        {/* ⚖ Call only: investors opt in to texts on the buyer list, never
+            by texting the homeowner line. */}
         <a href="tel:+16787105786" class="btn btn-secondary bar-a">
-          Call or text
+          Call
         </a>
-        <a href="#buyer-list" class="btn btn-primary bar-b">
+        <a href="/investors#buyer-list" class="btn btn-primary bar-b">
           Join the buyer list
         </a>
       </>

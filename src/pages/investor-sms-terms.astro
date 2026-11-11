@@ -1,0 +1,85 @@
+---
+import Base from "../layouts/Base.astro";
+import { BUYER_LINE } from "../data/consent";
+// ⚖ ATTORNEY REVIEW BEFORE LAUNCH (plan §12.1). The investor deal-texts A2P
+// 10DLC campaign's terms. Buyer-only on purpose: that campaign cites the
+// investor pages, and the homeowner campaign keeps /sms-terms. Written to
+// match the optional box in src/data/consent.ts (BUYER_TEXT_CONSENT_VERSION),
+// newBuyer.js and /investor-text-consent.
+---
+
+<Base
+  title="Investor SMS Terms | Hendrix Ventures Group"
+  description="Hendrix Ventures Group LLC's investor deal texts: what you'll receive, message frequency, rates, and how to opt out at any time."
+  path="/investor-sms-terms"
+  sticky="investor"
+>
+  <section class="legal">
+    <div class="container-narrow">
+      <h1>Investor SMS Terms</h1>
+      <p class="legal-effective">Effective November 10, 2026</p>
+
+      <h2>The program</h2>
+      <p>
+        Hendrix Ventures Group LLC texts real estate investors who opt in:
+        alerts about investment properties we have available (area, size,
+        condition and price), and updates on deals you respond to, such as
+        walkthrough times, the status of your offer and next steps to close.
+        Deal alerts are promotional texts. We send them only to investors who
+        opt in, and we never text numbers from purchased or third-party lists.
+      </p>
+
+      <h2>How you opt in</h2>
+      <p>
+        Check the optional texting box when you join our buyer list at
+        <a href="/investors">hendrixventures.com/investors</a>{
+          // One line on purpose: Astro renders line breaks inside a fragment.
+          BUYER_LINE && (
+            <>, or text <strong>DEALS</strong> to our buyer line, <a href={BUYER_LINE.sms} style="white-space: nowrap">{BUYER_LINE.display}</a></>
+          )
+        }. The box is unchecked until you check it. Texts are optional and not
+        required to join the buyer list. Your first text confirms that you
+        opted in. See
+        <a href="/investor-text-consent">how investors agree to texts</a>, word
+        for word.
+      </p>
+
+      <h2>The fine print that matters</h2>
+      <ul>
+        <li>Message frequency varies. Message and data rates may apply.</li>
+        <li>
+          Reply <strong>STOP</strong> at any time to stop receiving texts. We
+          honor it promptly, and you may receive one final message confirming
+          the opt-out. Reply <strong>START</strong> to opt back in.
+        </li>
+        <li>Reply <strong>HELP</strong> for help, or contact us below.</li>
+        <li>
+          You can also opt out or change preferences any time by emailing
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >
+          or calling <a href="tel:+16787105786">(678) 710-5786</a>.
+        </li>
+        <li>
+          Carriers are not liable for delayed or undelivered messages.
+        </li>
+        <li>
+          No mobile telephone numbers or SMS consent information are shared
+          with third parties or affiliates for marketing or promotional
+          purposes. See our
+          <a href="/investor-privacy">Investor Privacy Notice</a>.
+        </li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p>
+        Hendrix Ventures Group LLC · 1700 Northside Dr NW, Suite A7 #813,
+        Atlanta, GA 30318 ·
+        <a href="tel:+16787105786">(678) 710-5786</a> ·
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+      </p>
+    </div>
+  </section>
+</Base>
