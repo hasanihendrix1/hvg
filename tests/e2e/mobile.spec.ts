@@ -65,8 +65,8 @@ test("sticky bar never covers the last interactive element", async ({
   }
 });
 
-// Below the width where the header's links fit, they sat behind nothing: the
-// only way to another page was the footer.
+// Below the width where the header's links fit, the menu is the only way to
+// another page short of the footer.
 const MENU_LINKS = [
   "How It Works",
   "Houses We've Bought",

@@ -176,3 +176,39 @@ test("an address typed before the form hydrates is kept", async ({ page }) => {
     address: "77 Early Bird Ln, Atlanta, GA",
   });
 });
+
+// The narrowest gap: the button is pressed in the same instant the form
+// hydrates, before its first effects have run.
+test("a press the instant the form hydrates still keeps the address", async ({
+  page,
+}) => {
+  let release!: () => void;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route("**/_astro/OfferForm*.js", async (route) => {
+    await held;
+    await route.continue();
+  });
+  const submissions: any[] = [];
+  await page.route("**/.netlify/functions/submit-lead", async (route) => {
+    submissions.push(route.request().postDataJSON());
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+
+  await page.goto("/get-offer/", { waitUntil: "domcontentloaded" });
+  await page.getByLabel("Property address").fill("78 Quick Draw Ct, Atlanta, GA");
+  await page.evaluate(() => {
+    const island = document.querySelector("astro-island:has(.offer-form)")!;
+    new MutationObserver((_, observer) => {
+      if (island.hasAttribute("ssr")) return;
+      observer.disconnect();
+      island.querySelector<HTMLButtonElement>("button[type=submit]")!.click();
+    }).observe(island, { attributes: true, attributeFilter: ["ssr"] });
+  });
+  release();
+
+  await expect(page.getByRole("heading", { name: /Almost done/ })).toBeVisible();
+  expect(submissions[0]).toMatchObject({
+    stage: "partial",
+    address: "78 Quick Draw Ct, Atlanta, GA",
+  });
+});

@@ -104,3 +104,27 @@ test.each([[undefined], [null], [""]])("a missing address (%s) is empty, not a c
     full: "",
   });
 });
+
+// "St" ends a street and starts a city ("St Louis", "St. Marys"); after
+// another street word it is the city's, and the split is too unclear to make.
+test.each([
+  ["4243 E San Francisco Avenue St Louis, MO 63115", "4243 E San Francisco Avenue St Louis"],
+  ["123 Oak Dr St. Marys, GA 31558", "123 Oak Dr St. Marys"],
+])("%s keeps its saint", (raw, street) => {
+  expect(formatAddress(raw)).toMatchObject({ street, city: "" });
+});
+
+test.each([
+  ["100 Main St Unit B Atlanta, GA 30303", "100 Main St Unit B Atlanta"],
+  ["100 Main St, Ste 200 Atlanta, GA 30303", "100 Main St, Ste 200 Atlanta"],
+  ["123 Main St NE, GA 30303", "123 Main St NE"],
+])("%s is not given a unit or a compass point as its city", (raw, street) => {
+  expect(formatAddress(raw)).toMatchObject({ street, city: "" });
+});
+
+test("a city named for a saint still splits when the comma says where", () => {
+  expect(formatAddress("4243 E San Francisco Ave, St Louis, MO 63115")).toMatchObject({
+    street: "4243 E San Francisco Ave",
+    city: "St Louis",
+  });
+});

@@ -250,11 +250,12 @@ const ariaCurrent = (href: string) => (current === href ? "page" : undefined);
     }
 
     /* A phone held sideways is shorter than the open menu, and the bottom
-       bar (about 72px) sits over whatever reaches it. Stop above the bar and
-       scroll inside instead. 8.5rem = this header + that bar. */
+       bar sits over whatever reaches it. Stop above the bar and scroll
+       inside instead: 8.5rem is this header plus the bar, and the bar grows
+       by the home-indicator inset on notched phones. */
     .site-menu-panel {
-      max-height: calc(100vh - 8.5rem);
-      max-height: calc(100dvh - 8.5rem);
+      max-height: calc(100vh - 8.5rem - env(safe-area-inset-bottom, 0px));
+      max-height: calc(100dvh - 8.5rem - env(safe-area-inset-bottom, 0px));
       overflow-y: auto;
     }
   }
@@ -290,7 +291,7 @@ const ariaCurrent = (href: string) => (current === href ? "page" : undefined);
     }
 
     /* If it ever fails to fit, a second row beats a page that scrolls
-       sideways (the overflow this header was already fixed for once). */
+       sideways. */
     .header-inner {
       flex-wrap: wrap;
     }
