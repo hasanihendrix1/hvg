@@ -2,8 +2,9 @@ import React, { useId, useState } from "react";
 import "../styles/investor.css";
 import {
   BUYER_CONSENT_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_TEXT,
+  BUYER_DEAL_UPDATES_CONSENT_TEXT,
   BUYER_LINE,
-  BUYER_TEXT_CONSENT_TEXT,
 } from "../data/consent";
 
 // Area code and exchange never start with 0 or 1, so a typo here is caught
@@ -21,7 +22,8 @@ export default function BuyerSignup() {
   const [email, setEmail] = useState("");
   const [buyerType, setBuyerType] = useState("");
   const [consent, setConsent] = useState(false);
-  const [textConsent, setTextConsent] = useState(false);
+  const [dealAlerts, setDealAlerts] = useState(false);
+  const [dealUpdates, setDealUpdates] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [fieldError, setFieldError] = useState("");
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -44,7 +46,8 @@ export default function BuyerSignup() {
     const ticked = (name: string) =>
       form.querySelector<HTMLInputElement>(`input[name="${name}"]`)?.checked;
     if (ticked("consentCallsEmail")) setConsent(true);
-    if (ticked("consentTexts")) setTextConsent(true);
+    if (ticked("consentDealAlerts")) setDealAlerts(true);
+    if (ticked("consentDealUpdates")) setDealUpdates(true);
   }, [uid]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,7 +83,8 @@ export default function BuyerSignup() {
           market: "atlanta",
           buyerType,
           consentMarketing: consent,
-          consentTexts: textConsent,
+          consentDealAlerts: dealAlerts,
+          consentDealUpdates: dealUpdates,
           investorLiftScore: 0,
           level: "Potential Buyer",
         }),
@@ -189,17 +193,27 @@ export default function BuyerSignup() {
           <a href="/investor-privacy">Investor Privacy Notice</a>.
         </span>
       </label>
-      {/* ⚖ The investor deal-texts opt-in: optional, unchecked until the
-          buyer ticks it, and never needed to join (A2P 10DLC). Its links go
-          to the investor pages only; the homeowner campaign keeps its own. */}
+      {/* ⚖ The investor deal-texts opt-ins (A2P 10DLC), one box per kind of
+          text (consent.ts says why): each optional, unchecked until the buyer
+          ticks it, and never needed to join. Their links go to the investor
+          pages only; the homeowner campaign keeps its own. */}
+      <label className="buyer-consent">
+        <input
+          type="checkbox"
+          name="consentDealAlerts"
+          checked={dealAlerts}
+          onChange={(e) => setDealAlerts(e.target.checked)}
+        />
+        <span>{BUYER_DEAL_ALERTS_CONSENT_TEXT}</span>
+      </label>
       <label className="buyer-consent buyer-consent-texts">
         <input
           type="checkbox"
-          name="consentTexts"
-          checked={textConsent}
-          onChange={(e) => setTextConsent(e.target.checked)}
+          name="consentDealUpdates"
+          checked={dealUpdates}
+          onChange={(e) => setDealUpdates(e.target.checked)}
         />
-        <span>{BUYER_TEXT_CONSENT_TEXT}</span>
+        <span>{BUYER_DEAL_UPDATES_CONSENT_TEXT}</span>
       </label>
       <p className="buyer-consent-links">
         {BUYER_LINE && (

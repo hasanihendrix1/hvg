@@ -16,7 +16,7 @@ import { BUYER_LINE } from "../data/consent";
   <section class="legal">
     <div class="container-narrow">
       <h1>Investor Privacy Notice</h1>
-      <p class="legal-effective">Effective November 10, 2026</p>
+      <p class="legal-effective">Effective November 11, 2026</p>
       <p>
         This notice covers real estate investors who join our buyer list at
         <a href="/investors">hendrixventures.com/investors</a> or opt in to
@@ -35,15 +35,17 @@ import { BUYER_LINE } from "../data/consent";
         <li>
           <strong>Consent records:</strong> when you join the buyer list we
           record the date and time, your IP address, your browser type, the
-          exact wording of each checkbox shown to you and the version of the
-          texting box's wording, and whether you checked the optional texting
+          exact wording of each checkbox shown to you and the version of each
+          texting box's wording, and whether you checked each optional texting
           box.{
             // One line on purpose: Astro renders line breaks inside a fragment.
             BUYER_LINE && (
               <> When you text DEALS to our buyer line, <a href={BUYER_LINE.sms} style="white-space: nowrap">{BUYER_LINE.display}</a>, we keep your text, with its date and time, as the record of your opt-in.</>
             )
-          } We keep these records to honor — and prove we honor — your
-          communication choices.
+          } When you ask us in writing to send our deals by text, we keep your
+          message, and record that you agreed in writing, for which number,
+          when, and who recorded it. We keep these records to honor — and prove
+          we honor — your communication choices.
         </li>
         <li>
           <strong>Basic site analytics:</strong> we record page views and

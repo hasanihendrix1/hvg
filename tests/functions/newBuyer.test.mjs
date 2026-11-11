@@ -10,8 +10,10 @@ import axios from "axios";
 import {
   handler,
   BUYER_CONSENT_TEXT,
-  BUYER_TEXT_CONSENT_TEXT,
-  BUYER_TEXT_CONSENT_VERSION,
+  BUYER_DEAL_ALERTS_CONSENT_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_VERSION,
+  BUYER_DEAL_UPDATES_CONSENT_TEXT,
+  BUYER_DEAL_UPDATES_CONSENT_VERSION,
 } from "../../netlify/functions/newBuyer.js";
 
 const SUPABASE_PATH = "/rest/v1/investor_signups";
@@ -144,57 +146,90 @@ test("dotato is best-effort: its failure never fails a saved signup, and it neve
   expect((await post(realBuyerFormPayload())).statusCode).toBe(500);
 });
 
-// The optional texting box (investor deal texts). Joining must never depend
-// on it, and both records carry the box's state with the wording and version
-// shown, so a yes can be proven and a no is never mistaken for one.
-const textEvidence = (consentTexts) => ({
-  consentTexts,
-  textConsentVersion: BUYER_TEXT_CONSENT_VERSION,
-  textConsentText: BUYER_TEXT_CONSENT_TEXT,
+// The two optional texting boxes (investor deal texts). Joining must never
+// depend on either, and both records carry each box's state with the wording
+// and version shown, so a yes can be proven and a no is never mistaken for
+// one.
+const textEvidence = ({ alerts, updates }) => ({
+  consentDealAlerts: alerts,
+  dealAlertsConsentVersion: BUYER_DEAL_ALERTS_CONSENT_VERSION,
+  dealAlertsConsentText: BUYER_DEAL_ALERTS_CONSENT_TEXT,
+  consentDealUpdates: updates,
+  dealUpdatesConsentVersion: BUYER_DEAL_UPDATES_CONSENT_VERSION,
+  dealUpdatesConsentText: BUYER_DEAL_UPDATES_CONSENT_TEXT,
 });
 
-test("joins the buyer list with the texting box unticked, and records the no", async () => {
-  vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
-  const res = await post(realBuyerFormPayload({ consentTexts: false }));
-  expect(res.statusCode).toBe(200);
-  const [[, stored]] = callsTo(SUPABASE_PATH);
-  expect(stored.raw).toMatchObject(textEvidence(false));
-  const [[, sent]] = callsTo("/hvg-buyers/");
-  expect(sent).toMatchObject(textEvidence(false));
+// dotato's ingest (lib/hvg-buyers/ingest.ts) reads one
+// texting box as consentTexts / textConsentVersion / textConsentText and
+// records a ticked one as a yes. Those fields carry the deal-alerts box only,
+// so a deal-updates yes is never filed as a yes to marketing.
+const dotatoLegacyBox = (alerts) => ({
+  consentTexts: alerts,
+  textConsentVersion: BUYER_DEAL_ALERTS_CONSENT_VERSION,
+  textConsentText: BUYER_DEAL_ALERTS_CONSENT_TEXT,
 });
 
-test("a payload without the texting field (an older client) is a no to texts", async () => {
+const BOTH_WAYS = [
+  { alerts: false, updates: false },
+  { alerts: true, updates: false },
+  { alerts: false, updates: true },
+  { alerts: true, updates: true },
+];
+
+for (const boxes of BOTH_WAYS) {
+  test(`alerts ${boxes.alerts ? "ticked" : "unticked"}, updates ${boxes.updates ? "ticked" : "unticked"}: joins, and both records say so box by box`, async () => {
+    vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
+    const res = await post(
+      realBuyerFormPayload({
+        consentDealAlerts: boxes.alerts,
+        consentDealUpdates: boxes.updates,
+      })
+    );
+    expect(res.statusCode).toBe(200);
+    const [[, stored]] = callsTo(SUPABASE_PATH);
+    expect(stored.raw).toMatchObject(textEvidence(boxes));
+    const [[, sent]] = callsTo("/hvg-buyers/");
+    expect(sent).toMatchObject(textEvidence(boxes));
+    expect(sent).toMatchObject(dotatoLegacyBox(boxes.alerts));
+    expect(sent.consentCallsEmail).toBe(true);
+  });
+}
+
+test("a payload without the texting fields (an older client) is a no to both", async () => {
   vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
   expect((await post(realBuyerFormPayload())).statusCode).toBe(200);
+  const none = { alerts: false, updates: false };
   const [[, stored]] = callsTo(SUPABASE_PATH);
-  expect(stored.raw).toMatchObject(textEvidence(false));
+  expect(stored.raw).toMatchObject(textEvidence(none));
   const [[, sent]] = callsTo("/hvg-buyers/");
-  expect(sent).toMatchObject(textEvidence(false));
+  expect(sent).toMatchObject(textEvidence(none));
+  expect(sent).toMatchObject(dotatoLegacyBox(false));
 });
 
-test("a ticked texting box is stored and sent to dotato with its wording and version", async () => {
+// The old single box's field is not a yes to either new box: the buyer who
+// sent it saw other wording.
+test("the retired single box's field is never read as a yes", async () => {
   vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
-  const res = await post(realBuyerFormPayload({ consentTexts: true }));
-  expect(res.statusCode).toBe(200);
+  await post(realBuyerFormPayload({ consentTexts: true }));
   const [[, stored]] = callsTo(SUPABASE_PATH);
-  expect(stored.raw).toMatchObject(textEvidence(true));
+  expect(stored.raw).toMatchObject({ consentDealAlerts: false, consentDealUpdates: false });
   const [[, sent]] = callsTo("/hvg-buyers/");
-  expect(sent).toMatchObject(textEvidence(true));
-  expect(sent.consentCallsEmail).toBe(true);
+  expect(sent).toMatchObject({ consentDealAlerts: false, consentDealUpdates: false, consentTexts: false });
 });
 
-test("only a literal true counts as a yes to texts", async () => {
-  for (const consentTexts of ["true", 1, "yes", null]) {
+test("only a literal true counts as a yes, box by box", async () => {
+  for (const v of ["true", 1, "yes", null]) {
     axios.post.mockClear();
-    await post(realBuyerFormPayload({ consentTexts }));
+    await post(realBuyerFormPayload({ consentDealAlerts: v, consentDealUpdates: v }));
     const [[, stored]] = callsTo(SUPABASE_PATH);
-    expect(stored.raw.consentTexts).toBe(false);
+    expect(stored.raw.consentDealAlerts).toBe(false);
+    expect(stored.raw.consentDealUpdates).toBe(false);
   }
 });
 
 // The sheet mirror is a third copy of the signup; it must not disagree with
 // the other two about texting consent.
-test("the sheet mirror gets the same yes-or-no to texts as the records", async () => {
+test("the sheet mirror gets the same yes-or-no per box as the records", async () => {
   const SHEET_URL = "https://script.google.example/buyer";
   vi.stubEnv("REACT_APP_GOOGLE_APPS_SCRIPT_URL_BUYER", SHEET_URL);
   vi.resetModules();
@@ -203,10 +238,13 @@ test("the sheet mirror gets the same yes-or-no to texts as the records", async (
     {
       httpMethod: "POST",
       headers: {},
-      body: JSON.stringify(realBuyerFormPayload({ consentTexts: "true" })),
+      body: JSON.stringify(
+        realBuyerFormPayload({ consentDealAlerts: "true", consentDealUpdates: true })
+      ),
     },
     {}
   );
   const [[, mirrored]] = callsTo(SHEET_URL);
-  expect(mirrored.consentTexts).toBe(false);
+  expect(mirrored.consentDealAlerts).toBe(false);
+  expect(mirrored.consentDealUpdates).toBe(true);
 });

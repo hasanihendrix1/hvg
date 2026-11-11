@@ -2,7 +2,7 @@
 // and /text-consent; netlify/functions/submit-lead.js stores its own copy
 // (tests/consent-sync.test.mjs fails if they differ). Bump the version on any
 // wording change. Homeowners get no marketing texts (their own A2P 10DLC
-// campaign); investor deal texts are a separate campaign with the box below.
+// campaign); investor deal texts are a separate campaign with the boxes below.
 export const CONSENT_VERSION = "2026-10-05.1";
 export const CONSENT_TEXT =
   "I agree to receive text messages from Hendrix Ventures Group LLC about selling my property, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Consent is not required to get an offer.";
@@ -13,15 +13,24 @@ export const CONSENT_TEXT =
 export const BUYER_CONSENT_TEXT =
   "I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.";
 
-// ⚖ The buyer form's optional texting box: the investor deal-texts campaign
-// (dotato docs/a2p-buyer-campaign-draft.md quotes it in the message flow).
-// Shown by BuyerSignup.tsx and /investor-text-consent; newBuyer.js stores its
-// own copy (tests/consent-sync.test.mjs fails if they differ). Bump the
-// version on any wording change, and re-shoot the /investor-text-consent
+// ⚖ The buyer form's two optional texting boxes, the investor deal-texts
+// campaign (dotato docs/a2p-buyer-campaign-draft.md quotes them in the
+// message flow). Two boxes because Twilio rejects one that covers marketing
+// and informational texts together (error 30913). Shown by BuyerSignup.tsx
+// and /investor-text-consent; newBuyer.js stores its own copies
+// (tests/consent-sync.test.mjs fails if they differ). Bump a box's version on
+// any change to its wording, and re-shoot the /investor-text-consent
 // screenshot.
-export const BUYER_TEXT_CONSENT_VERSION = "2026-11-10.1";
-export const BUYER_TEXT_CONSENT_TEXT =
-  "I agree to receive recurring text messages from Hendrix Ventures Group LLC with alerts about investment properties and updates on deals I respond to, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Texts are optional and not required to join the buyer list.";
+
+// Deal alerts: the marketing texts.
+export const BUYER_DEAL_ALERTS_CONSENT_VERSION = "2026-11-11.1";
+export const BUYER_DEAL_ALERTS_CONSENT_TEXT =
+  "I agree to receive recurring promotional text messages from Hendrix Ventures Group LLC with deal alerts about investment properties we have available, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal alerts are optional and not required to join the buyer list.";
+
+// Deal updates: the informational texts.
+export const BUYER_DEAL_UPDATES_CONSENT_VERSION = "2026-11-11.1";
+export const BUYER_DEAL_UPDATES_CONSENT_TEXT =
+  "I agree to receive text messages from Hendrix Ventures Group LLC with updates on deals I respond to, such as walkthrough times and offer status, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal updates are optional and not required to join the buyer list.";
 
 // ⚖ The buyer line, in E.164 ("+14705550123"). Empty until the number is
 // bought, answers DEALS with the confirmation text, and sits in the "Buyers"
