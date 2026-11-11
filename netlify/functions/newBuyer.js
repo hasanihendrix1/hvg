@@ -18,10 +18,16 @@ const NETLIFY_FORMS_ORIGIN = process.env.URL || "https://hendrixventures.com";
 const SINK_TIMEOUT_MS = 3500;
 
 // ⚖ The buyer form's required box, as shown by src/islands/BuyerSignup.tsx
-// (tests/consent-sync.test.mjs fails if they differ). Calls and emails only:
-// texting investors needs its own A2P campaign first (README TODO).
+// (tests/consent-sync.test.mjs fails if they differ). Calls and emails only.
 export const BUYER_CONSENT_TEXT =
   "I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.";
+
+// ⚖ The optional texting box below it, the investor deal-texts campaign.
+// Same rule: a copy of src/data/consent.ts, so the record names the exact
+// wording and version the buyer saw, ticked or not.
+export const BUYER_TEXT_CONSENT_VERSION = "2026-11-10.1";
+export const BUYER_TEXT_CONSENT_TEXT =
+  "I agree to receive recurring text messages from Hendrix Ventures Group LLC with alerts about investment properties and updates on deals I respond to, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Texts are optional and not required to join the buyer list.";
 
 export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -62,6 +68,13 @@ export const handler = async (event) => {
     const submissionId = randomUUID();
     // Read per call so a deploy can switch it on without a code change.
     const dotatoUrl = process.env.DOTATO_BUYERS_WEBHOOK_URL;
+    // Only a literal true is a yes to texts. The same three fields go to both
+    // records, so the website's row and dotato's card can be compared.
+    const textConsent = {
+      consentTexts: buyerData.consentTexts === true,
+      textConsentVersion: BUYER_TEXT_CONSENT_VERSION,
+      textConsentText: BUYER_TEXT_CONSENT_TEXT,
+    };
 
     const postSupabase = () =>
       axios.post(
@@ -75,7 +88,12 @@ export const handler = async (event) => {
           buyer_type: buyerData.buyerType || null,
           user_agent: event.headers["user-agent"] || null,
           ip: event.headers["x-nf-client-connection-ip"] || null,
-          raw: { ...buyerData, submissionId, consentText: BUYER_CONSENT_TEXT },
+          raw: {
+            ...buyerData,
+            submissionId,
+            consentText: BUYER_CONSENT_TEXT,
+            ...textConsent,
+          },
         },
         {
           headers: {
@@ -88,10 +106,14 @@ export const handler = async (event) => {
       );
 
     const postSheet = () =>
-      axios.post(GOOGLE_SCRIPT_URL, buyerData, {
-        headers: { "Content-Type": "application/json" },
-        timeout: SINK_TIMEOUT_MS,
-      });
+      axios.post(
+        GOOGLE_SCRIPT_URL,
+        { ...buyerData, consentTexts: textConsent.consentTexts },
+        {
+          headers: { "Content-Type": "application/json" },
+          timeout: SINK_TIMEOUT_MS,
+        }
+      );
 
     const postNetlifyForm = () =>
       axios.post(
@@ -125,6 +147,7 @@ export const handler = async (event) => {
           buyerType: buyerData.buyerType || null,
           consentCallsEmail: true,
           consentText: BUYER_CONSENT_TEXT,
+          ...textConsent,
           receivedAt: new Date().toISOString(),
         },
         {

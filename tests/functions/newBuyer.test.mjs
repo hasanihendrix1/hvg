@@ -7,7 +7,12 @@ vi.mock("axios", () => {
 });
 
 import axios from "axios";
-import { handler, BUYER_CONSENT_TEXT } from "../../netlify/functions/newBuyer.js";
+import {
+  handler,
+  BUYER_CONSENT_TEXT,
+  BUYER_TEXT_CONSENT_TEXT,
+  BUYER_TEXT_CONSENT_VERSION,
+} from "../../netlify/functions/newBuyer.js";
 
 const SUPABASE_PATH = "/rest/v1/investor_signups";
 
@@ -137,4 +142,71 @@ test("dotato is best-effort: its failure never fails a saved signup, and it neve
     url.includes("/hvg-buyers/") ? Promise.resolve({ data: { ok: true } }) : Promise.reject(new Error("store down"))
   );
   expect((await post(realBuyerFormPayload())).statusCode).toBe(500);
+});
+
+// The optional texting box (investor deal texts). Joining must never depend
+// on it, and both records carry the box's state with the wording and version
+// shown, so a yes can be proven and a no is never mistaken for one.
+const textEvidence = (consentTexts) => ({
+  consentTexts,
+  textConsentVersion: BUYER_TEXT_CONSENT_VERSION,
+  textConsentText: BUYER_TEXT_CONSENT_TEXT,
+});
+
+test("joins the buyer list with the texting box unticked, and records the no", async () => {
+  vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
+  const res = await post(realBuyerFormPayload({ consentTexts: false }));
+  expect(res.statusCode).toBe(200);
+  const [[, stored]] = callsTo(SUPABASE_PATH);
+  expect(stored.raw).toMatchObject(textEvidence(false));
+  const [[, sent]] = callsTo("/hvg-buyers/");
+  expect(sent).toMatchObject(textEvidence(false));
+});
+
+test("a payload without the texting field (an older client) is a no to texts", async () => {
+  vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
+  expect((await post(realBuyerFormPayload())).statusCode).toBe(200);
+  const [[, stored]] = callsTo(SUPABASE_PATH);
+  expect(stored.raw).toMatchObject(textEvidence(false));
+  const [[, sent]] = callsTo("/hvg-buyers/");
+  expect(sent).toMatchObject(textEvidence(false));
+});
+
+test("a ticked texting box is stored and sent to dotato with its wording and version", async () => {
+  vi.stubEnv("DOTATO_BUYERS_WEBHOOK_URL", DOTATO_URL);
+  const res = await post(realBuyerFormPayload({ consentTexts: true }));
+  expect(res.statusCode).toBe(200);
+  const [[, stored]] = callsTo(SUPABASE_PATH);
+  expect(stored.raw).toMatchObject(textEvidence(true));
+  const [[, sent]] = callsTo("/hvg-buyers/");
+  expect(sent).toMatchObject(textEvidence(true));
+  expect(sent.consentCallsEmail).toBe(true);
+});
+
+test("only a literal true counts as a yes to texts", async () => {
+  for (const consentTexts of ["true", 1, "yes", null]) {
+    axios.post.mockClear();
+    await post(realBuyerFormPayload({ consentTexts }));
+    const [[, stored]] = callsTo(SUPABASE_PATH);
+    expect(stored.raw.consentTexts).toBe(false);
+  }
+});
+
+// The sheet mirror is a third copy of the signup; it must not disagree with
+// the other two about texting consent.
+test("the sheet mirror gets the same yes-or-no to texts as the records", async () => {
+  const SHEET_URL = "https://script.google.example/buyer";
+  vi.stubEnv("REACT_APP_GOOGLE_APPS_SCRIPT_URL_BUYER", SHEET_URL);
+  vi.resetModules();
+  const { handler: withSheet } = await import("../../netlify/functions/newBuyer.js");
+  await withSheet(
+    {
+      httpMethod: "POST",
+      headers: {},
+      body: JSON.stringify(realBuyerFormPayload({ consentTexts: "true" })),
+    },
+    {}
+  );
+  const [[, mirrored]] = callsTo(SHEET_URL);
+  expect(mirrored.consentTexts).toBe(false);
 });

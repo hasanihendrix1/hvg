@@ -1,6 +1,17 @@
 ---
 import Logo from "./Logo.astro";
 
+export interface Props {
+  cta?: "seller" | "investor";
+}
+const { cta = "seller" } = Astro.props;
+// ⚖ Investor pages are the investor A2P campaign's evidence, so their call to
+// action stays on the buyer list instead of sending a reviewer to /get-offer.
+const action =
+  cta === "investor"
+    ? { href: "/investors#buyer-list", label: "Get deals" }
+    : { href: "/get-offer", label: "Get my offer" };
+
 // Slim, warm-neutral header (plan §7.1) — not a full-saturation brand bar.
 const nav = [
   { href: "/how-it-works", label: "How It Works" },
@@ -35,7 +46,7 @@ const ariaCurrent = (href: string) => (current === href ? "page" : undefined);
     </nav>
     <div class="header-actions">
       <a href="tel:+16787105786" class="header-phone">(678) 710-5786</a>
-      <a href="/get-offer" class="btn btn-primary header-cta">Get my offer</a>
+      <a href={action.href} class="btn btn-primary header-cta">{action.label}</a>
       <!-- The same links for every width they don't fit inline. A native
            disclosure, so it opens with no script; the script below only adds
            the ways people expect to close one. -->

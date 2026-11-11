@@ -2,7 +2,9 @@
 import Base from "../layouts/Base.astro";
 // ⚖ ATTORNEY REVIEW BEFORE LAUNCH (plan §12.1). Written to match the actual
 // consent flow in src/data/consent.ts / submit-lead.js (version 2026-10-05.1)
-// and /text-consent. One program, no marketing (A2P 10DLC registration).
+// and /text-consent: the homeowner program, no marketing (its A2P 10DLC
+// registration). Investor deal texts are a separate campaign whose terms live
+// on /investor-sms-terms, so this page only points there.
 ---
 
 <Base
@@ -13,15 +15,15 @@ import Base from "../layouts/Base.astro";
   <section class="legal">
     <div class="container-narrow">
       <h1>SMS &amp; Communications Terms</h1>
-      <p class="legal-effective">Effective October 5, 2026</p>
+      <p class="legal-effective">Effective November 10, 2026</p>
 
       <h2>The program</h2>
       <p>
         Hendrix Ventures Group LLC texts homeowners about one thing: the
         property they asked us about. Messages cover replies to your request,
         scheduling a walkthrough, your offer, and updates on the sale if you
-        go ahead. We send no marketing or promotional texts, and we never text
-        numbers from purchased lists.
+        go ahead. We send homeowners no marketing or promotional texts, and we
+        never text numbers from purchased lists.
       </p>
       <p>
         We text you only after you agree — by checking the optional box on our
@@ -29,6 +31,10 @@ import Base from "../layouts/Base.astro";
         first. Agreeing to texts is never required to get an offer. See
         <a href="/text-consent">how you agree to texts</a> for each of these,
         word for word.
+      </p>
+      <p>
+        Real estate investors: deal texts are a separate program, with their
+        own <a href="/investor-sms-terms">Investor SMS Terms</a>.
       </p>
 
       <h2>The fine print that matters</h2>

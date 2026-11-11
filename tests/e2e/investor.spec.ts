@@ -1,4 +1,9 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+import {
+  BUYER_CONSENT_TEXT,
+  BUYER_LINE,
+  BUYER_TEXT_CONSENT_TEXT,
+} from "../../src/data/consent";
 
 const MOCK_DEALS = [
   {
@@ -172,6 +177,7 @@ test("what a buyer types before the form hydrates is still submitted", async ({
   await page.getByRole("textbox", { name: "Email" }).fill("early@example.com");
   await page.getByRole("radio", { name: "Both" }).check();
   await page.getByRole("checkbox", { name: /calls and emails/ }).check();
+  await page.getByRole("checkbox", { name: /recurring text messages/ }).check();
   await expect(
     page.locator("astro-island:has(.buyer-form)[ssr]")
   ).toHaveCount(1);
@@ -186,5 +192,162 @@ test("what a buyer types before the form hydrates is still submitted", async ({
     email: "early@example.com",
     buyerType: "Both",
     consentMarketing: true,
+    consentTexts: true,
   });
+});
+
+// The investor deal-texts opt-in (A2P 10DLC): optional, unchecked, the
+// registered wording in full, and never needed to join.
+const fillBuyer = async (page: Page) => {
+  await page.goto("/investors/");
+  await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
+  await page.getByLabel("First name").fill("Playwright");
+  await page.getByLabel("Last name").fill("Investor");
+  await page.getByLabel("Mobile phone").fill("(404) 555-0142");
+  await page.getByRole("textbox", { name: "Email" }).fill("pw@example.com");
+  await page.getByRole("radio", { name: "Landlord" }).check();
+  await page.getByRole("checkbox", { name: /calls and emails/ }).check();
+};
+
+test("the texting box is optional: unchecked, fully worded, and joining works without it", async ({
+  page,
+}) => {
+  let payload: any = null;
+  await page.route("**/.netlify/functions/newBuyer", async (route) => {
+    payload = route.request().postDataJSON();
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await fillBuyer(page);
+  const textBox = page.getByRole("checkbox", {
+    name: BUYER_TEXT_CONSENT_TEXT,
+    exact: true,
+  });
+  await expect(textBox).toBeVisible();
+  await expect(textBox).not.toBeChecked();
+  await page.getByRole("button", { name: "Join the buyer list" }).click();
+  await expect(page.getByText("You're on the list")).toBeVisible();
+  expect(payload.consentMarketing).toBe(true);
+  expect(payload.consentTexts).toBe(false);
+});
+
+test("ticking the texting box sends a yes to texts", async ({ page }) => {
+  let payload: any = null;
+  await page.route("**/.netlify/functions/newBuyer", async (route) => {
+    payload = route.request().postDataJSON();
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await fillBuyer(page);
+  await page
+    .getByRole("checkbox", { name: BUYER_TEXT_CONSENT_TEXT, exact: true })
+    .check();
+  await page.getByRole("button", { name: "Join the buyer list" }).click();
+  await expect(page.getByText("You're on the list")).toBeVisible();
+  expect(payload.consentTexts).toBe(true);
+});
+
+test("/investor-text-consent shows both boxes word for word, with the form screenshot", async ({
+  page,
+}) => {
+  await page.goto("/investor-text-consent/");
+  const quotes = page.locator(".consent-quote");
+  await expect(quotes.filter({ hasText: BUYER_CONSENT_TEXT })).toHaveCount(1);
+  await expect(quotes.filter({ hasText: BUYER_TEXT_CONSENT_TEXT })).toHaveCount(1);
+  const shot = page.locator(".consent-shot img");
+  await shot.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => shot.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+});
+
+// Until the buyer line is bought, no page may invite anyone to text DEALS.
+const DEALS_PAGES = [
+  "/investors/",
+  "/investor-text-consent/",
+  "/investor-sms-terms/",
+  "/investor-privacy/",
+];
+for (const path of DEALS_PAGES) {
+  test(`the DEALS keyword on ${path} follows the buyer line constant`, async ({
+    page,
+  }) => {
+    await page.goto(path);
+    await page.locator("main").waitFor();
+    if (!BUYER_LINE) {
+      await expect(page.locator("main")).not.toContainText("DEALS");
+      return;
+    }
+    await expect(page.locator("main")).toContainText(BUYER_LINE.display);
+    await expect(
+      page.locator(`main a[href="${BUYER_LINE.sms}"]`).first()
+    ).toBeVisible();
+  });
+}
+
+// Two A2P 10DLC campaigns, each reviewed against its own pages: the buyer
+// pages link only investor legal pages, and the homeowner campaign's pages
+// carry nothing of the investor program but one pointer line.
+const SELLER_LEGAL = ["/privacy", "/sms-terms", "/text-consent", "/get-offer"];
+const linksIn = (page: Page, selector: string) =>
+  page
+    .locator(`${selector} a[href]`)
+    .evaluateAll((as: HTMLAnchorElement[]) =>
+      as.map((a) => new URL(a.href).pathname.replace(/\/$/, ""))
+    );
+
+for (const path of DEALS_PAGES) {
+  test(`${path} links no homeowner legal page`, async ({ page }) => {
+    await page.goto(path);
+    const content = await linksIn(page, "main");
+    expect(
+      content.some((p) => ["/investor-sms-terms", "/investor-privacy"].includes(p))
+    ).toBe(true);
+    // The whole page: header, content, footer and the mobile bar.
+    const everywhere = await linksIn(page, "body");
+    for (const seller of SELLER_LEGAL) expect(everywhere).not.toContain(seller);
+  });
+}
+
+for (const path of ["/privacy/", "/sms-terms/", "/text-consent/", "/get-offer/"]) {
+  test(`${path} carries no investor program content`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("main")).not.toContainText("DEALS");
+    const investorLinks = (await linksIn(page, "main")).filter((p) =>
+      p.startsWith("/investor-")
+    );
+    const pointer = ["/privacy/", "/sms-terms/"].includes(path)
+      ? ["/investor-sms-terms"]
+      : [];
+    expect(investorLinks).toEqual(pointer);
+    const legal = await linksIn(page, 'footer nav[aria-label="Legal"]');
+    expect(legal.filter((p) => p.startsWith("/investor-"))).toEqual([]);
+  });
+}
+
+test("ticking only the calls box before hydration is never read as a yes to texts", async ({
+  page,
+}) => {
+  let release!: () => void;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route("**/_astro/BuyerSignup*.js", async (route) => {
+    await held;
+    await route.continue();
+  });
+  let payload: any = null;
+  await page.route("**/.netlify/functions/newBuyer", async (route) => {
+    payload = route.request().postDataJSON();
+    await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+  });
+  await page.goto("/investors/", { waitUntil: "domcontentloaded" });
+  await page.getByLabel("First name").fill("Early");
+  await page.getByLabel("Last name").fill("Typist");
+  await page.getByLabel("Mobile phone").fill("(404) 555-0142");
+  await page.getByRole("textbox", { name: "Email" }).fill("early@example.com");
+  await page.getByRole("radio", { name: "Both" }).check();
+  await page.getByRole("checkbox", { name: /calls and emails/ }).check();
+  release();
+  await page.locator("astro-island:has(.buyer-form):not([ssr])").waitFor();
+  await page.getByRole("button", { name: "Join the buyer list" }).click();
+  await expect(page.getByText("You're on the list")).toBeVisible();
+  expect(payload.consentMarketing).toBe(true);
+  expect(payload.consentTexts).toBe(false);
 });

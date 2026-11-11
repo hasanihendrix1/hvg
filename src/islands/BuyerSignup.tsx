@@ -1,6 +1,10 @@
 import React, { useId, useState } from "react";
 import "../styles/investor.css";
-import { BUYER_CONSENT_TEXT } from "../data/consent";
+import {
+  BUYER_CONSENT_TEXT,
+  BUYER_LINE,
+  BUYER_TEXT_CONSENT_TEXT,
+} from "../data/consent";
 
 // Area code and exchange never start with 0 or 1, so a typo here is caught
 // on the form rather than reaching dotato as an undialable number.
@@ -17,6 +21,7 @@ export default function BuyerSignup() {
   const [email, setEmail] = useState("");
   const [buyerType, setBuyerType] = useState("");
   const [consent, setConsent] = useState(false);
+  const [textConsent, setTextConsent] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [fieldError, setFieldError] = useState("");
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -36,7 +41,10 @@ export default function BuyerSignup() {
     adopt("email", setEmail);
     const picked = form.querySelector<HTMLInputElement>('input[type="radio"]:checked');
     if (picked) setBuyerType(picked.value);
-    if (form.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked) setConsent(true);
+    const ticked = (name: string) =>
+      form.querySelector<HTMLInputElement>(`input[name="${name}"]`)?.checked;
+    if (ticked("consentCallsEmail")) setConsent(true);
+    if (ticked("consentTexts")) setTextConsent(true);
   }, [uid]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,6 +80,7 @@ export default function BuyerSignup() {
           market: "atlanta",
           buyerType,
           consentMarketing: consent,
+          consentTexts: textConsent,
           investorLiftScore: 0,
           level: "Potential Buyer",
         }),
@@ -170,17 +179,41 @@ export default function BuyerSignup() {
       <label className="buyer-consent">
         <input
           type="checkbox"
+          name="consentCallsEmail"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
           required
         />
-        {/* TODO(investor texting): texts dropped 2026-10-05 so the site has
-            one texting program for the homeowner A2P campaign. Texting buyers
-            needs its own A2P campaign + opt-in before "texts" comes back here. */}
         <span>
-          {BUYER_CONSENT_TEXT} See our <a href="/privacy">Privacy Policy</a>.
+          {BUYER_CONSENT_TEXT} See our{" "}
+          <a href="/investor-privacy">Investor Privacy Notice</a>.
         </span>
       </label>
+      {/* ⚖ The investor deal-texts opt-in: optional, unchecked until the
+          buyer ticks it, and never needed to join (A2P 10DLC). Its links go
+          to the investor pages only; the homeowner campaign keeps its own. */}
+      <label className="buyer-consent buyer-consent-texts">
+        <input
+          type="checkbox"
+          name="consentTexts"
+          checked={textConsent}
+          onChange={(e) => setTextConsent(e.target.checked)}
+        />
+        <span>{BUYER_TEXT_CONSENT_TEXT}</span>
+      </label>
+      <p className="buyer-consent-links">
+        {BUYER_LINE && (
+          <>
+            Or text DEALS to{" "}
+            <a href={BUYER_LINE.sms} className="buyer-line">
+              {BUYER_LINE.display}
+            </a>
+            .{" "}
+          </>
+        )}
+        See our <a href="/investor-sms-terms">Investor SMS Terms</a> and{" "}
+        <a href="/investor-text-consent">how investors agree to texts</a>.
+      </p>
       <button
         type="submit"
         className="btn btn-primary"

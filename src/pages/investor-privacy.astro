@@ -1,0 +1,144 @@
+---
+import Base from "../layouts/Base.astro";
+import { BUYER_LINE } from "../data/consent";
+// ⚖ ATTORNEY REVIEW BEFORE LAUNCH (plan §12.1). The investor deal-texts A2P
+// 10DLC campaign's privacy notice: buyer-only, so that campaign cites investor
+// pages and the homeowner campaign keeps /privacy. Keep it consistent with
+// /privacy, and with what newBuyer.js actually stores.
+---
+
+<Base
+  title="Investor Privacy Notice | Hendrix Ventures Group"
+  description="How Hendrix Ventures Group LLC handles the information real estate investors give us when they join our buyer list or opt in to deal texts."
+  path="/investor-privacy"
+  sticky="investor"
+>
+  <section class="legal">
+    <div class="container-narrow">
+      <h1>Investor Privacy Notice</h1>
+      <p class="legal-effective">Effective November 10, 2026</p>
+      <p>
+        This notice covers real estate investors who join our buyer list at
+        <a href="/investors">hendrixventures.com/investors</a> or opt in to
+        our investor deal texts. The short version: we collect what you give
+        us to send you deals, we protect it, we don't sell it, and we don't
+        run third-party ad trackers.
+      </p>
+
+      <h2>What we collect</h2>
+      <ul>
+        <li>
+          <strong>What you submit:</strong> your first and last name, mobile
+          phone, email, and whether you buy as a landlord, a fix-and-flipper or
+          both.
+        </li>
+        <li>
+          <strong>Consent records:</strong> when you join the buyer list we
+          record the date and time, your IP address, your browser type, the
+          exact wording of each checkbox shown to you and the version of the
+          texting box's wording, and whether you checked the optional texting
+          box.{
+            // One line on purpose: Astro renders line breaks inside a fragment.
+            BUYER_LINE && (
+              <> When you text DEALS to our buyer line, <a href={BUYER_LINE.sms} style="white-space: nowrap">{BUYER_LINE.display}</a>, we keep your text, with its date and time, as the record of your opt-in.</>
+            )
+          } We keep these records to honor — and prove we honor — your
+          communication choices.
+        </li>
+        <li>
+          <strong>Basic site analytics:</strong> we record page views and
+          clicks using our own first-party system. It uses
+          <strong>no cookies</strong>, no fingerprinting, and no third-party
+          analytics or advertising services. IP addresses in these records are
+          used for spam prevention.
+        </li>
+      </ul>
+
+      <h2>How we use it</h2>
+      <p>
+        To tell you about investment properties we have available, by call
+        and email, and by text only if you opt in to texts; to follow up on
+        deals you respond to; to honor your communication preferences; and to
+        understand how the site is used. We do not use your information for
+        third-party advertising.
+      </p>
+
+      <h2>Investor deal texts</h2>
+      <p>
+        Deal texts are optional and not required to join the buyer list. We
+        text only investors who opt in, and only about investment properties
+        we have available and deals they respond to. Message frequency varies;
+        message and data rates may apply. Reply <strong>STOP</strong> to opt
+        out, <strong>HELP</strong> for help. Carriers are not liable for
+        delayed or undelivered messages. See
+        <a href="/investor-text-consent">how investors agree to texts</a> and
+        our <a href="/investor-sms-terms">Investor SMS Terms</a>.
+      </p>
+
+      <h2>What we never do</h2>
+      <ul>
+        <li>We do not sell your personal information.</li>
+        <li>
+          No mobile telephone numbers or SMS consent information are shared
+          with third parties or affiliates for marketing or promotional
+          purposes.
+        </li>
+        <li>We do not run advertising pixels or cross-site trackers.</li>
+      </ul>
+
+      <h2>Who processes it for us</h2>
+      <p>
+        Like nearly every website, we rely on service providers that process
+        data on our behalf, under their own security programs, including our
+        website host (Netlify, which also stores form submission copies), our
+        database provider (Supabase, where signups and consent records are
+        stored), the services that run our own buyer-list software, where a
+        copy of your signup and consent record is kept, and our text-messaging
+        provider. Service providers may
+        process your information only to provide their service to us.
+      </p>
+
+      <h2>How long we keep it</h2>
+      <p>
+        Buyer-list records are retained for our business records; consent and
+        opt-out records are retained for at least five years, as
+        telemarketing rules expect. Analytics events contain no name or
+        contact information.
+      </p>
+
+      <h2>Your choices</h2>
+      <ul>
+        <li>
+          Reply <strong>STOP</strong> to any text from us to stop texts. Reply
+          <strong>HELP</strong> for help. See our
+          <a href="/investor-sms-terms">Investor SMS Terms</a>.
+        </li>
+        <li>
+          Email
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >
+          to leave the buyer list, to ask what we have about you, to correct
+          it, or to request deletion (we may retain what the law requires us to
+          keep, such as opt-out records).
+        </li>
+      </ul>
+
+      <h2>Children</h2>
+      <p>
+        Our buyer list is for adults investing in real estate; we do not
+        knowingly collect information from children under 13.
+      </p>
+
+      <h2>Changes &amp; contact</h2>
+      <p>
+        If we change this notice we'll change the date at the top. Questions:
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+        · (678) 710-5786 · Hendrix Ventures Group LLC, 1700 Northside Dr NW,
+        Suite A7 #813, Atlanta, GA 30318.
+      </p>
+    </div>
+  </section>
+</Base>

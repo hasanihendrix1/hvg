@@ -1,7 +1,30 @@
 ---
 import Logo from "./Logo.astro";
 
+export interface Props {
+  legal?: "seller" | "investor";
+}
+const { legal = "seller" } = Astro.props;
 const year = new Date().getFullYear();
+// ⚖ Two A2P 10DLC campaigns, and each reviewer follows its own pages: the
+// investor pages link the investor terms, privacy notice and opt-in record,
+// never the homeowner ones.
+const legalLinks =
+  legal === "investor"
+    ? [
+        { href: "/investor-privacy", label: "Investor Privacy Notice" },
+        { href: "/terms", label: "Terms of Use" },
+        { href: "/investor-sms-terms", label: "Investor SMS Terms" },
+        { href: "/investor-text-consent", label: "How Investors Agree to Texts" },
+        { href: "/accessibility", label: "Accessibility" },
+      ]
+    : [
+        { href: "/privacy", label: "Privacy Policy" },
+        { href: "/terms", label: "Terms of Use" },
+        { href: "/sms-terms", label: "SMS & Communications" },
+        { href: "/text-consent", label: "How You Agree to Texts" },
+        { href: "/accessibility", label: "Accessibility" },
+      ];
 ---
 
 <footer class="site-footer">
@@ -41,11 +64,13 @@ const year = new Date().getFullYear();
 
       <nav class="footer-legal-nav" aria-label="Legal">
         <ul>
-          <li><a href="/privacy">Privacy Policy</a></li>
-          <li><a href="/terms">Terms of Use</a></li>
-          <li><a href="/sms-terms">SMS &amp; Communications</a></li>
-          <li><a href="/text-consent">How You Agree to Texts</a></li>
-          <li><a href="/accessibility">Accessibility</a></li>
+          {
+            legalLinks.map(({ href, label }) => (
+              <li>
+                <a href={href}>{label}</a>
+              </li>
+            ))
+          }
         </ul>
       </nav>
     </div>

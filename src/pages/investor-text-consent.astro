@@ -1,0 +1,204 @@
+---
+import Base from "../layouts/Base.astro";
+import {
+  BUYER_CONSENT_TEXT,
+  BUYER_LINE,
+  BUYER_TEXT_CONSENT_TEXT,
+} from "../data/consent";
+// ⚖ Evidence page for the investor A2P campaign: every line here must match
+// what is actually shown, said, emailed and sent. Box wording comes from
+// src/data/consent.ts, the call line and confirmation from the registration
+// draft. The DEALS door renders only once BUYER_LINE is set.
+const CALL_LINE =
+  "If you want our deals by text, text DEALS to this number and you'll get a confirmation. Message frequency varies, rates may apply, and you can reply STOP anytime.";
+// Not in the draft yet: the one-to-one email's template must use these words.
+const EMAIL_LINE_BEFORE = "Want our deals by text?";
+const EMAIL_LINK_TEXT = "Tap here to text DEALS to";
+const EMAIL_LINE_AFTER =
+  ", and you'll get a confirmation. Message frequency varies, rates may apply, and you can reply STOP anytime.";
+const CONFIRMATION =
+  "Hendrix Ventures Group: You're signed up for investor deal texts. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to opt out.";
+---
+
+<Base
+  title="How investors agree to texts | Hendrix Ventures Group"
+  description="How a real estate investor opts in to deal texts from Hendrix Ventures Group LLC, word for word: the optional box on our buyer-list form, and the confirmation text that follows."
+  path="/investor-text-consent"
+  sticky="investor"
+>
+  <section class="legal text-consent">
+    <div class="container-narrow">
+      <h1>How investors agree to texts</h1>
+      <p class="legal-effective">Effective November 10, 2026</p>
+      <p>
+        Hendrix Ventures Group LLC texts real estate investors alerts about
+        investment properties we have available, and updates on deals they
+        respond to, such as walkthrough times, the status of their offer and
+        next steps to close. We text only investors who opt in, in writing.
+        This program is for investors only: we never text homeowners from it,
+        and we never text numbers from purchased or third-party lists.
+        {
+          BUYER_LINE
+            ? "There are two ways to opt in. Here is each one, word for word."
+            : "Here is how to opt in, word for word."
+        }
+      </p>
+
+      <h2>{BUYER_LINE ? "1. On our website" : "On our website"}</h2>
+      <p>
+        Our buyer-list form at
+        <a href="/investors">hendrixventures.com/investors</a> asks for your
+        first and last name, mobile phone, email, and whether you buy as a
+        landlord, a fix-and-flipper or both, then shows two separate
+        checkboxes, just above the submit button:
+      </p>
+      <figure class="consent-shot">
+        <img
+          src="/investor-text-consent-form.webp"
+          width="1144"
+          height="1330"
+          loading="lazy"
+          decoding="async"
+          alt="The Hendrix Ventures Group buyer-list form, filled in with sample details: first and last name, mobile phone, email and buyer type, then two unchecked checkboxes. The first reads “I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.” The second reads “I agree to receive recurring text messages from Hendrix Ventures Group LLC with alerts about investment properties…”, above the Join the buyer list button."
+        />
+        <figcaption>
+          The buyer-list form as it appears on our site (captured November 10,
+          2026), with sample details. Both boxes start unchecked.
+        </figcaption>
+      </figure>
+      <p>
+        The first box is required to join the buyer list, and covers calls and
+        emails only:
+      </p>
+      <blockquote class="consent-quote">{BUYER_CONSENT_TEXT}</blockquote>
+      <p>
+        The second box is the only way to opt in to texts on the form. It
+        reads:
+      </p>
+      <blockquote class="consent-quote">{BUYER_TEXT_CONSENT_TEXT}</blockquote>
+      <p>
+        The texting box is optional and unchecked until you check it. You
+        don't need to check it to join the buyer list: leave it unchecked and
+        we'll reach you by phone and email only. When you submit, we record the
+        date and time, your IP address, the exact wording shown and its
+        version, and whether you checked the box.
+      </p>
+
+      {
+        BUYER_LINE && (
+          <>
+            <h2>2. By texting DEALS</h2>
+            <p>
+              Text the keyword <strong>DEALS</strong> to our buyer line,
+              {BUYER_LINE.display}. Beside the box on our website we say:
+            </p>
+            <blockquote class="consent-quote">
+              Or text DEALS to <a href={BUYER_LINE.sms}>{BUYER_LINE.display}</a>
+            </blockquote>
+            <p>
+              We also invite investors to opt in this way at the end of our
+              calls, and in the voicemails we leave. We say:
+            </p>
+            <blockquote class="consent-quote">{CALL_LINE}</blockquote>
+            <p>
+              We call from the buyer line, so “this number” is the one on your
+              screen. On a voicemail we also say the number, slowly.
+            </p>
+            <p>
+              In one-to-one emails to investors (never a mailing list), we
+              include a link that opens your texting app with DEALS already
+              typed to our buyer line:
+            </p>
+            <blockquote class="consent-quote">
+              {EMAIL_LINE_BEFORE} <a href={BUYER_LINE.sms}>{EMAIL_LINK_TEXT} {BUYER_LINE.display}</a>{EMAIL_LINE_AFTER}
+            </blockquote>
+            <p>
+              On this path we never text an investor first: your own DEALS
+              text is the opt-in.
+            </p>
+          </>
+        )
+      }
+
+      <h2>Your first text</h2>
+      <p>
+        {
+          BUYER_LINE
+            ? "Whichever way you opt in, the first text we send you confirms it:"
+            : "After you check the box, the first text we send you confirms it:"
+        }
+      </p>
+      <blockquote class="consent-quote">{CONFIRMATION}</blockquote>
+
+      <h2>Stopping texts, or getting help</h2>
+      <ul>
+        <li>
+          Reply <strong>STOP</strong> to any text to opt out. We stop texting
+          that number, and you may get one final message confirming it. Reply
+          <strong>START</strong> to opt back in.
+        </li>
+        <li>
+          Reply <strong>HELP</strong> for help, or call
+          <a href="tel:+16787105786">(678) 710-5786</a> or email
+          <a href="mailto:hasani@hendrixventures.com"
+            >hasani@hendrixventures.com</a
+          >.
+        </li>
+        <li>Message frequency varies. Message and data rates may apply.</li>
+        <li>Carriers are not liable for delayed or undelivered messages.</li>
+        <li>
+          Investor deal texts are their own program: agreeing to them signs you
+          up for nothing else.
+        </li>
+        <li>
+          No mobile telephone numbers or SMS consent information are shared
+          with third parties or affiliates for marketing or promotional
+          purposes.
+        </li>
+      </ul>
+      <p>
+        See our <a href="/investor-privacy">Investor Privacy Notice</a> and
+        <a href="/investor-sms-terms">Investor SMS Terms</a>.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Hendrix Ventures Group LLC · 1700 Northside Dr NW, Suite A7 #813,
+        Atlanta, GA 30318 ·
+        <a href="tel:+16787105786">(678) 710-5786</a> ·
+        <a href="mailto:hasani@hendrixventures.com"
+          >hasani@hendrixventures.com</a
+        >
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .consent-shot {
+    margin: var(--space-5) 0;
+  }
+  .consent-shot img {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+  .consent-shot figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+  .consent-quote {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface);
+    border-left: 3px solid var(--color-brand);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+</style>

@@ -43,6 +43,13 @@ test("mobile sticky bar shows investor actions on /investors", async ({
   await expect(
     bar.getByRole("link", { name: "Join the buyer list" })
   ).toBeVisible();
+  // Investors opt in to texts on the buyer list, never by texting the
+  // homeowner line, so the bar offers a call only.
+  await expect(bar.getByRole("link", { name: "Call", exact: true })).toHaveAttribute(
+    "href",
+    "tel:+16787105786"
+  );
+  await expect(bar).not.toContainText(/text/i);
 });
 
 test("sticky bar never covers the last interactive element", async ({
