@@ -151,7 +151,8 @@ export const handler = async (event) => {
     return json(200, { ok: true });
   } catch (err) {
     const status = err && err.response && err.response.status;
-    if (status === 404 || status === 410) return json(410, { message: "gone" });
+    // Only dotato's own "no such deal" means gone; a 404 is a webhook that is off or misaddressed.
+    if (status === 410) return json(410, { message: "gone" });
     console.error("dotato deal response failed:", status || (err && err.message));
     return json(502, { message: "failed" });
   }

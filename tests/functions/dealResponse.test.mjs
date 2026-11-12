@@ -137,8 +137,13 @@ test("without the webhook settings nothing is sent and the buyer is told", async
 });
 
 test("a deal dotato no longer knows answers 410, so the page says it is gone", async () => {
-  axios.post.mockRejectedValue({ response: { status: 404 } });
+  axios.post.mockRejectedValue({ response: { status: 410 } });
   expect((await post(offer())).statusCode).toBe(410);
+});
+
+test("a 404 is a webhook that is off or misaddressed: a failure, never a gone deal", async () => {
+  axios.post.mockRejectedValue({ response: { status: 404 } });
+  expect((await post(offer())).statusCode).toBe(502);
 });
 
 test("any other dotato failure is a failure the buyer sees", async () => {
