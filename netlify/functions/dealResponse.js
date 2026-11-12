@@ -27,6 +27,13 @@ const PHONE =
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
+// A real calendar day: "2026-02-31" has the shape and no date, and the database refuses it.
+const isCalendarDay = (s) => {
+  if (!ISO_DAY.test(s)) return false;
+  const d = new Date(`${s}T12:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+};
+
 const text = (v, max) =>
   typeof v === "string" && v.trim() !== "" && v.trim().length <= max ? v.trim() : null;
 
@@ -69,7 +76,7 @@ export function validateResponse(p) {
     const emd = o.emd == null ? null : wholeDollars(o.emd, 0, 5_000_000);
     if (o.emd != null && emd === null) return { ok: false, reason: "emd" };
     const closeBy = o.closeBy == null || o.closeBy === "" ? null : text(o.closeBy, 10);
-    if (closeBy !== null && !ISO_DAY.test(closeBy)) return { ok: false, reason: "closeBy" };
+    if (closeBy !== null && !isCalendarDay(closeBy)) return { ok: false, reason: "closeBy" };
     if (o.notes != null && typeof o.notes !== "string") return { ok: false, reason: "notes" };
     const notes = typeof o.notes === "string" ? o.notes.trim().slice(0, 1000) || null : null;
     offer = { siteUnseen: o.siteUnseen, amount, emd, closeBy, notes };
@@ -147,6 +154,8 @@ export const handler = async (event) => {
       },
       timeout: DOTATO_TIMEOUT_MS,
       transformRequest: (d) => d,
+      // A redirect would turn the signed POST into a GET that reads as success.
+      maxRedirects: 0,
     });
     return json(200, { ok: true });
   } catch (err) {

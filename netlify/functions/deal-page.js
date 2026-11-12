@@ -88,7 +88,8 @@ const setAttr = (html, pattern, value) =>
 export function renderDealPage({ shell, page, url }) {
   const meta = pageMeta(page);
   const title = `${meta.title} | Hendrix Ventures Group`;
-  let html = shell.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(title)}</title>`);
+  // Function replacers throughout: a string one reads $' $` $& $$ in the deal's words as patterns.
+  let html = shell.replace(/<title>[^<]*<\/title>/, () => `<title>${escapeHtml(title)}</title>`);
   html = setAttr(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, meta.description);
   html = setAttr(html, /(<link\s+rel="canonical"\s+href=")[^"]*(")/, url);
   html = setAttr(html, /(<meta\s+property="og:url"\s+content=")[^"]*(")/, url);
@@ -105,7 +106,7 @@ export function renderDealPage({ shell, page, url }) {
     html = setAttr(html, /(<meta\s+name="twitter:image"\s+content=")[^"]*(")/, meta.image);
   }
   const data = `<script type="application/json" id="deal-data">${scriptJson(page)}</script>`;
-  return html.replace("</head>", `${data}</head>`);
+  return html.replace("</head>", () => `${data}</head>`);
 }
 
 // The shell is a static file of the same deploy; one fetch per warm instance.
@@ -169,6 +170,10 @@ export const handler = async (event) => {
     }
   }
   const slug = slugFrom(path);
+  const publicOrigin = (process.env.URL || SITE).replace(/\/+$/, "");
+  const shellOrigin = (process.env.DEPLOY_URL || publicOrigin).replace(/\/+$/, "");
+  // The two reads are independent; together they must fit the function's time limit.
+  const shellLoad = loadShell(shellOrigin).catch((err) => err);
   let page;
   let statusCode;
   if (!slug) {
@@ -194,11 +199,10 @@ export const handler = async (event) => {
     }
   }
 
-  const publicOrigin = (process.env.URL || SITE).replace(/\/+$/, "");
-  const shellOrigin = (process.env.DEPLOY_URL || publicOrigin).replace(/\/+$/, "");
   let html;
   try {
-    const shell = await loadShell(shellOrigin);
+    const shell = await shellLoad;
+    if (shell instanceof Error) throw shell;
     html = renderDealPage({ shell, page, url: slug ? `${publicOrigin}/deals/${slug}` : `${publicOrigin}/investors` });
   } catch (err) {
     console.error("deal page shell failed:", err && err.message);

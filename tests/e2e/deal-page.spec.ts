@@ -160,6 +160,64 @@ test.describe("desktop", () => {
     expect(body.fillTimeMs).toBeGreaterThan(0);
   });
 
+  // Review, 2026-11-12: the spam timer started on the review screen, so a quick Send
+  // there read as a bot and the server dropped a real offer while the page said sent.
+  test("the form's fill time counts from the page, not from the last screen", async ({ page }) => {
+    const served = await serve(page, live());
+    await page.goto(`/deals/${SLUG}`);
+    await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
+    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Offer price").fill("150000");
+    await fillContact(page);
+    await page.waitForTimeout(2500);
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await page.getByRole("button", { name: "Send offer" }).click();
+    await expect(page.getByRole("heading", { name: "Offer sent" })).toBeVisible();
+    expect(served.posts[0].fillTimeMs).toBeGreaterThanOrEqual(2500);
+  });
+
+  // Review, 2026-11-12: Back from "Offer sent" remounted the review with a new id, so a
+  // second tap sent the same offer again as a new submission.
+  test("Back after sending and sending again is the same submission", async ({ page }) => {
+    const served = await serve(page, live());
+    await page.goto(`/deals/${SLUG}`);
+    await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
+    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Offer price").fill("150000");
+    await fillContact(page);
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await page.getByRole("button", { name: "Send offer" }).click();
+    await expect(page.getByRole("heading", { name: "Offer sent" })).toBeVisible();
+    await page.goBack();
+    await page.getByRole("button", { name: "Send offer" }).click();
+    await expect(page.getByRole("heading", { name: "Offer sent" })).toBeVisible();
+    expect(served.posts).toHaveLength(2);
+    expect(served.posts[1].submissionId).toBe(served.posts[0].submissionId);
+  });
+
+  test("cents are cents, and a price the website would refuse is caught on the form", async ({ page }) => {
+    const served = await serve(page, live());
+    await page.goto(`/deals/${SLUG}`);
+    await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
+    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await fillContact(page);
+    await page.getByLabel("Offer price").fill("$158,000.00");
+    await page.getByLabel("Earnest money ($)").fill("3k");
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await expect(page.getByRole("alert")).toHaveText("Please enter the earnest money in dollars.");
+    await page.getByLabel("Earnest money ($)").fill("9,000,000");
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await expect(page.getByRole("alert")).toHaveText("Earnest money can be at most $5,000,000.");
+    await page.getByLabel("Earnest money ($)").fill("3,000");
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await expect(page.locator(".deal-review-price")).toHaveText("$158,000");
+    await page.getByRole("button", { name: "Send offer" }).click();
+    expect(served.posts[0].offer).toMatchObject({ amount: 158000, emd: 3000 });
+  });
+
   test("an offer after a walkthrough needs no acknowledgment", async ({ page }) => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);

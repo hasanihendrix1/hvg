@@ -71,3 +71,14 @@ test("helpers", () => {
   expect(phoneDisplay("+14705550123")).toBe("(470) 555-0123");
   expect(drivePhotoUrl("ab c", 640)).toBe("https://drive.google.com/thumbnail?id=ab%20c&sz=w640");
 });
+
+// Review, 2026-11-12: "$158,000.00" was read as 15,800,000.
+test("dollars read as a person writes them, cents rounded, nothing else accepted", async () => {
+  const { parseDollars } = await import("../src/data/deal-page.ts");
+  expect(parseDollars("158000")).toBe(158000);
+  expect(parseDollars("$158,000")).toBe(158000);
+  expect(parseDollars(" $158,000.00 ")).toBe(158000);
+  expect(parseDollars("158,000.50")).toBe(158001);
+  expect(parseDollars("3,000")).toBe(3000);
+  for (const bad of ["", "3k", "1.2.3", "$", "15.800.000", "-5", "abc", "1,00,0"]) expect(parseDollars(bad), bad).toBeNull();
+});

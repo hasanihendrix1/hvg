@@ -178,3 +178,31 @@ test("HEAD answers without a body; other methods are refused", async () => {
   const post = await get(`/deals/${SLUG}`, "POST");
   expect(post.statusCode).toBe(405);
 });
+
+// Review, 2026-11-12: a string replacement reads $' $` $& $$ as patterns, so a price
+// in the deal's words could paste the rest of the page into the data and break it.
+test("dollar signs in the deal's words reach the page exactly as written", () => {
+  const words = { ...CONTENT, locality: "Atlanta $` GA", about: "Seller credit $' extra, pay $$ at close, $& too" };
+  const html = renderDealPage({ shell: SHELL, page: { state: "live", slug: SLUG, content: words }, url: "https://hendrixventures.com/deals/x" });
+  expect(dataOf(html).content).toEqual(words);
+  expect(head(html)).toContain("<title>Off-market deal · Atlanta $` GA | Hendrix Ventures Group</title>");
+  expect(html.match(/<\/head>/g)).toHaveLength(1);
+});
+
+// The renderer finds its tags by pattern; against the real build, so a layout change
+// that moves a tag fails here instead of silently giving every link the site's preview.
+import { existsSync, readFileSync } from "node:fs";
+const BUILT = new URL("../../dist/deals/shell/index.html", import.meta.url);
+test.skipIf(!existsSync(BUILT))("the built shell's every preview tag is filled (needs npm run build)", () => {
+  const shell = readFileSync(BUILT, "utf8");
+  const html = renderDealPage({ shell, page: { state: "live", slug: SLUG, content: CONTENT }, url: `https://hendrixventures.com/deals/${SLUG}` });
+  const h = head(html);
+  expect(h).toContain("<title>Off-market deal · Atlanta, GA 30316 | Hendrix Ventures Group</title>");
+  expect(h).toContain('<meta name="description" content="Suggested Price $165,000 · Hendrix Ventures Group">');
+  expect(h).toContain(`<link rel="canonical" href="https://hendrixventures.com/deals/${SLUG}">`);
+  for (const tag of ['property="og:title"', 'property="og:description"', 'property="og:url"', 'property="og:image"', 'name="twitter:title"', 'name="twitter:description"', 'name="twitter:image"']) {
+    expect(h, tag).toMatch(new RegExp(`<meta ${tag} content="(?!Investor deal|An off-market deal|https://hendrixventures.com/og-image|https://hendrixventures.com/deals/shell)`));
+  }
+  expect(h).toContain('<meta name="robots" content="noindex, nofollow">');
+  expect(dataOf(html).slug).toBe(SLUG);
+});

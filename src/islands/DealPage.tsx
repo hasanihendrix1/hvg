@@ -7,6 +7,8 @@ import {
 } from "../data/consent";
 import {
   drivePhotoUrl,
+  LIMITS,
+  parseDollars,
   phoneDisplay,
   readDealPageState,
   usd,
@@ -69,13 +71,6 @@ function newSubmissionId(): string {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
-const digits = (s: string) => s.replace(/[^0-9]/g, "");
-
-const dollars = (s: string): number | null => {
-  const d = digits(s);
-  return d ? Number(d) : null;
-};
-
 const dayLabel = (iso: string): string => {
   const d = new Date(`${iso}T12:00:00`);
   return Number.isNaN(d.getTime())
@@ -85,8 +80,9 @@ const dayLabel = (iso: string): string => {
 
 function contactProblem(c: Contact): string | null {
   if (!c.firstName.trim() || !c.lastName.trim()) return "Please fill in your first and last name.";
+  if (c.firstName.trim().length > LIMITS.name || c.lastName.trim().length > LIMITS.name) return `Please keep each name under ${LIMITS.name} characters.`;
   if (!PHONE_REGEX.test(c.phone.trim())) return "Please enter a valid phone number.";
-  if (!EMAIL_REGEX.test(c.email.trim())) return "Please enter a valid email address.";
+  if (!EMAIL_REGEX.test(c.email.trim()) || c.email.trim().length > LIMITS.email) return "Please enter a valid email address.";
   if (!c.consent) return "Please check the box to agree to calls and emails.";
   return null;
 }
@@ -134,6 +130,17 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
   const [gone, setGone] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const first = useRef(true);
+  // The spam check's clock runs from the page, never from the screen the Send button is on.
+  const startedAt = useRef(Date.now());
+  // One id per response, kept across screens: Back from "sent" and Send again is the same submission.
+  const ids = useRef<{ interested: string | null; offer: string | null }>({ interested: null, offer: null });
+
+  useEffect(() => {
+    ids.current = { interested: null, offer: null };
+  }, [contact]);
+  useEffect(() => {
+    ids.current.offer = null;
+  }, [choice, amount, emd, closeBy, notes]);
 
   // Each flow is a history entry, so the phone's back button steps back through
   // it instead of leaving the page and losing what was typed.
@@ -164,7 +171,7 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
   if (gone) return <NoLongerAvailable />;
 
   const phone = deal.phone ? phoneDisplay(deal.phone) : null;
-  const flow = { deal, slug, phone, headingRef, go, back, contact, setContact, onGone: () => setGone(true) };
+  const flow = { deal, slug, phone, headingRef, go, back, contact, setContact, onGone: () => setGone(true), startedAt, ids };
 
   switch (screen) {
     case "interested":
@@ -212,8 +219,8 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
         <OfferReview
           {...flow}
           choice={choice}
-          amount={dollars(amount)}
-          emd={dollars(emd)}
+          amount={parseDollars(amount)}
+          emd={emd.trim() ? parseDollars(emd) : null}
           closeBy={closeBy}
           notes={notes}
           ack={ack}
@@ -221,13 +228,15 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
         />
       );
     case "offerSent": {
-      const n = dollars(amount);
+      const n = parseDollars(amount);
+      // Reached by Forward after a reload, with nothing behind it: show the deal.
+      if (n === null || choice === null) return <DealView deal={deal} phone={phone} onInterested={() => go("interested")} onOffer={() => go("offerAsk")} />;
       return (
         <Sent headingRef={headingRef} title="Offer sent">
           <p className="deal-sent-line">
             {choice === "unseen"
-              ? `Your site-unseen offer of ${n ? usd(n) : ""} on ${deal.street} is in.`
-              : `Your offer of ${n ? usd(n) : ""} on ${deal.street} is in. It becomes final after your walkthrough.`}
+              ? `Your site-unseen offer of ${usd(n)} on ${deal.street} is in.`
+              : `Your offer of ${usd(n)} on ${deal.street} is in. It becomes final after your walkthrough.`}
           </p>
           {phone && (
             <p>
@@ -256,19 +265,20 @@ function DealView({
   onInterested: () => void;
   onOffer: () => void;
 }) {
-  const [driveBroken, setDriveBroken] = useState(false);
+  // A photo Drive won't serve drops out on its own; the folder link stays for the rest.
+  const [failed, setFailed] = useState<ReadonlySet<string>>(() => new Set());
   const [showAll, setShowAll] = useState(false);
   const [viewing, setViewing] = useState<number | null>(null);
-  const photos = deal.photos;
-  const hero = deal.heroUrl ?? (photos[0] && !driveBroken ? drivePhotoUrl(photos[0].id) : null);
-  const gallery = driveBroken ? [] : photos;
+  const drop = (id: string) => setFailed((f) => (f.has(id) ? f : new Set(f).add(id)));
+  const gallery = deal.photos.filter((p) => !failed.has(p.id));
+  const hero = deal.heroUrl ?? (gallery[0] ? drivePhotoUrl(gallery[0].id) : null);
   const shown = showAll ? gallery : gallery.slice(0, 8);
 
   return (
     <div className="deal">
       <div className="deal-hero">
         {hero ? (
-          <img src={hero} alt={`Front of ${deal.street}`} width={1200} height={750} onError={deal.heroUrl ? undefined : () => setDriveBroken(true)} />
+          <img src={hero} alt={`Front of ${deal.street}`} width={1200} height={750} onError={deal.heroUrl || !gallery[0] ? undefined : () => drop(gallery[0].id)} />
         ) : (
           <div className="deal-hero-empty" aria-hidden="true" />
         )}
@@ -329,7 +339,7 @@ function DealView({
                         loading="lazy"
                         width={640}
                         height={480}
-                        onError={() => setDriveBroken(true)}
+                        onError={() => drop(p.id)}
                       />
                     </button>
                   </li>
@@ -376,8 +386,8 @@ function DealView({
           <section className="deal-section" aria-labelledby="deal-must-h">
             <h2 id="deal-must-h">Must-read before viewing</h2>
             <ul className="deal-list">
-              {deal.mustRead.map((line) => (
-                <li key={line}>{line}</li>
+              {deal.mustRead.map((line, i) => (
+                <li key={i}>{line}</li>
               ))}
             </ul>
           </section>
@@ -387,8 +397,8 @@ function DealView({
           <section className="deal-section" aria-labelledby="deal-terms-h">
             <h2 id="deal-terms-h">Basic terms</h2>
             <ul className="deal-list">
-              {deal.terms.map((line) => (
-                <li key={line}>{line}</li>
+              {deal.terms.map((line, i) => (
+                <li key={i}>{line}</li>
               ))}
             </ul>
           </section>
@@ -485,6 +495,8 @@ type FlowProps = {
   contact: Contact;
   setContact: React.Dispatch<React.SetStateAction<Contact>>;
   onGone: () => void;
+  startedAt: React.MutableRefObject<number>;
+  ids: React.MutableRefObject<{ interested: string | null; offer: string | null }>;
 };
 
 function FlowHeader({ back, step }: { back: () => void; step?: string }) {
@@ -579,15 +591,13 @@ function HoneypotField({ value, onChange }: { value: string; onChange: (v: strin
 
 type SendState = { status: "idle" } | { status: "sending" } | { status: "error"; message: string };
 
-/** One submission per kind: a retry after a timeout reuses its id, so dotato never records it twice. */
+/** A retry, or Back and Send again, reuses the response's id, so dotato never records it twice. */
 function useSend(p: FlowProps, kind: "interested" | "offer") {
-  const started = useRef(Date.now());
-  const submissionId = useRef<string | null>(null);
   const [state, setState] = useState<SendState>({ status: "idle" });
   const [fax, setFax] = useState("");
   const send = async (offer: Record<string, unknown> | null): Promise<boolean> => {
     if (state.status === "sending") return false;
-    submissionId.current ??= newSubmissionId();
+    const submissionId = (p.ids.current[kind] ??= newSubmissionId());
     setState({ status: "sending" });
     const c = p.contact;
     try {
@@ -597,7 +607,7 @@ function useSend(p: FlowProps, kind: "interested" | "offer") {
         body: JSON.stringify({
           slug: p.slug,
           kind,
-          submissionId: submissionId.current,
+          submissionId,
           firstName: c.firstName.trim(),
           lastName: c.lastName.trim(),
           phone: c.phone.trim(),
@@ -607,7 +617,7 @@ function useSend(p: FlowProps, kind: "interested" | "offer") {
           consentDealUpdates: c.dealUpdates,
           offer,
           fax,
-          fillTimeMs: Date.now() - started.current,
+          fillTimeMs: Date.now() - p.startedAt.current,
         }),
       });
       if (res.status === 410) {
@@ -739,14 +749,18 @@ function OfferDetails(
   if (!p.choice) return <Unfinished {...p} />;
   const review = (e: React.FormEvent) => {
     e.preventDefault();
-    const amount = dollars(p.amount);
-    const emd = p.emd.trim() ? dollars(p.emd) : null;
+    const amount = parseDollars(p.amount);
+    const emd = p.emd.trim() ? parseDollars(p.emd) : null;
     const bad =
-      amount === null || amount < 1000
+      amount === null || amount < LIMITS.offerMin
         ? "Please enter your offer in dollars."
-        : p.emd.trim() && emd === null
-          ? "Please enter the earnest money in dollars."
-          : contactProblem(p.contact);
+        : amount > LIMITS.offerMax
+          ? `An offer can be at most ${usd(LIMITS.offerMax)}.`
+          : p.emd.trim() && emd === null
+            ? "Please enter the earnest money in dollars."
+            : emd !== null && emd > LIMITS.emdMax
+              ? `Earnest money can be at most ${usd(LIMITS.emdMax)}.`
+              : contactProblem(p.contact);
     setProblem(bad);
     if (!bad) p.go("offerReview");
   };

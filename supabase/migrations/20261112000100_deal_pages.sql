@@ -37,6 +37,12 @@ $$;
 revoke all on function public.deal_page(text) from public;
 grant execute on function public.deal_page(text) to anon, authenticated, service_role;
 
+-- The inventory row stays public, but only the columns /investors shows (getDeals.js names them): a photo or
+-- media link written by mistake, or dotato's lead id, is never readable with the publishable key.
+revoke select on public.bridge_deals from anon;
+grant select (id, created_at, updated_at, address, price, bedrooms, bathrooms, sqft, status, active)
+  on public.bridge_deals to anon;
+
 -- The front photo, copied here by dotato under the page's slug: public by URL, never listable by anon.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('deal-photos', 'deal-photos', true, 10485760, array['image/jpeg', 'image/png', 'image/webp'])

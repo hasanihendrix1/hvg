@@ -117,3 +117,17 @@ test("a live deal is served without its photo or media link, marked live", async
   expect(deals[0]).toMatchObject({ address: "Decatur, GA 30032", image: null, mediaLink: null, live: true });
   expect(deals[1].live).toBeUndefined();
 });
+
+// DOT-512: anon may read only the columns /investors shows, so the read names them.
+test("the inventory read names its columns and never asks for photos, media or dotato's id", async () => {
+  route(
+    () => Promise.resolve({ data: { result: SANITY_DEALS } }),
+    () => Promise.resolve({ data: BRIDGE_ROWS })
+  );
+  await handler();
+  const url = axios.get.mock.calls.map(([u]) => u).find((u) => u.includes("bridge_deals"));
+  const select = new URL(url).searchParams.get("select").split(",");
+  expect(select).not.toContain("*");
+  for (const hidden of ["image_url", "media_link", "source_lead_id"]) expect(select).not.toContain(hidden);
+  expect(select).toEqual(expect.arrayContaining(["id", "created_at", "address", "price", "status"]));
+});

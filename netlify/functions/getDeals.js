@@ -10,6 +10,9 @@ const SUPABASE_PUBLISHABLE_KEY =
   process.env.SUPABASE_PUBLISHABLE_KEY ||
   "sb_publishable_MIw-hDdAugdp8ZWpw__t-w_-d8wxhK8";
 
+// The only columns anon may read since 20261112000100_deal_pages.sql: a "*" would be refused.
+export const BRIDGE_COLUMNS = "id,created_at,address,price,bedrooms,bathrooms,sqft,status";
+
 const toQuarter = (iso) => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "2026-Q1";
@@ -45,7 +48,7 @@ export const handler = async () => {
     const [sanityResult, bridgeResult] = await Promise.allSettled([
       axios.get(SANITY_API_URL, { params: { query }, timeout: 6000 }),
       axios.get(
-        `${SUPABASE_URL}/rest/v1/bridge_deals?select=*&active=eq.true&order=updated_at.desc`,
+        `${SUPABASE_URL}/rest/v1/bridge_deals?select=${BRIDGE_COLUMNS}&active=eq.true&order=updated_at.desc`,
         {
           headers: { apikey: SUPABASE_PUBLISHABLE_KEY },
           timeout: 4000,

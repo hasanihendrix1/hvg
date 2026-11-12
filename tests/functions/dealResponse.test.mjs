@@ -157,3 +157,29 @@ test("only POST", async () => {
   const res = await handler({ httpMethod: "GET", headers: {} });
   expect(res.statusCode).toBe(405);
 });
+
+// The form checks the same limits first (src/data/deal-page.ts LIMITS), so a buyer is
+// told which one; a drift would send them a generic failure on every retry.
+test("the server's limits are the form's limits", async () => {
+  const { LIMITS } = await import("../../src/data/deal-page.ts");
+  const status = async (o, extra = {}) => (await post(offer(o, extra))).statusCode;
+  expect(await status({ amount: LIMITS.offerMin })).toBe(200);
+  expect(await status({ amount: LIMITS.offerMin - 1 })).toBe(400);
+  expect(await status({ amount: LIMITS.offerMax })).toBe(200);
+  expect(await status({ amount: LIMITS.offerMax + 1 })).toBe(400);
+  expect(await status({ emd: LIMITS.emdMax })).toBe(200);
+  expect(await status({ emd: LIMITS.emdMax + 1 })).toBe(400);
+  expect(await status({}, { firstName: "x".repeat(LIMITS.name) })).toBe(200);
+  expect(await status({}, { firstName: "x".repeat(LIMITS.name + 1) })).toBe(400);
+});
+
+test("a close-by date that is not on the calendar is refused", async () => {
+  expect((await post(offer({ closeBy: "2026-02-31" }))).statusCode).toBe(400);
+  expect((await post(offer({ closeBy: "2026-13-01" }))).statusCode).toBe(400);
+  expect((await post(offer({ closeBy: "2028-02-29" }))).statusCode).toBe(200);
+});
+
+test("the signed POST never follows a redirect", async () => {
+  await post(offer());
+  expect(axios.post.mock.calls[0][2].maxRedirects).toBe(0);
+});

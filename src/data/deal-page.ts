@@ -124,3 +124,23 @@ export const phoneDisplay = (e164: string): string =>
 /** A shared Drive photo, sized for the page; the folder must be "Anyone with the link". */
 export const drivePhotoUrl = (id: string, width = 1600): string =>
   `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w${width}`;
+
+// The website's function refuses outside these (netlify/functions/dealResponse.js);
+// the form checks them first so the buyer is told which, not just that it failed.
+export const LIMITS = {
+  offerMin: 1000,
+  offerMax: 50_000_000,
+  emdMax: 5_000_000,
+  name: 80,
+  email: 254,
+} as const;
+
+const DOLLARS = /^\$?\s*(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?$/;
+
+/** "$158,000.00" → 158000; cents round to the dollar. Anything else ("3k", "1.2.3") is null. */
+export function parseDollars(raw: string): number | null {
+  const s = raw.trim();
+  if (!DOLLARS.test(s)) return null;
+  const n = Number(s.replace(/[$,\s]/g, ""));
+  return Number.isFinite(n) ? Math.round(n) : null;
+}
