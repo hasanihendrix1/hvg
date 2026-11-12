@@ -4,6 +4,7 @@ import {
   BUYER_DEAL_ALERTS_CONSENT_TEXT,
   BUYER_DEAL_UPDATES_CONSENT_TEXT,
   BUYER_LINE,
+  BUYER_LINE_INVITES,
 } from "../../src/data/consent";
 
 const MOCK_DEALS = [
@@ -295,6 +296,20 @@ test("/investor-text-consent describes the written-request door", async ({
   await expect(door).toContainText(
     "A spoken request is never recorded as an opt-in."
   );
+});
+
+// The evidence page may say we invite DEALS on calls, voicemails and emails only
+// once we do: until then the keyword door is the website line alone.
+test("/investor-text-consent mentions call, voicemail and email invitations only once they are on", async ({
+  page,
+}) => {
+  await page.goto("/investor-text-consent/");
+  const page_ = page.locator("section.legal");
+  const invites = [/at\s+the\s+end\s+of\s+our\s+calls/, /voicemail/i, /We\s+call\s+from\s+the\s+buyer\s+line/, /Tap\s+here\s+to\s+text\s+DEALS/, /one-to-one\s+emails/];
+  for (const line of invites) {
+    if (BUYER_LINE && BUYER_LINE_INVITES) await expect(page_).toContainText(line);
+    else await expect(page_).not.toContainText(line);
+  }
 });
 
 // Until the buyer line is bought, no page may invite anyone to text DEALS.

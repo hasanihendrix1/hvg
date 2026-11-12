@@ -5,12 +5,14 @@ import {
   BUYER_DEAL_ALERTS_CONSENT_TEXT,
   BUYER_DEAL_UPDATES_CONSENT_TEXT,
   BUYER_LINE,
+  BUYER_LINE_INVITES,
 } from "../data/consent";
 // ⚖ Evidence page for the investor A2P campaign: every line here must match
 // what is actually shown, said, emailed and sent. Box wording comes from
 // src/data/consent.ts; the call line, the written-request door and the
 // confirmation from the registration draft's message flow. The DEALS door
-// renders only once BUYER_LINE is set. The written-request door is dotato's
+// renders only once BUYER_LINE is set, and its call, voicemail and email
+// invitations only once BUYER_LINE_INVITES is. The written-request door is dotato's
 // "Agreed to deal texts" box on the buyer card
 // (https://linear.app/hendrixventures/issue/DOT-496).
 const CALL_LINE =
@@ -104,23 +106,29 @@ const CONFIRMATION =
             <blockquote class="consent-quote">
               Or text DEALS to <a href={BUYER_LINE.sms}>{BUYER_LINE.display}</a>
             </blockquote>
-            <p>
-              We also invite investors to opt in this way at the end of our
-              calls, and in the voicemails we leave. We say:
-            </p>
-            <blockquote class="consent-quote">{CALL_LINE}</blockquote>
-            <p>
-              We call from the buyer line, so “this number” is the one on your
-              screen. On a voicemail we also say the number, slowly.
-            </p>
-            <p>
-              In one-to-one emails to investors (never a mailing list), we
-              include a link that opens your texting app with DEALS already
-              typed to our buyer line:
-            </p>
-            <blockquote class="consent-quote">
-              {EMAIL_LINE_BEFORE} <a href={BUYER_LINE.sms}>{EMAIL_LINK_TEXT} {BUYER_LINE.display}</a>{EMAIL_LINE_AFTER}
-            </blockquote>
+            {
+              BUYER_LINE_INVITES && (
+                <>
+                  <p>
+                    We also invite investors to opt in this way at the end of
+                    our calls, and in the voicemails we leave. We say:
+                  </p>
+                  <blockquote class="consent-quote">{CALL_LINE}</blockquote>
+                  <p>
+                    We call from the buyer line, so “this number” is the one on
+                    your screen. On a voicemail we also say the number, slowly.
+                  </p>
+                  <p>
+                    In one-to-one emails to investors (never a mailing list), we
+                    include a link that opens your texting app with DEALS
+                    already typed to our buyer line:
+                  </p>
+                  <blockquote class="consent-quote">
+                    {EMAIL_LINE_BEFORE} <a href={BUYER_LINE.sms}>{EMAIL_LINK_TEXT} {BUYER_LINE.display}</a>{EMAIL_LINE_AFTER}
+                  </blockquote>
+                </>
+              )
+            }
             <p>
               On this path we never text an investor first: your own DEALS
               text is the opt-in.

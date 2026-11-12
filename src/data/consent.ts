@@ -32,12 +32,19 @@ export const BUYER_DEAL_UPDATES_CONSENT_VERSION = "2026-11-11.1";
 export const BUYER_DEAL_UPDATES_CONSENT_TEXT =
   "I agree to receive text messages from Hendrix Ventures Group LLC with updates on deals I respond to, such as walkthrough times and offer status, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal updates are optional and not required to join the buyer list.";
 
-// ⚖ The buyer line, in E.164 ("+14705550123"). Empty until the number is
-// bought, answers DEALS with the confirmation text, and sits in the "Buyers"
-// Messaging Service; while empty the site never mentions texting DEALS.
-// Setting it changes /investors, so re-shoot the /investor-text-consent
-// screenshot then too.
-export const BUYER_LINE_E164 = "";
+// ⚖ The buyer line, in E.164. Bought 2026-11-11 and on the "Buyers" Messaging
+// Service, whose Advanced Opt-Out answers DEALS with the confirmation text once
+// the investor campaign is approved (an unregistered number sends nothing).
+// While empty the site never mentions texting DEALS. Changing it changes
+// /investors, so re-shoot the /investor-text-consent screenshot then too.
+export const BUYER_LINE_E164 = "+14702561938";
+
+// ⚖ Whether we invite investors to text DEALS at the end of our calls, in our
+// voicemails and in one-to-one emails. Off until each is true: buyer calls go
+// out from the buyer line (so "this number" is the one on their screen) and the
+// email carries the exact tap-to-text line on /investor-text-consent (owner,
+// 2026-11-11: publish the keyword alone first).
+export const BUYER_LINE_INVITES = false;
 
 export function buyerLine(e164: string) {
   if (!e164) return null;
