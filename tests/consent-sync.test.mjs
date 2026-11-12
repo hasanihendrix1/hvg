@@ -11,6 +11,13 @@ import {
   BUYER_DEAL_UPDATES_CONSENT_VERSION as UPDATES_SERVER_VERSION,
 } from "../netlify/functions/newBuyer.js";
 import {
+  BUYER_CONSENT_TEXT as DEAL_SERVER_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_TEXT as DEAL_ALERTS_SERVER_TEXT,
+  BUYER_DEAL_ALERTS_CONSENT_VERSION as DEAL_ALERTS_SERVER_VERSION,
+  BUYER_DEAL_UPDATES_CONSENT_TEXT as DEAL_UPDATES_SERVER_TEXT,
+  BUYER_DEAL_UPDATES_CONSENT_VERSION as DEAL_UPDATES_SERVER_VERSION,
+} from "../netlify/functions/dealResponse.js";
+import {
   BUYER_CONSENT_TEXT,
   BUYER_DEAL_ALERTS_CONSENT_TEXT,
   BUYER_DEAL_ALERTS_CONSENT_VERSION,
@@ -55,6 +62,16 @@ test("each buyer texting box's wording matches what the server records", () => {
   expect(ALERTS_SERVER_TEXT).toBe(BUYER_DEAL_ALERTS_CONSENT_TEXT);
   expect(UPDATES_SERVER_VERSION).toBe(BUYER_DEAL_UPDATES_CONSENT_VERSION);
   expect(UPDATES_SERVER_TEXT).toBe(BUYER_DEAL_UPDATES_CONSENT_TEXT);
+});
+
+// A deal page's interest and offer forms show the same three boxes and send
+// their own copies to dotato as the evidence.
+test("the deal page's consent wording matches what its function sends to dotato", () => {
+  expect(DEAL_SERVER_TEXT).toBe(BUYER_CONSENT_TEXT);
+  expect(DEAL_ALERTS_SERVER_VERSION).toBe(BUYER_DEAL_ALERTS_CONSENT_VERSION);
+  expect(DEAL_ALERTS_SERVER_TEXT).toBe(BUYER_DEAL_ALERTS_CONSENT_TEXT);
+  expect(DEAL_UPDATES_SERVER_VERSION).toBe(BUYER_DEAL_UPDATES_CONSENT_VERSION);
+  expect(DEAL_UPDATES_SERVER_TEXT).toBe(BUYER_DEAL_UPDATES_CONSENT_TEXT);
 });
 
 const EVERY_DISCLOSURE = [

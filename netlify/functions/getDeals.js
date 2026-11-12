@@ -73,12 +73,15 @@ export const handler = async () => {
             timestamp: toQuarter(b.created_at),
             price: b.price,
             status: b.status, // 'Available' | 'Pending'
+            // dotato writes the town and ZIP here, never the street (DOT-512).
             address: b.address,
             bedrooms: b.bedrooms,
             bathrooms: b.bathrooms,
             sqft: b.sqft,
-            image: b.image_url,
-            mediaLink: b.media_link,
+            // A live deal's photos and media go to the buyer list, not the public page.
+            image: null,
+            mediaLink: null,
+            live: true,
           }))
         : [];
     if (bridgeResult.status === "rejected") {

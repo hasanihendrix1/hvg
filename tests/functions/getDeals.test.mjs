@@ -102,3 +102,18 @@ test("500s only when both sources fail", async () => {
   const res = await handler();
   expect(res.statusCode).toBe(500);
 });
+
+// DOT-512: a live deal shows its town and price; its photos and media go to the
+// buyer list, whatever the bridge row carries.
+test("a live deal is served without its photo or media link, marked live", async () => {
+  route(
+    () => Promise.resolve({ data: { result: SANITY_DEALS } }),
+    () =>
+      Promise.resolve({
+        data: [{ ...BRIDGE_ROWS[0], address: "Decatur, GA 30032", image_url: "https://x/y.jpg", media_link: "https://drive.google.com/x" }],
+      })
+  );
+  const deals = JSON.parse((await handler()).body);
+  expect(deals[0]).toMatchObject({ address: "Decatur, GA 30032", image: null, mediaLink: null, live: true });
+  expect(deals[1].live).toBeUndefined();
+});

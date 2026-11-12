@@ -25,6 +25,21 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
+# Link-only deal pages: never indexed, and the slug never leaves in a Referer.
+# The function sets the same headers on every /deals/<slug> it serves.
+[[headers]]
+  for = "/deals/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+    Referrer-Policy = "no-referrer"
+
+# One deal's page (dotato DOT-512): the function fills /deals/shell/ with the
+# deal named by the slug. The shell itself is a real file, so it shadows this.
+[[redirects]]
+  from = "/deals/*"
+  to = "/.netlify/functions/deal-page"
+  status = 200
+
 # Legacy investor route
 [[redirects]]
   from = "/investordeals"

@@ -17,6 +17,12 @@ export interface Props {
   /** Seller journey (default) or investor: picks the header's call to
       action, the mobile sticky-bar actions and the footer's legal links */
   sticky?: "seller" | "investor";
+  /** Keep the page out of search results (link-only deal pages) */
+  noindex?: boolean;
+  /** The path analytics records instead of the address bar's, so a link-only URL is never logged */
+  trackPath?: string;
+  /** The mobile bottom bar; a page with its own pinned actions turns it off */
+  stickyBar?: boolean;
 }
 
 const {
@@ -26,6 +32,9 @@ const {
   ogImage = "/og-image.jpg",
   schema = [],
   sticky = "seller",
+  noindex = false,
+  trackPath,
+  stickyBar = true,
 } = Astro.props;
 
 const canonical = new URL(path, Astro.site).href;
@@ -66,6 +75,7 @@ const baseSchema = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#800000" />
 
     <link rel="icon" href="/favicon.ico" />
@@ -95,14 +105,14 @@ const baseSchema = {
       ))
     }
   </head>
-  <body>
+  <body data-track-path={trackPath}>
     <a href="#main" class="skip-link">Skip to main content</a>
     <Header cta={sticky} />
     <main id="main">
       <slot />
     </main>
     <Footer legal={sticky} />
-    <StickyMobileBar variant={sticky} />
+    {stickyBar && <StickyMobileBar variant={sticky} />}
     <script>
       // First-party, cookieless analytics (owner free-route directive):
       // page views + call clicks to our own event sink. No third parties.
@@ -113,7 +123,7 @@ const baseSchema = {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               event,
-              path: window.location.pathname,
+              path: document.body.dataset.trackPath || window.location.pathname,
               meta,
             }),
             keepalive: true,

@@ -1,0 +1,26 @@
+---
+// The one deal page's frame. netlify/functions/deal-page.js serves it at
+// /deals/<slug> with the deal's preview tags and data filled in; opened
+// directly (here, with no data) it says the deal is no longer available.
+import Base from "../../layouts/Base.astro";
+import DealPage from "../../islands/DealPage";
+---
+
+<Base
+  title="Investor deal | Hendrix Ventures Group"
+  description="An off-market deal from Hendrix Ventures Group."
+  path="/deals/shell"
+  sticky="investor"
+  noindex
+  trackPath="/deals/[link]"
+  stickyBar={false}
+>
+  <div id="deal-page">
+    <DealPage client:only="react" />
+    <noscript>
+      <div class="container-narrow" style="padding-block: 3rem">
+        <p>This page needs JavaScript. Email <a href="mailto:hasani@hendrixventures.com">hasani@hendrixventures.com</a> about this deal.</p>
+      </div>
+    </noscript>
+  </div>
+</Base>

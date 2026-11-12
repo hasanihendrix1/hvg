@@ -13,6 +13,8 @@ interface Deal {
   sqft: number;
   image: string | null;
   mediaLink?: string;
+  /** Under contract now (the dotato bridge): town, ZIP and price only */
+  live?: boolean;
 }
 
 const quarterValue = (t: string) => {
@@ -213,6 +215,11 @@ export default function InvestorInventory() {
                           {part}
                         </React.Fragment>
                       ))}
+                    </p>
+                  )}
+                  {deal.live && (
+                    <p className="inv-card-foot">
+                      <a href="#buyer-list">Join the buyer list for the address and photos</a>
                     </p>
                   )}
                   {deal.mediaLink && (
