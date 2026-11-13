@@ -37,7 +37,7 @@ type Served = { posts: Record<string, unknown>[] };
 async function serve(
   page: Page,
   state: Record<string, unknown>,
-  opts: { thumbnails?: "ok" | "broken"; respond?: (n: number) => number } = {}
+  opts: { thumbnails?: "ok" | "broken" | { broken: string }; respond?: (n: number) => number } = {}
 ): Promise<Served> {
   const served: Served = { posts: [] };
   const shell = await (await page.request.get("/deals/shell/")).text();
@@ -48,9 +48,11 @@ async function serve(
       body: renderDealPage({ shell, page: state, url: `https://hendrixventures.com/deals/${SLUG}` }),
     })
   );
-  await page.route("**/drive.google.com/thumbnail**", (route) =>
-    opts.thumbnails === "broken" ? route.abort() : route.fulfill({ status: 200, contentType: "image/png", body: PNG })
-  );
+  await page.route("**/drive.google.com/thumbnail**", (route) => {
+    const t = opts.thumbnails;
+    const broken = t === "broken" || (typeof t === "object" && route.request().url().includes(`id=${t.broken}&`));
+    return broken ? route.abort() : route.fulfill({ status: 200, contentType: "image/png", body: PNG });
+  });
   await page.route("**/storage/v1/object/public/**", (route) =>
     route.fulfill({ status: 200, contentType: "image/png", body: PNG })
   );
@@ -160,8 +162,6 @@ test.describe("desktop", () => {
     expect(body.fillTimeMs).toBeGreaterThan(0);
   });
 
-  // Review, 2026-11-12: the spam timer started on the review screen, so a quick Send
-  // there read as a bot and the server dropped a real offer while the page said sent.
   test("the form's fill time counts from the page, not from the last screen", async ({ page }) => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
@@ -177,8 +177,6 @@ test.describe("desktop", () => {
     expect(served.posts[0].fillTimeMs).toBeGreaterThanOrEqual(2500);
   });
 
-  // Review, 2026-11-12: Back from "Offer sent" remounted the review with a new id, so a
-  // second tap sent the same offer again as a new submission.
   test("Back after sending and sending again is the same submission", async ({ page }) => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
@@ -195,6 +193,27 @@ test.describe("desktop", () => {
     await expect(page.getByRole("heading", { name: "Offer sent" })).toBeVisible();
     expect(served.posts).toHaveLength(2);
     expect(served.posts[1].submissionId).toBe(served.posts[0].submissionId);
+  });
+
+  test("a changed offer sent after Back is a new submission", async ({ page }) => {
+    const served = await serve(page, live());
+    await page.goto(`/deals/${SLUG}`);
+    await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
+    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Offer price").fill("150000");
+    await fillContact(page);
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await page.getByRole("button", { name: "Send offer" }).click();
+    await expect(page.getByRole("heading", { name: "Offer sent" })).toBeVisible();
+    await page.goBack();
+    await page.goBack();
+    await page.getByLabel("Offer price").fill("160000");
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await page.getByRole("button", { name: "Send offer" }).click();
+    await expect(page.getByRole("heading", { name: "Offer sent" })).toBeVisible();
+    expect(served.posts.map((p) => (p.offer as { amount: number }).amount)).toEqual([150000, 160000]);
+    expect(served.posts[1].submissionId).not.toBe(served.posts[0].submissionId);
   });
 
   test("cents are cents, and a price the website would refuse is caught on the form", async ({ page }) => {
@@ -281,6 +300,21 @@ test.describe("desktop", () => {
     expect(served.posts[1].submissionId).toBe(served.posts[0].submissionId);
   });
 
+  test("interest sent again with a different email is a new submission", async ({ page }) => {
+    const served = await serve(page, live());
+    await page.goto(`/deals/${SLUG}`);
+    await page.locator(".deal-price-card").getByRole("button", { name: "I'm interested" }).click();
+    await fillContact(page);
+    await page.getByRole("button", { name: "Send" }).click();
+    await expect(page.getByRole("heading", { name: "Got it" })).toBeVisible();
+    await page.goBack();
+    await page.getByLabel("Email", { exact: true }).fill("dana.buyer@example.com");
+    await page.getByRole("button", { name: "Send" }).click();
+    await expect(page.getByRole("heading", { name: "Got it" })).toBeVisible();
+    expect(served.posts.map((p) => p.email)).toEqual(["dana@example.com", "dana.buyer@example.com"]);
+    expect(served.posts[1].submissionId).not.toBe(served.posts[0].submissionId);
+  });
+
   test("a deal that went Pending while the form was open says it is no longer available", async ({ page }) => {
     await serve(page, live(), { respond: () => 410 });
     await page.goto(`/deals/${SLUG}`);
@@ -295,6 +329,15 @@ test.describe("desktop", () => {
     await page.goto(`/deals/${SLUG}`);
     await expect(page.getByRole("link", { name: /See the photos and video/ })).toBeVisible();
     await expect(page.locator(".deal-tile")).toHaveCount(0);
+  });
+
+  test("one Drive photo that will not load drops out on its own", async ({ page }) => {
+    await serve(page, live(), { thumbnails: { broken: "driveFileId0003" } });
+    await page.goto(`/deals/${SLUG}`);
+    await page.locator(".deal-gallery").scrollIntoViewIfNeeded();
+    await expect(page.locator(".deal-count")).toHaveText("9 photos");
+    await expect(page.getByRole("button", { name: /Room 4/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Room 5/ })).toBeVisible();
   });
 
   test("a Pending or closed deal shows only that it is no longer available", async ({ page }) => {

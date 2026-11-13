@@ -72,7 +72,6 @@ test("helpers", () => {
   expect(drivePhotoUrl("ab c", 640)).toBe("https://drive.google.com/thumbnail?id=ab%20c&sz=w640");
 });
 
-// Review, 2026-11-12: "$158,000.00" was read as 15,800,000.
 test("dollars read as a person writes them, cents rounded, nothing else accepted", async () => {
   const { parseDollars } = await import("../src/data/deal-page.ts");
   expect(parseDollars("158000")).toBe(158000);

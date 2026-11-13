@@ -176,6 +176,8 @@ test("the server's limits are the form's limits", async () => {
 test("a close-by date that is not on the calendar is refused", async () => {
   expect((await post(offer({ closeBy: "2026-02-31" }))).statusCode).toBe(400);
   expect((await post(offer({ closeBy: "2026-13-01" }))).statusCode).toBe(400);
+  expect((await post(offer({ closeBy: "0000-06-01" }))).statusCode).toBe(400);
+  expect((await post(offer({ closeBy: "9999-12-31" }))).statusCode).toBe(400);
   expect((await post(offer({ closeBy: "2028-02-29" }))).statusCode).toBe(200);
 });
 

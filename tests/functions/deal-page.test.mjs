@@ -179,8 +179,6 @@ test("HEAD answers without a body; other methods are refused", async () => {
   expect(post.statusCode).toBe(405);
 });
 
-// Review, 2026-11-12: a string replacement reads $' $` $& $$ as patterns, so a price
-// in the deal's words could paste the rest of the page into the data and break it.
 test("dollar signs in the deal's words reach the page exactly as written", () => {
   const words = { ...CONTENT, locality: "Atlanta $` GA", about: "Seller credit $' extra, pay $$ at close, $& too" };
   const html = renderDealPage({ shell: SHELL, page: { state: "live", slug: SLUG, content: words }, url: "https://hendrixventures.com/deals/x" });

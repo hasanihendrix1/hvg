@@ -25,9 +25,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 const PHONE =
   /^(?:\+?1[-. ]?)?\(?([2-9][0-9]{2})\)?[-. ]?([2-9][0-9]{2})[-. ]?([0-9]{4})$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+const ISO_DAY = /^20\d{2}-\d{2}-\d{2}$/;
 
-// A real calendar day: "2026-02-31" has the shape and no date, and the database refuses it.
+// A real calendar day this century: "2026-02-31" has the shape and no date, and the database refuses it.
 const isCalendarDay = (s) => {
   if (!ISO_DAY.test(s)) return false;
   const d = new Date(`${s}T12:00:00Z`);
