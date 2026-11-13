@@ -18,6 +18,7 @@ const MOCK_DEALS = [
     bathrooms: 2,
     sqft: 1400,
     image: null,
+    live: true,
   },
   {
     _id: "s1",
@@ -440,4 +441,14 @@ test("ticking only the calls box before hydration is never read as a yes to text
   expect(payload.consentMarketing).toBe(true);
   expect(payload.consentDealAlerts).toBe(false);
   expect(payload.consentDealUpdates).toBe(false);
+});
+
+// DOT-512: a deal under contract shows its town and price; the address and
+// photos go to the buyer list.
+test("a live deal's card sends buyers to the list for the address and photos", async ({ page }) => {
+  await page.goto("/investors/");
+  const live = page.locator(".inv-card").filter({ hasText: "Bridge Rd" });
+  await expect(live.getByRole("link", { name: "Join the buyer list for the address and photos" })).toHaveAttribute("href", "#buyer-list");
+  const history = page.locator(".inv-card").filter({ hasText: "Arabian Woods" });
+  await expect(history.getByRole("link", { name: /address and photos/ })).toHaveCount(0);
 });
