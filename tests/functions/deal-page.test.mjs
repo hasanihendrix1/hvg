@@ -7,6 +7,7 @@ vi.mock("axios", () => {
 });
 
 import axios from "axios";
+import { readDealContent } from "../../src/data/deal-page.ts";
 import {
   handler,
   pageMeta,
@@ -213,4 +214,33 @@ test("the page's source carries no ARV, even when dotato sends one", () => {
   expect(html).not.toContain("295000");
   expect(html).not.toContain('"arv"');
   expect(html).toContain("1234 Sample Dr SE");
+});
+
+test("the page's source carries only the fields the page reads", () => {
+  const html = renderDealPage({
+    shell: SHELL,
+    page: { state: "live", slug: "sample-dr-k3m9q2x7wzpa", content: { ...CONTENT, arvConfidence: "high", comps: [{ price: 301000 }] } },
+    url: "https://hendrixventures.com/deals/sample-dr-k3m9q2x7wzpa",
+  });
+  expect(html).not.toContain("arvConfidence");
+  expect(html).not.toContain("301000");
+  expect(dataOf(html).content.street).toBe("1234 Sample Dr SE");
+});
+
+test("every field the page reads survives the trip into its source", () => {
+  const full = {
+    ...CONTENT,
+    about: "Brick ranch.",
+    mustRead: ["Soft floor."],
+    terms: ["Close on or before Sat, Dec 12."],
+    disclaimer: "Not a broker.",
+    photos: [{ id: "driveFileId0001", name: "Kitchen.jpg" }],
+    photosFolderUrl: "https://drive.google.com/drive/folders/abc",
+    phone: "+14705550123",
+    deposit: 3000,
+    closeBy: "2026-12-12",
+    walkthrough: { at: "2026-11-21T15:00:00.000Z", label: "Sat, Nov 21 · 10:00 AM" },
+  };
+  const html = renderDealPage({ shell: SHELL, page: { state: "live", slug: "sample-dr-k3m9q2x7wzpa", content: full }, url: "https://hendrixventures.com/deals/x" });
+  expect(readDealContent(dataOf(html).content)).toEqual(readDealContent(full));
 });

@@ -708,7 +708,7 @@
   max-width: 42rem;
 }
 
-/* Phone only: stands in for the keys whenever one is out of sight */
+/* Phones and tablets: stands in for the keys whenever one is out of sight */
 .deal-actionbar {
   display: none;
 }
@@ -1256,6 +1256,11 @@
 }
 
 @media (max-width: 900px) {
+  /* Three columns get narrow here: a long close-by wraps instead of running into the padding */
+  .deal-stat-value {
+    white-space: normal;
+  }
+
   .deal-keys,
   .deal-keys[data-walk] {
     grid-template-columns: minmax(0, 1fr);

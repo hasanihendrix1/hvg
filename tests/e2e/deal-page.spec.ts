@@ -21,7 +21,7 @@ const CONTENT = {
   terms: [
     "We hold this house under a purchase contract and are offering to assign that contract.",
     "Earnest money: $3,000, non-refundable, due to the closing attorney by noon the next business day after signing.",
-    "Close on or before Fri, Dec 12.",
+    "Close on or before Sat, Dec 12.",
   ],
   disclaimer: "Hendrix Ventures Group LLC is a real estate investor, not a licensed broker or agent.",
   heroUrl: "https://ltpiqfgtfdzlgtqdghle.supabase.co/storage/v1/object/public/deal-photos/s/front.jpg",
@@ -107,7 +107,7 @@ test.describe("desktop", () => {
     await page.getByRole("button", { name: "See all 10 photos" }).click();
     await expect(page.locator(".deal-tile")).toHaveCount(10);
     await expect(page.getByRole("link", { name: /Photos and video folder/ })).toHaveAttribute("href", CONTENT.photosFolderUrl);
-    await expect(page.getByText("Close on or before Fri, Dec 12.")).toBeVisible();
+    await expect(page.getByText("Close on or before Sat, Dec 12.")).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
     await expectAxeClean(page);
   });

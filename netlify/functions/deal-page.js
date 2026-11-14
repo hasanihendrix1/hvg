@@ -84,10 +84,14 @@ export function pageMeta(page) {
 const setAttr = (html, pattern, value) =>
   html.replace(pattern, (_m, open, close) => `${open}${escapeHtml(value)}${close}`);
 
-// The page shows no ARV (owner, 2026-11-14), so it stays out of the page's source too.
+// Only what the page reads reaches its source: no ARV (owner, 2026-11-14), nor any field dotato adds later.
+const PAGE_FIELDS = [
+  "street", "locality", "facts", "occupancy", "price", "about", "mustRead", "terms", "disclaimer",
+  "heroUrl", "photos", "photosFolderUrl", "phone", "deposit", "closeBy", "walkthrough",
+];
 const forPage = (page) => {
   if (!page || page.state !== "live" || !page.content || typeof page.content !== "object") return page;
-  const { arv: _arv, ...content } = page.content;
+  const content = Object.fromEntries(PAGE_FIELDS.filter((k) => k in page.content).map((k) => [k, page.content[k]]));
   return { ...page, content };
 };
 
