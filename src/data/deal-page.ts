@@ -33,6 +33,13 @@ export interface DealPageContent {
   deposit: number | null;
   /** The offer form's close-by default, YYYY-MM-DD */
   closeBy: string | null;
+  /** The one walkthrough: its instant, and how it reads on the seller-side clock ("Sat, Nov 21 · 10:00 AM") */
+  walkthrough: DealWalkthrough | null;
+}
+
+export interface DealWalkthrough {
+  at: string;
+  label: string;
 }
 
 export type DealPageState =
@@ -61,6 +68,7 @@ const httpsUrl = (v: unknown): string | null => {
 const DRIVE_ID = /^[A-Za-z0-9_-]{10,200}$/;
 const E164 = /^\+1[2-9][0-9]{2}[2-9][0-9]{6}$/;
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
 
 /** The page's content, or null when it is missing what every page needs. */
 export function readDealContent(raw: unknown): DealPageContent | null {
@@ -84,6 +92,9 @@ export function readDealContent(raw: unknown): DealPageContent | null {
     : [];
   const phone = str(r.phone, 20);
   const closeBy = str(r.closeBy, 10);
+  const w = (r.walkthrough && typeof r.walkthrough === "object" ? r.walkthrough : {}) as Record<string, unknown>;
+  const walkAt = str(w.at, 40);
+  const walkLabel = str(w.label, 80);
   return {
     street,
     locality,
@@ -101,7 +112,16 @@ export function readDealContent(raw: unknown): DealPageContent | null {
     phone: phone && E164.test(phone) ? phone : null,
     deposit: money(r.deposit),
     closeBy: closeBy && ISO_DAY.test(closeBy) ? closeBy : null,
+    walkthrough:
+      walkAt && walkLabel && ISO_INSTANT.test(walkAt) && !Number.isNaN(Date.parse(walkAt))
+        ? { at: new Date(walkAt).toISOString(), label: walkLabel }
+        : null,
   };
+}
+
+/** Whether the walkthrough is still ahead: its RSVP closes when it starts. */
+export function walkthroughOpen(w: DealWalkthrough | null, now: number = Date.now()): w is DealWalkthrough {
+  return w !== null && Date.parse(w.at) > now;
 }
 
 /** What the server put in the page's #deal-data script, read defensively. */
@@ -127,6 +147,10 @@ export const drivePhotoUrl = (id: string, width = 1600): string =>
 
 // The website's function refuses outside these (netlify/functions/dealResponse.js);
 // the form checks them first so the buyer is told which, not just that it failed.
+/** Who a buyer may bring to the walkthrough, beside themselves. */
+export const MAX_GUESTS = 4;
+export const MAX_DD_DAYS = 365;
+
 export const LIMITS = {
   offerMin: 1000,
   offerMax: 50_000_000,

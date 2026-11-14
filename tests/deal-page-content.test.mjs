@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { readDealContent, readDealPageState, drivePhotoUrl, phoneDisplay } from "../src/data/deal-page.ts";
+import { readDealContent, readDealPageState, drivePhotoUrl, phoneDisplay, walkthroughOpen } from "../src/data/deal-page.ts";
 
 const GOOD = {
   street: "1234 Sample Dr SE",
@@ -18,6 +18,7 @@ const GOOD = {
   phone: "+14705550123",
   deposit: 3000,
   closeBy: "2026-12-12",
+  walkthrough: { at: "2026-11-21T15:00:00.000Z", label: "Sat, Nov 21 · 10:00 AM" },
 };
 
 test("well-formed content passes through", () => {
@@ -80,4 +81,19 @@ test("dollars read as a person writes them, cents rounded, nothing else accepted
   expect(parseDollars("158,000.50")).toBe(158001);
   expect(parseDollars("3,000")).toBe(3000);
   for (const bad of ["", "3k", "1.2.3", "$", "15.800.000", "-5", "abc", "1,00,0"]) expect(parseDollars(bad), bad).toBeNull();
+});
+
+test("the walkthrough needs a real instant and its label, or the page shows none", () => {
+  expect(readDealContent({ ...GOOD, walkthrough: null }).walkthrough).toBeNull();
+  expect(readDealContent({ ...GOOD, walkthrough: undefined }).walkthrough).toBeNull();
+  expect(readDealContent({ ...GOOD, walkthrough: { at: "Saturday at 10", label: "Sat" } }).walkthrough).toBeNull();
+  expect(readDealContent({ ...GOOD, walkthrough: { at: "2026-11-21T15:00:00.000Z" } }).walkthrough).toBeNull();
+  expect(readDealContent({ ...GOOD, walkthrough: { at: "2026-11-21T10:00:00-05:00", label: "Sat, Nov 21 · 10:00 AM" } }).walkthrough).toEqual(GOOD.walkthrough);
+});
+
+test("the RSVP is open until the walkthrough starts", () => {
+  const w = GOOD.walkthrough;
+  expect(walkthroughOpen(w, Date.parse(w.at) - 1)).toBe(true);
+  expect(walkthroughOpen(w, Date.parse(w.at))).toBe(false);
+  expect(walkthroughOpen(null, 0)).toBe(false);
 });

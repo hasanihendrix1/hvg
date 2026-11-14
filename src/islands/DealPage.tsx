@@ -8,6 +8,9 @@ import {
 import {
   drivePhotoUrl,
   LIMITS,
+  MAX_DD_DAYS,
+  MAX_GUESTS,
+  walkthroughOpen,
   parseDollars,
   phoneDisplay,
   readDealPageState,
@@ -28,7 +31,11 @@ type Screen =
   | "offerAsk"
   | "offerDetails"
   | "offerReview"
-  | "offerSent";
+  | "offerSent"
+  | "rsvp"
+  | "rsvpSent";
+
+type Guest = { name: string; phone: string };
 
 type Choice = "unseen" | "walkthrough" | null;
 
@@ -126,6 +133,9 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
   const [emd, setEmd] = useState(deal.deposit ? deal.deposit.toLocaleString("en-US") : "");
   const [closeBy, setCloseBy] = useState(deal.closeBy ?? "");
   const [notes, setNotes] = useState("");
+  const [ddDays, setDdDays] = useState("");
+  const [guests, setGuests] = useState<Guest[]>([]);
+  const [rsvpNote, setRsvpNote] = useState("");
   const [ack, setAck] = useState(false);
   const [gone, setGone] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -133,14 +143,17 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
   // The spam check's clock runs from the page, never from the screen the Send button is on.
   const startedAt = useRef(Date.now());
   // One id per response, kept across screens: Back from "sent" and Send again is the same submission.
-  const ids = useRef<{ interested: string | null; offer: string | null }>({ interested: null, offer: null });
+  const ids = useRef<Ids>({ interested: null, offer: null, rsvp: null });
 
   useEffect(() => {
-    ids.current = { interested: null, offer: null };
+    ids.current = { interested: null, offer: null, rsvp: null };
   }, [contact]);
   useEffect(() => {
     ids.current.offer = null;
-  }, [choice, amount, emd, closeBy, notes]);
+  }, [choice, amount, emd, closeBy, notes, ddDays]);
+  useEffect(() => {
+    ids.current.rsvp = null;
+  }, [guests, rsvpNote]);
 
   // Each flow is a history entry, so the phone's back button steps back through
   // it instead of leaving the page and losing what was typed.
@@ -173,9 +186,31 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
   const phone = deal.phone ? phoneDisplay(deal.phone) : null;
   const flow = { deal, slug, phone, headingRef, go, back, contact, setContact, onGone: () => setGone(true), startedAt, ids };
 
+  const view = <DealView deal={deal} phone={phone} onInterested={() => go("interested")} onOffer={() => go("offerAsk")} onRsvp={() => go("rsvp")} />;
+  // A line added and left empty is not a guest: the form sends only the named ones.
+  const named = guests.filter((g) => g.name.trim()).length;
+
   switch (screen) {
     case "interested":
       return <InterestForm {...flow} />;
+    case "rsvp":
+      return <RsvpForm {...flow} guests={guests} setGuests={setGuests} note={rsvpNote} setNote={setRsvpNote} />;
+    case "rsvpSent":
+      // Reached by Forward after a reload on a page with no walkthrough: show the deal.
+      if (!deal.walkthrough) return view;
+      return (
+        <Sent headingRef={headingRef} title="You're on the list">
+          <p className="deal-sent-line">
+            See you at {deal.street} on {deal.walkthrough.label}
+            {named > 0 ? `, with ${named} ${named === 1 ? "guest" : "guests"}` : ""}.
+          </p>
+          <p>It is the one walkthrough for everyone. If the time changes, we will call you.</p>
+          <p className="deal-strong">The first acceptable offer after the walkthrough gets the deal.</p>
+          <button type="button" className="btn btn-secondary deal-btn deal-btn-outline" onClick={() => go("page")}>
+            Back to the deal
+          </button>
+        </Sent>
+      );
     case "interestedSent":
       return (
         <Sent headingRef={headingRef} title="Got it">
@@ -212,6 +247,8 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
           setCloseBy={setCloseBy}
           notes={notes}
           setNotes={setNotes}
+          ddDays={ddDays}
+          setDdDays={setDdDays}
         />
       );
     case "offerReview":
@@ -223,6 +260,7 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
           emd={emd.trim() ? parseDollars(emd) : null}
           closeBy={closeBy}
           notes={notes}
+          ddDays={ddDays.trim() ? Number(ddDays) : null}
           ack={ack}
           setAck={setAck}
         />
@@ -230,7 +268,7 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
     case "offerSent": {
       const n = parseDollars(amount);
       // Reached by Forward after a reload, with nothing behind it: show the deal.
-      if (n === null || choice === null) return <DealView deal={deal} phone={phone} onInterested={() => go("interested")} onOffer={() => go("offerAsk")} />;
+      if (n === null || choice === null) return view;
       return (
         <Sent headingRef={headingRef} title="Offer sent">
           <p className="deal-sent-line">
@@ -250,7 +288,7 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
       );
     }
     default:
-      return <DealView deal={deal} phone={phone} onInterested={() => go("interested")} onOffer={() => go("offerAsk")} />;
+      return view;
   }
 }
 
@@ -259,12 +297,16 @@ function DealView({
   phone,
   onInterested,
   onOffer,
+  onRsvp,
 }: {
   deal: DealPageContent;
   phone: string | null;
   onInterested: () => void;
   onOffer: () => void;
+  onRsvp: () => void;
 }) {
+  // Read once per render: the RSVP closes when the walkthrough starts.
+  const walk = walkthroughOpen(deal.walkthrough) ? deal.walkthrough : null;
   // A photo Drive won't serve drops out on its own; the folder link stays for the rest.
   const [failed, setFailed] = useState<ReadonlySet<string>>(() => new Set());
   const [showAll, setShowAll] = useState(false);
@@ -314,6 +356,15 @@ function DealView({
               I'm interested
             </button>
           </div>
+          {walk && (
+            <div className="deal-walk" data-testid="deal-walk">
+              <p className="deal-walk-label">One walkthrough for everyone</p>
+              <p className="deal-walk-time">{walk.label}</p>
+              <button type="button" className="btn btn-secondary deal-btn deal-btn-outline" onClick={onRsvp}>
+                RSVP for the walkthrough
+              </button>
+            </div>
+          )}
           <p className="deal-first">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="8" />
@@ -496,8 +547,9 @@ type FlowProps = {
   setContact: React.Dispatch<React.SetStateAction<Contact>>;
   onGone: () => void;
   startedAt: React.MutableRefObject<number>;
-  ids: React.MutableRefObject<{ interested: string | null; offer: string | null }>;
+  ids: React.MutableRefObject<Ids>;
 };
+type Ids = { interested: string | null; offer: string | null; rsvp: string | null };
 
 function FlowHeader({ back, step }: { back: () => void; step?: string }) {
   return (
@@ -592,10 +644,10 @@ function HoneypotField({ value, onChange }: { value: string; onChange: (v: strin
 type SendState = { status: "idle" } | { status: "sending" } | { status: "error"; message: string };
 
 /** A retry, or Back and Send again, reuses the response's id, so dotato never records it twice. */
-function useSend(p: FlowProps, kind: "interested" | "offer") {
+function useSend(p: FlowProps, kind: "interested" | "offer" | "rsvp") {
   const [state, setState] = useState<SendState>({ status: "idle" });
   const [fax, setFax] = useState("");
-  const send = async (offer: Record<string, unknown> | null): Promise<boolean> => {
+  const send = async (offer: Record<string, unknown> | null, rsvp: Record<string, unknown> | null = null): Promise<boolean> => {
     if (state.status === "sending") return false;
     const submissionId = (p.ids.current[kind] ??= newSubmissionId());
     setState({ status: "sending" });
@@ -616,6 +668,7 @@ function useSend(p: FlowProps, kind: "interested" | "offer") {
           consentDealAlerts: c.dealAlerts,
           consentDealUpdates: c.dealUpdates,
           offer,
+          rsvp,
           fax,
           fillTimeMs: Date.now() - p.startedAt.current,
         }),
@@ -624,12 +677,17 @@ function useSend(p: FlowProps, kind: "interested" | "offer") {
         p.onGone();
         return false;
       }
+      if (res.status === 409) {
+        // The walkthrough moved or was called off after this page loaded.
+        setState({ status: "error", message: "The walkthrough time has changed. Reload this page to see the new time." });
+        return false;
+      }
       if (!res.ok) throw new Error(`dealResponse ${res.status}`);
       setState({ status: "idle" });
       return true;
     } catch (err) {
       console.error("Deal response failed:", err);
-      const what = kind === "offer" ? "Your offer didn't go through." : "That didn't go through.";
+      const what = kind === "offer" ? "Your offer didn't go through." : kind === "rsvp" ? "Your RSVP didn't go through." : "That didn't go through.";
       setState({
         status: "error",
         message: p.phone ? `${what} Try again, or call or text ${p.phone}.` : `${what} Try again in a minute.`,
@@ -670,6 +728,98 @@ function InterestForm(p: FlowProps) {
         )}
         <button type="submit" className="btn btn-primary deal-btn" disabled={state.status === "sending"}>
           {state.status === "sending" ? "Sending…" : "Send"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+/**
+ * The walkthrough RSVP: who is coming, and anyone they bring. One time for everyone, so there is nothing to pick.
+ */
+function RsvpForm(
+  p: FlowProps & { guests: Guest[]; setGuests: (g: Guest[]) => void; note: string; setNote: (v: string) => void }
+) {
+  const uid = useId();
+  const { state, send, fax, setFax } = useSend(p, "rsvp");
+  const [problem, setProblem] = useState<string | null>(null);
+  const walk = walkthroughOpen(p.deal.walkthrough) ? p.deal.walkthrough : null;
+  if (!walk) return <Unfinished {...p} />;
+  const setGuest = (i: number, patch: Partial<Guest>) => p.setGuests(p.guests.map((g, j) => (j === i ? { ...g, ...patch } : g)));
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const named = p.guests.filter((g) => g.name.trim() || g.phone.trim());
+    const bad =
+      contactProblem(p.contact) ??
+      (named.some((g) => !g.name.trim())
+        ? "Please add a name for each person you're bringing, or remove the empty line."
+        : named.some((g) => g.name.trim().length > LIMITS.name)
+          ? "A guest's name is too long."
+          : null);
+    setProblem(bad);
+    if (bad) return;
+    const ok = await send(null, {
+      slotAt: walk.at,
+      guests: named.map((g) => ({ name: g.name.trim(), phone: g.phone.trim() || null })),
+      note: p.note.trim() || null,
+    });
+    if (ok) p.go("rsvpSent");
+  };
+  const error = problem ?? (state.status === "error" ? state.message : null);
+  return (
+    <section className="deal-flow container-narrow">
+      <FlowHeader back={p.back} />
+      <h1 ref={p.headingRef} tabIndex={-1}>
+        RSVP for the walkthrough
+      </h1>
+      <div className="deal-walk deal-walk-flow">
+        <p className="deal-walk-label">{p.deal.street}</p>
+        <p className="deal-walk-time">{walk.label}</p>
+        <p className="deal-walk-note">One walkthrough for everyone. A host opens the house and stays through it.</p>
+      </div>
+      <form className="deal-form" onSubmit={submit} noValidate>
+        <ContactFields contact={p.contact} setContact={p.setContact} />
+        <fieldset className="deal-guests">
+          <legend>
+            Bringing anyone? <span className="deal-optional">Optional</span>
+          </legend>
+          {p.guests.map((g, i) => (
+            <div className="deal-guest" key={i}>
+              <div className="deal-field">
+                <label htmlFor={`${uid}-guest-${i}`}>Guest {i + 1} name</label>
+                <input id={`${uid}-guest-${i}`} type="text" autoComplete="off" maxLength={LIMITS.name} value={g.name} onChange={(e) => setGuest(i, { name: e.target.value })} />
+              </div>
+              <div className="deal-field">
+                <label htmlFor={`${uid}-guest-phone-${i}`}>
+                  Guest {i + 1} phone <span className="deal-optional">Optional</span>
+                </label>
+                <input id={`${uid}-guest-phone-${i}`} type="tel" autoComplete="off" maxLength={30} value={g.phone} onChange={(e) => setGuest(i, { phone: e.target.value })} />
+              </div>
+              <button type="button" className="deal-link-btn" onClick={() => p.setGuests(p.guests.filter((_, j) => j !== i))} aria-label={`Remove guest ${i + 1}`}>
+                Remove
+              </button>
+            </div>
+          ))}
+          {p.guests.length < MAX_GUESTS && (
+            <button type="button" className="btn btn-secondary deal-btn deal-btn-quiet" onClick={() => p.setGuests([...p.guests, { name: "", phone: "" }])}>
+              {p.guests.length === 0 ? "Add a guest" : "Add another guest"}
+            </button>
+          )}
+        </fieldset>
+        <div className="deal-field">
+          <label htmlFor={`${uid}-rsvp-note`}>
+            Anything we should know? <span className="deal-optional">Optional</span>
+          </label>
+          <textarea id={`${uid}-rsvp-note`} rows={2} maxLength={1000} value={p.note} onChange={(e) => p.setNote(e.target.value)} />
+        </div>
+        <HoneypotField value={fax} onChange={setFax} />
+        {error && (
+          <p className="deal-error" role="alert">
+            {error}
+          </p>
+        )}
+        <button type="submit" className="btn btn-primary deal-btn" disabled={state.status === "sending"}>
+          {state.status === "sending" ? "Sending…" : "Send RSVP"}
         </button>
       </form>
     </section>
@@ -742,6 +892,8 @@ function OfferDetails(
     setCloseBy: (v: string) => void;
     notes: string;
     setNotes: (v: string) => void;
+    ddDays: string;
+    setDdDays: (v: string) => void;
   }
 ) {
   const uid = useId();
@@ -760,7 +912,9 @@ function OfferDetails(
             ? "Please enter the earnest money in dollars."
             : emd !== null && emd > LIMITS.emdMax
               ? `Earnest money can be at most ${usd(LIMITS.emdMax)}.`
-              : contactProblem(p.contact);
+              : p.ddDays.trim() && !(/^\d{1,3}$/.test(p.ddDays.trim()) && Number(p.ddDays) <= MAX_DD_DAYS)
+                ? `Please enter due diligence as a number of days, 0 to ${MAX_DD_DAYS}.`
+                : contactProblem(p.contact);
     setProblem(bad);
     if (!bad) p.go("offerReview");
   };
@@ -802,6 +956,12 @@ function OfferDetails(
             <input id={`${uid}-close`} type="date" value={p.closeBy} onChange={(e) => p.setCloseBy(e.target.value)} />
           </div>
         </div>
+        <div className="deal-field">
+          <label htmlFor={`${uid}-dd`}>
+            Due diligence days <span className="deal-optional">Optional</span>
+          </label>
+          <input id={`${uid}-dd`} type="text" inputMode="numeric" autoComplete="off" placeholder="0" value={p.ddDays} onChange={(e) => p.setDdDays(e.target.value)} />
+        </div>
         <ContactFields contact={p.contact} setContact={p.setContact} />
         <div className="deal-field">
           <label htmlFor={`${uid}-notes`}>
@@ -829,6 +989,7 @@ function OfferReview(
     emd: number | null;
     closeBy: string;
     notes: string;
+    ddDays: number | null;
     ack: boolean;
     setAck: (v: boolean) => void;
   }
@@ -846,6 +1007,7 @@ function OfferReview(
       emd: p.emd,
       closeBy: p.closeBy || null,
       notes: p.notes.trim() || null,
+      ddDays: p.ddDays,
     });
     if (ok) p.go("offerSent");
   };
@@ -855,11 +1017,12 @@ function OfferReview(
         ["House", p.deal.street],
         ["Earnest money", p.emd !== null ? usd(p.emd) : "Not given"],
         ["Close by", p.closeBy ? dayLabel(p.closeBy) : "Not given"],
+        ["Due diligence", p.ddDays === null ? "Not given" : p.ddDays === 0 ? "None" : `${p.ddDays} ${p.ddDays === 1 ? "day" : "days"}`],
         ["Name", `${p.contact.firstName.trim()} ${p.contact.lastName.trim()}`],
         ["Phone", p.contact.phone.trim()],
         ["Email", p.contact.email.trim()],
       ] as const,
-    [p.deal.street, p.emd, p.closeBy, p.contact]
+    [p.deal.street, p.emd, p.closeBy, p.ddDays, p.contact]
   );
   if (p.choice === null || p.amount === null) return <Unfinished {...p} />;
   return (
