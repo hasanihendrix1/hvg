@@ -389,7 +389,7 @@ test.describe("desktop", () => {
     await page.getByTestId("deal-walk").getByRole("button", { name: "RSVP for the walkthrough" }).click();
     await fillContact(page);
     await page.getByRole("button", { name: "Add a guest" }).click();
-    await page.getByLabel("Phone Optional").fill("404-555-0199");
+    await page.getByLabel("Guest 1 phone").fill("404-555-0199");
     await page.getByRole("button", { name: "Send RSVP" }).click();
     await expect(page.getByRole("alert")).toContainText("add a name for each person");
     expect(served.posts).toHaveLength(0);

@@ -196,7 +196,7 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
     case "rsvp":
       return <RsvpForm {...flow} guests={guests} setGuests={setGuests} note={rsvpNote} setNote={setRsvpNote} />;
     case "rsvpSent":
-      // Reached by Forward after a reload, or once the walkthrough has started: show the deal.
+      // Reached by Forward after a reload on a page with no walkthrough: show the deal.
       if (!deal.walkthrough) return view;
       return (
         <Sent headingRef={headingRef} title="You're on the list">
@@ -791,7 +791,7 @@ function RsvpForm(
               </div>
               <div className="deal-field">
                 <label htmlFor={`${uid}-guest-phone-${i}`}>
-                  Phone <span className="deal-optional">Optional</span>
+                  Guest {i + 1} phone <span className="deal-optional">Optional</span>
                 </label>
                 <input id={`${uid}-guest-phone-${i}`} type="tel" autoComplete="off" maxLength={30} value={g.phone} onChange={(e) => setGuest(i, { phone: e.target.value })} />
               </div>
