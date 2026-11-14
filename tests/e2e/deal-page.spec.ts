@@ -135,7 +135,7 @@ test.describe("desktop", () => {
 
     await expect(page.getByRole("heading", { name: "Is this offer site unseen?" })).toBeVisible();
     const unseen = page.getByRole("button", { name: /^Site unseen/ });
-    const walk = page.getByRole("button", { name: /^After a walkthrough/ });
+    const walk = page.getByRole("button", { name: /^I've done the walkthrough/ });
     await expect(unseen).toHaveAttribute("aria-pressed", "false");
     await expect(walk).toHaveAttribute("aria-pressed", "false");
     await expect(page.getByRole("button", { name: "Continue" })).toBeDisabled();
@@ -177,7 +177,7 @@ test.describe("desktop", () => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
-    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: /^I've done the walkthrough/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await page.getByLabel("Offer price").fill("150000");
     await fillContact(page);
@@ -192,7 +192,7 @@ test.describe("desktop", () => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
-    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: /^I've done the walkthrough/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await page.getByLabel("Offer price").fill("150000");
     await fillContact(page);
@@ -210,7 +210,7 @@ test.describe("desktop", () => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
-    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: /^I've done the walkthrough/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await page.getByLabel("Offer price").fill("150000");
     await fillContact(page);
@@ -231,7 +231,7 @@ test.describe("desktop", () => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
-    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: /^I've done the walkthrough/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await fillContact(page);
     await page.getByLabel("Offer price").fill("$158,000.00");
@@ -252,15 +252,16 @@ test.describe("desktop", () => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
-    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: /^I've done the walkthrough/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await page.getByLabel("Offer price").fill("$150,000");
     await fillContact(page);
     await page.getByRole("button", { name: "Review offer" }).click();
-    await expect(page.locator(".deal-review-choice")).toHaveText("After a walkthrough");
+    await expect(page.locator(".deal-review-choice")).toHaveText("Walkthrough done");
     await expect(page.getByRole("checkbox", { name: /without seeing the inside/ })).toHaveCount(0);
     await page.getByRole("button", { name: "Send offer" }).click();
-    await expect(page.getByText("It becomes final after your walkthrough.")).toBeVisible();
+    await expect(page.getByText("Your offer of $150,000 on 1234 Sample Dr SE is in.")).toBeVisible();
+    await expect(page.getByText(/becomes final/)).toHaveCount(0);
     expect(served.posts[0].offer).toMatchObject({ siteUnseen: false, acknowledgedUnseen: false, amount: 150000 });
   });
 
@@ -445,7 +446,7 @@ test.describe("desktop", () => {
     const served = await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
-    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: /^I've done the walkthrough/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
     await page.getByLabel("Offer price").fill("$150,000");
     await fillContact(page);
@@ -457,7 +458,8 @@ test.describe("desktop", () => {
     await expect(page.locator(".deal-review-rows")).toContainText("Due diligence");
     await expect(page.locator(".deal-review-rows")).toContainText("10 days");
     await page.getByRole("button", { name: "Send offer" }).click();
-    await expect(page.getByText("It becomes final after your walkthrough.")).toBeVisible();
+    await expect(page.getByText("Your offer of $150,000 on 1234 Sample Dr SE is in.")).toBeVisible();
+    await expect(page.getByText(/becomes final/)).toHaveCount(0);
     expect(served.posts[0].offer).toMatchObject({ amount: 150000, ddDays: 10 });
   });
 

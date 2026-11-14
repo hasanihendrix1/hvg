@@ -275,7 +275,7 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
           <p className="deal-sent-line">
             {choice === "unseen"
               ? `Your site-unseen offer of ${usd(n)} on ${deal.street} is in.`
-              : `Your offer of ${usd(n)} on ${deal.street} is in. It becomes final after your walkthrough.`}
+              : `Your offer of ${usd(n)} on ${deal.street} is in.`}
           </p>
           {phone && (
             <p>
@@ -993,7 +993,7 @@ function OfferAsk({
       <p className="deal-sub">Pick one to continue. Site-unseen offers are reviewed first.</p>
       <div className="deal-picks">
         {card("unseen", "Site unseen", "I'm not walking the house first. This offer stands as is.")}
-        {card("walkthrough", "After a walkthrough", "I want to see the house before this offer is final.")}
+        {card("walkthrough", "I've done the walkthrough", "I've seen the house. This offer stands as is.")}
       </div>
       <button type="button" className="btn btn-primary deal-btn" disabled={!choice} onClick={next}>
         Continue
@@ -1046,7 +1046,7 @@ function OfferDetails(
         Your offer
       </h1>
       <div className="deal-choice-row">
-        <span>{p.choice === "unseen" ? "Site unseen" : "After a walkthrough"}</span>
+        <span>{p.choice === "unseen" ? "Site unseen" : "Walkthrough done"}</span>
         <button type="button" className="deal-link-btn" onClick={() => p.go("offerAsk")}>
           Change
         </button>
@@ -1155,11 +1155,11 @@ function OfferReview(
       <div className="deal-review-card">
         <p className="deal-price-label">Your offer</p>
         <p className="deal-review-price">{usd(p.amount)}</p>
-        <p className="deal-review-choice">{unseen ? "Site unseen" : "After a walkthrough"}</p>
+        <p className="deal-review-choice">{unseen ? "Site unseen" : "Walkthrough done"}</p>
         <p className="deal-review-line">
           {unseen
             ? "You are offering without walking the house first. This offer stands as is."
-            : "This offer becomes final after you see the house."}
+            : "You've walked the house. This offer stands as is."}
         </p>
       </div>
       <dl className="deal-review-rows">
