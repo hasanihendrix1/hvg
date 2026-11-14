@@ -87,7 +87,7 @@ async function expectAxeClean(page: Page) {
 test.describe("desktop", () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
-  test("a live deal shows its facts, price, ARV, photos and terms", async ({ page }) => {
+  test("a live deal shows its facts, price, terms and photos, and never an ARV", async ({ page }) => {
     await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     await expect(page.getByRole("heading", { level: 1, name: "1234 Sample Dr SE" })).toBeVisible();
@@ -96,8 +96,13 @@ test.describe("desktop", () => {
     const card = page.locator(".deal-price-card");
     await expect(card.getByText("Suggested Price")).toBeVisible();
     await expect(card.getByText("$165,000")).toBeVisible();
-    await expect(card.getByText("After-repair value (ARV)")).toBeVisible();
-    await expect(card.getByText("$295,000")).toBeVisible();
+    await expect(card.getByText("Earnest money")).toBeVisible();
+    await expect(card.getByText("$3,000")).toBeVisible();
+    // Read from the date itself: Dec 12, 2026 is a Saturday
+    await expect(card.getByText("Sat, Dec 12")).toBeVisible();
+    // The content carries an ARV; the page shows none (owner, 2026-11-14), in its text or its source
+    await expect(page.getByText(/ARV|after-repair/i)).toHaveCount(0);
+    expect(await page.content()).not.toContain("295000");
     await expect(page.locator(".deal-tile")).toHaveCount(8);
     await page.getByRole("button", { name: "See all 10 photos" }).click();
     await expect(page.locator(".deal-tile")).toHaveCount(10);
@@ -107,11 +112,14 @@ test.describe("desktop", () => {
     await expectAxeClean(page);
   });
 
-  test("no ARV unless the comp run rated it high confidence", async ({ page }) => {
-    await serve(page, live({ ...CONTENT, arv: null }));
+  test("a deal with no earnest money or close-by date shows the price alone", async ({ page }) => {
+    await serve(page, live({ ...CONTENT, deposit: null, closeBy: null }));
     await page.goto(`/deals/${SLUG}`);
-    await expect(page.getByText("$165,000")).toBeVisible();
-    await expect(page.getByText(/ARV|after-repair/i)).toHaveCount(0);
+    const card = page.locator(".deal-price-card");
+    await expect(card.getByText("$165,000")).toBeVisible();
+    await expect(card.getByText("Earnest money")).toHaveCount(0);
+    await expect(card.getByText("Close by")).toHaveCount(0);
+    await expect(card.getByRole("button", { name: /Submit an offer/ })).toBeVisible();
   });
 
   test("an agent deal reads Buy Now", async ({ page }) => {
@@ -356,9 +364,12 @@ test.describe("desktop", () => {
     const served = await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
     await page.goto(`/deals/${SLUG}`);
     const walk = page.getByTestId("deal-walk");
-    await expect(walk).toContainText("One walkthrough for everyone");
-    await expect(walk).toContainText(AHEAD.label);
-    await walk.getByRole("button", { name: "RSVP for the walkthrough" }).click();
+    // The stub shows the date, the line beside it the time; the name reads the whole of it
+    await expect(walk).toHaveAccessibleName(/^RSVP for the walkthrough Sat, Nov 21, 10:00 AM · one walkthrough for everyone/);
+    await expect(walk).toContainText("Nov");
+    await expect(walk).toContainText("21");
+    await expectAxeClean(page);
+    await walk.click();
 
     await expect(page.getByRole("heading", { name: "RSVP for the walkthrough" })).toBeFocused();
     await expect(page.locator(".deal-walk-flow")).toContainText(AHEAD.label);
@@ -386,7 +397,7 @@ test.describe("desktop", () => {
   test("a guest line with a phone and no name is caught on the form, and at most four come along", async ({ page }) => {
     const served = await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
     await page.goto(`/deals/${SLUG}`);
-    await page.getByTestId("deal-walk").getByRole("button", { name: "RSVP for the walkthrough" }).click();
+    await page.getByTestId("deal-walk").click();
     await fillContact(page);
     await page.getByRole("button", { name: "Add a guest" }).click();
     await page.getByLabel("Guest 1 phone").fill("404-555-0199");
@@ -411,7 +422,7 @@ test.describe("desktop", () => {
   test("a walkthrough that moved while the form was open asks for a reload, never a wrong RSVP", async ({ page }) => {
     await serve(page, live({ ...CONTENT, walkthrough: AHEAD }), { respond: () => 409 });
     await page.goto(`/deals/${SLUG}`);
-    await page.getByTestId("deal-walk").getByRole("button", { name: "RSVP for the walkthrough" }).click();
+    await page.getByTestId("deal-walk").click();
     await fillContact(page);
     await page.getByRole("button", { name: "Send RSVP" }).click();
     await expect(page.getByRole("alert")).toHaveText("The walkthrough time has changed. Reload this page to see the new time.");
@@ -438,6 +449,33 @@ test.describe("desktop", () => {
     expect(served.posts[0].offer).toMatchObject({ amount: 150000, ddDays: 10 });
   });
 
+  test("with a walkthrough set, I'm interested moves under the keys and still opens its form", async ({ page }) => {
+    await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
+    await page.goto(`/deals/${SLUG}`);
+    const card = page.locator(".deal-price-card");
+    await expect(card.getByRole("button", { name: /RSVP for the walkthrough/ })).toBeVisible();
+    await card.getByRole("button", { name: "I'm interested", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Interested in this house?" })).toBeFocused();
+  });
+
+  test("a walkthrough three days out counts down on its ticket, by calendar day", async ({ page }) => {
+    // 9 AM Eastern on Wed, Nov 18: the walkthrough is Sat, Nov 21 at 10 AM Eastern
+    await page.clock.setFixedTime(new Date("2026-11-18T14:00:00.000Z"));
+    await serve(page, live({ ...CONTENT, walkthrough: { at: "2026-11-21T15:00:00.000Z", label: "Sat, Nov 21 · 10:00 AM" } }));
+    await page.goto(`/deals/${SLUG}`);
+    await expect(page.getByTestId("deal-walk").locator(".deal-chip")).toHaveText("In 3 days");
+  });
+
+  test("the keys' press motion is parked under reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
+    await page.goto(`/deals/${SLUG}`);
+    const offer = page.locator(".deal-key-offer");
+    await offer.hover();
+    expect(await offer.evaluate((el) => getComputedStyle(el).transform)).toBe("none");
+    expect(await page.locator(".deal-price-card").evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
+  });
+
   test("the shell opened directly is unindexed and shows no deal", async ({ page }) => {
     await page.route("**/.netlify/functions/track-event", (route) => route.fulfill({ status: 200, body: "{}" }));
     const posted: Request[] = [];
@@ -455,10 +493,28 @@ test.describe("desktop", () => {
 test.describe("phone", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
+  test("both keys are on the first screen, and the bar takes over only once one scrolls away", async ({ page }) => {
+    await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
+    await page.goto(`/deals/${SLUG}`);
+    const viewport = page.viewportSize()!;
+    for (const key of [page.locator(".deal-key-offer"), page.getByTestId("deal-walk")]) {
+      const box = (await key.boundingBox())!;
+      expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
+    }
+    const bar = page.getByRole("region", { name: "Respond to this deal" });
+    await expect(bar).toBeHidden();
+    await page.getByRole("heading", { name: "Terms" }).scrollIntoViewIfNeeded();
+    await expect(bar).toBeVisible();
+    await expect(bar.getByRole("button", { name: /RSVP/ })).toContainText(AHEAD.label);
+    await bar.getByRole("button", { name: /RSVP/ }).click();
+    await expect(page.getByRole("heading", { name: "RSVP for the walkthrough" })).toBeFocused();
+  });
+
   test("the two actions stay pinned, the site's own bar is gone, and nothing scrolls sideways", async ({ page }) => {
     await serve(page, live());
     await page.goto(`/deals/${SLUG}`);
     const bar = page.getByRole("region", { name: "Respond to this deal" });
+    await page.getByRole("heading", { name: "Terms" }).scrollIntoViewIfNeeded();
     await expect(bar).toBeVisible();
     await expect(bar.getByRole("button", { name: "Submit offer" })).toBeVisible();
     await expect(page.locator(".sticky-bar")).toHaveCount(0);

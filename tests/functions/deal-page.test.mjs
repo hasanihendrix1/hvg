@@ -26,7 +26,6 @@ const CONTENT = {
   facts: "Single Family · 3 bed · 2 bath",
   occupancy: "Delivered Vacant",
   price: { label: "Suggested Price", amount: 165000 },
-  arv: null,
   heroUrl: "https://ltpiqfgtfdzlgtqdghle.supabase.co/storage/v1/object/public/deal-photos/x/front.jpg",
   photos: [],
 };
@@ -203,4 +202,15 @@ test.skipIf(!existsSync(BUILT))("the built shell's every preview tag is filled (
   }
   expect(h).toContain('<meta name="robots" content="noindex, nofollow">');
   expect(dataOf(html).slug).toBe(SLUG);
+});
+
+test("the page's source carries no ARV, even when dotato sends one", () => {
+  const html = renderDealPage({
+    shell: SHELL,
+    page: { state: "live", slug: "sample-dr-k3m9q2x7wzpa", content: { ...CONTENT, arv: 295000 } },
+    url: "https://hendrixventures.com/deals/sample-dr-k3m9q2x7wzpa",
+  });
+  expect(html).not.toContain("295000");
+  expect(html).not.toContain('"arv"');
+  expect(html).toContain("1234 Sample Dr SE");
 });
