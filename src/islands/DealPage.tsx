@@ -2,21 +2,24 @@ import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import "../styles/deal-page.css";
 import {
   BUYER_CONSENT_TEXT,
-  BUYER_DEAL_ALERTS_CONSENT_TEXT,
   BUYER_DEAL_UPDATES_CONSENT_TEXT,
 } from "../data/consent";
 import {
+  closeByLabel,
   drivePhotoUrl,
   LIMITS,
   MAX_DD_DAYS,
   MAX_GUESTS,
+  walkthroughCountdown,
   walkthroughOpen,
+  walkthroughParts,
   parseDollars,
   phoneDisplay,
   readDealPageState,
   usd,
   type DealPageContent,
   type DealPageState,
+  type DealWalkthrough,
 } from "../data/deal-page";
 
 // Same rule as the buyer sign-up: area code and exchange never start with 0 or 1.
@@ -45,7 +48,6 @@ type Contact = {
   phone: string;
   email: string;
   consent: boolean;
-  dealAlerts: boolean;
   dealUpdates: boolean;
 };
 
@@ -55,7 +57,6 @@ const EMPTY_CONTACT: Contact = {
   phone: "",
   email: "",
   consent: false,
-  dealAlerts: false,
   dealUpdates: false,
 };
 
@@ -274,7 +275,7 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
           <p className="deal-sent-line">
             {choice === "unseen"
               ? `Your site-unseen offer of ${usd(n)} on ${deal.street} is in.`
-              : `Your offer of ${usd(n)} on ${deal.street} is in. It becomes final after your walkthrough.`}
+              : `Your offer of ${usd(n)} on ${deal.street} is in.`}
           </p>
           {phone && (
             <p>
@@ -290,6 +291,93 @@ function LiveDeal({ slug, deal }: { slug: string; deal: DealPageContent }) {
     default:
       return view;
   }
+}
+
+// The sticky site header covers this much of the top of the screen (61-69px).
+const HEADER_CLEARANCE = 69;
+
+/** True while any button inside `ref` is out of sight; the phone's bar stands in for it then. */
+function useOutOfSight(ref: React.RefObject<HTMLElement>, watched: unknown): boolean {
+  const [out, setOut] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Without the observer the bar simply stays up, as it always did.
+    if (typeof IntersectionObserver === "undefined") {
+      setOut(true);
+      return;
+    }
+    const hidden = new Set<Element>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) hidden.delete(e.target);
+          else hidden.add(e.target);
+        }
+        setOut(hidden.size > 0);
+      },
+      { threshold: 0.6, rootMargin: `-${HEADER_CLEARANCE}px 0px 0px 0px` }
+    );
+    el.querySelectorAll("button").forEach((b) => io.observe(b));
+    return () => io.disconnect();
+  }, [ref, watched]);
+  return out;
+}
+
+const ArrowIcon = () => (
+  <span className="deal-key-go" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12h13M13 6l6 6-6 6" />
+    </svg>
+  </span>
+);
+
+/** The RSVP as a ticket: the date on its stub, the time beside it, and how soon it is. */
+function WalkKey({ walk, onRsvp }: { walk: DealWalkthrough; onRsvp: () => void }) {
+  const parts = walkthroughParts(walk.label);
+  const count = walkthroughCountdown(walk);
+  return (
+    <button
+      type="button"
+      className={`deal-key deal-key-light${parts ? " deal-key-ticket" : ""}`}
+      data-testid="deal-walk"
+      onClick={onRsvp}
+    >
+      {parts && (
+        <span className="deal-stub" aria-hidden="true">
+          <span>{parts.month}</span>
+          <b>{parts.day}</b>
+          <span>{parts.weekday}</span>
+        </span>
+      )}
+      <span className="deal-key-text">
+        <span className="deal-key-main">RSVP for the walkthrough</span>
+        <span className="deal-key-sub">
+          {parts ? (
+            <>
+              <span className="sr-only">
+                {parts.weekday}, {parts.month} {parts.day},{" "}
+              </span>
+              {parts.time}
+            </>
+          ) : (
+            walk.label
+          )}
+          <span className="deal-key-wide"> · one walkthrough for everyone</span>
+          {count && <span className="deal-key-narrow"> · {count.toLowerCase()}</span>}
+        </span>
+      </span>
+      {count && (
+        <span className="deal-chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="8" />
+            <path d="M12 8v4l2.5 2.5" />
+          </svg>
+          {count}
+        </span>
+      )}
+    </button>
+  );
 }
 
 function DealView({
@@ -315,163 +403,196 @@ function DealView({
   const gallery = deal.photos.filter((p) => !failed.has(p.id));
   const hero = deal.heroUrl ?? (gallery[0] ? drivePhotoUrl(gallery[0].id) : null);
   const shown = showAll ? gallery : gallery.slice(0, 8);
+  const keys = useRef<HTMLDivElement>(null);
+  const barOn = useOutOfSight(keys, walk !== null);
+  const hasTerms = deal.deposit !== null || deal.closeBy !== null;
+  const hasBody = Boolean(deal.about) || deal.mustRead.length > 0;
 
   return (
     <div className="deal">
-      <div className="deal-hero">
-        {hero ? (
-          <img src={hero} alt={`Front of ${deal.street}`} width={1200} height={750} onError={deal.heroUrl || !gallery[0] ? undefined : () => drop(gallery[0].id)} />
-        ) : (
-          <div className="deal-hero-empty" aria-hidden="true" />
-        )}
-        {gallery.length > 0 && (
-          <button type="button" className="deal-count" onClick={() => setViewing(0)}>
-            {gallery.length} {gallery.length === 1 ? "photo" : "photos"}
-          </button>
-        )}
-      </div>
-
-      <aside className="deal-summary">
-        <p className="deal-eyebrow">Off-market · {deal.locality}</p>
-        <h1>{deal.street}</h1>
-        {deal.facts && <p className="deal-facts">{deal.facts}</p>}
-        {deal.occupancy && <p className="deal-pill">{deal.occupancy}</p>}
-        <div className="deal-price-card">
-          <p className="deal-price-label">{deal.price.label}</p>
-          <p className="deal-price">{usd(deal.price.amount)}</p>
-          {deal.arv !== null && (
-            <div className="deal-arv">
-              <p className="deal-arv-row">
-                <span>After-repair value (ARV)</span>
-                <span className="deal-arv-amount">{usd(deal.arv)}</span>
-              </p>
-              <p className="deal-arv-note">Our estimate from recent renovated sales nearby. Run your own numbers.</p>
-            </div>
+      <section className="deal-stage" aria-label="This deal">
+        <div className={hero ? "deal-photo" : "deal-photo deal-photo-empty"}>
+          {hero && (
+            <img src={hero} alt={`Front of ${deal.street}`} width={1600} height={1000} onError={deal.heroUrl || !gallery[0] ? undefined : () => drop(gallery[0].id)} />
           )}
-          <div className="deal-actions">
-            <button type="button" className="btn btn-primary deal-btn" onClick={onOffer}>
-              Submit an offer
-            </button>
-            <button type="button" className="btn btn-secondary deal-btn deal-btn-outline" onClick={onInterested}>
-              I'm interested
-            </button>
-          </div>
-          {walk && (
-            <div className="deal-walk" data-testid="deal-walk">
-              <p className="deal-walk-label">One walkthrough for everyone</p>
-              <p className="deal-walk-time">{walk.label}</p>
-              <button type="button" className="btn btn-secondary deal-btn deal-btn-outline" onClick={onRsvp}>
-                RSVP for the walkthrough
+          <div className="deal-scrim" aria-hidden="true" />
+          <div className="deal-photo-in">
+            {gallery.length > 0 ? (
+              <button type="button" className="deal-photos-btn deal-count" onClick={() => setViewing(0)}>
+                <CameraIcon />
+                {gallery.length} {gallery.length === 1 ? "photo" : "photos"}
               </button>
+            ) : deal.photosFolderUrl ? (
+              <a href={deal.photosFolderUrl} target="_blank" rel="noopener noreferrer" className="deal-photos-btn">
+                <CameraIcon />
+                See the photos and video
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            ) : null}
+            <div className="deal-title">
+              <p className="deal-eyebrow">Off-market · {deal.locality}</p>
+              <h1>{deal.street}</h1>
             </div>
-          )}
-          <p className="deal-first">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="8" />
-              <path d="M12 8v4l2.5 2.5" />
-            </svg>
-            Site-unseen offers are reviewed first.
-          </p>
+          </div>
         </div>
-      </aside>
 
-      <div className="deal-main">
-        {(gallery.length > 0 || deal.photosFolderUrl) && (
-          <section className="deal-section" aria-labelledby="deal-photos-h">
-            <h2 id="deal-photos-h">Photos and video</h2>
-            {shown.length > 0 && (
-              <ul className="deal-gallery" role="list">
-                {shown.map((p, i) => (
-                  <li key={p.id}>
-                    <button type="button" className="deal-tile" onClick={() => setViewing(i)}>
-                      <img
-                        src={drivePhotoUrl(p.id, 640)}
-                        alt={p.name ? `Photo: ${p.name}` : `Photo ${i + 1} of ${gallery.length}`}
-                        loading="lazy"
-                        width={640}
-                        height={480}
-                        onError={() => drop(p.id)}
-                      />
-                    </button>
-                  </li>
-                ))}
-              </ul>
+        <div className="deal-stage-in">
+          <div className={hasTerms ? "deal-price-card" : "deal-price-card deal-price-card-solo"}>
+            {(deal.facts || deal.occupancy) && (
+              <p className="deal-facts">
+                {deal.facts}
+                {deal.occupancy && <span className="deal-pill">{deal.occupancy}</span>}
+              </p>
             )}
-            <div className="deal-photo-links">
-              {gallery.length > shown.length && (
-                <button type="button" className="btn btn-secondary deal-btn deal-btn-quiet" onClick={() => setShowAll(true)}>
-                  See all {gallery.length} photos
+            <div className="deal-stat deal-stat-price">
+              <p className="deal-price-label">{deal.price.label}</p>
+              <p className="deal-price">{usd(deal.price.amount)}</p>
+            </div>
+            {hasTerms && (
+              <div className="deal-terms-stats">
+                {deal.deposit !== null && (
+                  <div className="deal-stat">
+                    <p className="deal-price-label">Earnest money</p>
+                    <p className="deal-stat-value">{usd(deal.deposit)}</p>
+                  </div>
+                )}
+                {deal.closeBy !== null && (
+                  <div className="deal-stat">
+                    <p className="deal-price-label">Close by</p>
+                    <p className="deal-stat-value">{closeByLabel(deal.closeBy)}</p>
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="deal-keys" ref={keys} data-walk={walk ? "" : undefined}>
+              <button type="button" className="deal-key deal-key-offer" onClick={onOffer}>
+                <span className="deal-key-text">
+                  <span className="deal-key-main">Submit an offer</span>
+                  <span className="deal-key-sub">Site-unseen offers are reviewed first</span>
+                </span>
+                <ArrowIcon />
+              </button>
+              {walk ? (
+                <WalkKey walk={walk} onRsvp={onRsvp} />
+              ) : (
+                <button type="button" className="deal-key deal-key-light" onClick={onInterested}>
+                  <span className="deal-key-text">
+                    <span className="deal-key-main">I'm interested</span>
+                    <span className="deal-key-sub">Not ready to offer yet</span>
+                  </span>
+                  <ArrowIcon />
                 </button>
               )}
-              {deal.photosFolderUrl && (
-                <a href={deal.photosFolderUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary deal-btn deal-btn-quiet">
-                  {gallery.length > 0 ? "Photos and video folder" : "See the photos and video"}
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
-              )}
             </div>
-          </section>
-        )}
+            {(walk || phone) && (
+              <div className="deal-panel-foot">
+                {walk && (
+                  <p>
+                    Not ready to offer?{" "}
+                    <button type="button" className="deal-inline-btn" onClick={onInterested}>
+                      I'm interested
+                    </button>
+                  </p>
+                )}
+                {phone && (
+                  <p>
+                    Questions? Call or text <a href={`tel:${deal.phone}`} className="nowrap">{phone}</a>
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
-        {deal.about && (
-          <section className="deal-section" aria-labelledby="deal-about-h">
-            <h2 id="deal-about-h">About the house</h2>
-            <p className="deal-prose">{deal.about}</p>
-          </section>
-        )}
-
-        <section className="deal-section" aria-labelledby="deal-secure-h">
-          <h2 id="deal-secure-h">How to secure it</h2>
-          <p>
-            Submit your offer on this page
-            {phone ? (
-              <>
-                , or call or text <a href={`tel:${deal.phone}`} className="nowrap">{phone}</a>
-              </>
-            ) : null}
-            .
-          </p>
-        </section>
-
-        {deal.mustRead.length > 0 && (
-          <section className="deal-section" aria-labelledby="deal-must-h">
-            <h2 id="deal-must-h">Must-read before viewing</h2>
-            <ul className="deal-list">
-              {deal.mustRead.map((line, i) => (
-                <li key={i}>{line}</li>
+      <div className="deal-main">
+        {gallery.length > 0 && (
+          <section className="deal-section" aria-labelledby="deal-photos-h">
+            <h2 id="deal-photos-h">Photos and video</h2>
+            <ul className="deal-gallery" role="list">
+              {shown.map((p, i) => (
+                <li key={p.id}>
+                  <button type="button" className="deal-tile" onClick={() => setViewing(i)}>
+                    <img
+                      src={drivePhotoUrl(p.id, 640)}
+                      alt={p.name ? `Photo: ${p.name}` : `Photo ${i + 1} of ${gallery.length}`}
+                      loading="lazy"
+                      width={640}
+                      height={480}
+                      onError={() => drop(p.id)}
+                    />
+                  </button>
+                </li>
               ))}
             </ul>
+            {(gallery.length > shown.length || deal.photosFolderUrl) && (
+              <div className="deal-photo-links">
+                {gallery.length > shown.length && (
+                  <button type="button" className="btn btn-secondary deal-btn deal-btn-quiet" onClick={() => setShowAll(true)}>
+                    See all {gallery.length} photos
+                  </button>
+                )}
+                {deal.photosFolderUrl && (
+                  <a href={deal.photosFolderUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary deal-btn deal-btn-quiet">
+                    Photos and video folder
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </a>
+                )}
+              </div>
+            )}
           </section>
         )}
 
-        {deal.terms.length > 0 && (
-          <section className="deal-section" aria-labelledby="deal-terms-h">
-            <h2 id="deal-terms-h">Basic terms</h2>
-            <ul className="deal-list">
-              {deal.terms.map((line, i) => (
-                <li key={i}>{line}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {phone && (
-          <div className="deal-questions">
-            <p className="deal-strong">Questions about this house?</p>
-            <p>
-              Call or text <a href={`tel:${deal.phone}`} className="nowrap">{phone}</a>
-            </p>
+        {(hasBody || deal.terms.length > 0) && (
+          <div className={hasBody && deal.terms.length > 0 ? "deal-details" : "deal-details deal-details-one"}>
+            {hasBody && (
+              <div className="deal-details-body">
+                {deal.about && (
+                  <section className="deal-section" aria-labelledby="deal-about-h">
+                    <h2 id="deal-about-h">About the house</h2>
+                    <p className="deal-prose">{deal.about}</p>
+                  </section>
+                )}
+                {deal.mustRead.length > 0 && (
+                  <section className="deal-section" aria-labelledby="deal-must-h">
+                    <h2 id="deal-must-h">Must-read before viewing</h2>
+                    <ul className="deal-list">
+                      {deal.mustRead.map((line, i) => (
+                        <li key={i}>{line}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+              </div>
+            )}
+            {deal.terms.length > 0 && (
+              <section className="deal-section deal-terms-card" aria-labelledby="deal-terms-h">
+                <h2 id="deal-terms-h">Terms</h2>
+                <ul className="deal-list">
+                  {deal.terms.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
         )}
 
         {deal.disclaimer && <p className="deal-disclaimer">{deal.disclaimer}</p>}
       </div>
 
-      <div className="deal-actionbar" role="region" aria-label="Respond to this deal">
-        <button type="button" className="btn btn-secondary deal-btn deal-btn-outline" onClick={onInterested}>
-          I'm interested
-        </button>
-        <button type="button" className="btn btn-primary deal-btn" onClick={onOffer}>
+      <div className="deal-actionbar" role="region" aria-label="Respond to this deal" data-on={barOn ? "" : undefined}>
+        {walk ? (
+          <button type="button" className="deal-bar-btn deal-bar-light" onClick={onRsvp}>
+            RSVP
+            <span className="deal-bar-sub">{walk.label}</span>
+          </button>
+        ) : (
+          <button type="button" className="deal-bar-btn deal-bar-light" onClick={onInterested}>
+            I'm interested
+          </button>
+        )}
+        <button type="button" className="deal-bar-btn deal-bar-fill" onClick={onOffer}>
           Submit offer
         </button>
       </div>
@@ -482,6 +603,13 @@ function DealView({
     </div>
   );
 }
+
+const CameraIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 7h3l2-2h6l2 2h3v12H4z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </svg>
+);
 
 function PhotoViewer({
   photos,
@@ -612,13 +740,7 @@ function ContactFields({ contact, setContact }: { contact: Contact; setContact: 
             {BUYER_CONSENT_TEXT} See our <a href="/investor-privacy">Investor Privacy Notice</a>.
           </span>
         </label>
-        {/* ⚖ The investor deal-texts boxes: optional, unticked until the buyer ticks one. */}
-        <label className="deal-consent">
-          <input type="checkbox" name="consentDealAlerts" checked={contact.dealAlerts} onChange={set("dealAlerts")} />
-          <span>
-            {BUYER_DEAL_ALERTS_CONSENT_TEXT} See our <a href="/investor-sms-terms">Investor SMS Terms</a>.
-          </span>
-        </label>
+        {/* ⚖ Deal updates only, optional and unticked: the deal-alerts box lives on /investors (owner, 2026-11-14). */}
         <label className="deal-consent">
           <input type="checkbox" name="consentDealUpdates" checked={contact.dealUpdates} onChange={set("dealUpdates")} />
           <span>
@@ -665,7 +787,6 @@ function useSend(p: FlowProps, kind: "interested" | "offer" | "rsvp") {
           phone: c.phone.trim(),
           email: c.email.trim(),
           consentCallsEmail: c.consent,
-          consentDealAlerts: c.dealAlerts,
           consentDealUpdates: c.dealUpdates,
           offer,
           rsvp,
@@ -872,7 +993,7 @@ function OfferAsk({
       <p className="deal-sub">Pick one to continue. Site-unseen offers are reviewed first.</p>
       <div className="deal-picks">
         {card("unseen", "Site unseen", "I'm not walking the house first. This offer stands as is.")}
-        {card("walkthrough", "After a walkthrough", "I want to see the house before this offer is final.")}
+        {card("walkthrough", "I've done the walkthrough", "I've seen the house. This offer stands as is.")}
       </div>
       <button type="button" className="btn btn-primary deal-btn" disabled={!choice} onClick={next}>
         Continue
@@ -925,7 +1046,7 @@ function OfferDetails(
         Your offer
       </h1>
       <div className="deal-choice-row">
-        <span>{p.choice === "unseen" ? "Site unseen" : "After a walkthrough"}</span>
+        <span>{p.choice === "unseen" ? "Site unseen" : "Walkthrough done"}</span>
         <button type="button" className="deal-link-btn" onClick={() => p.go("offerAsk")}>
           Change
         </button>
@@ -1034,11 +1155,11 @@ function OfferReview(
       <div className="deal-review-card">
         <p className="deal-price-label">Your offer</p>
         <p className="deal-review-price">{usd(p.amount)}</p>
-        <p className="deal-review-choice">{unseen ? "Site unseen" : "After a walkthrough"}</p>
+        <p className="deal-review-choice">{unseen ? "Site unseen" : "Walkthrough done"}</p>
         <p className="deal-review-line">
           {unseen
             ? "You are offering without walking the house first. This offer stands as is."
-            : "This offer becomes final after you see the house."}
+            : "You've walked the house. This offer stands as is."}
         </p>
       </div>
       <dl className="deal-review-rows">

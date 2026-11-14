@@ -84,6 +84,17 @@ export function pageMeta(page) {
 const setAttr = (html, pattern, value) =>
   html.replace(pattern, (_m, open, close) => `${open}${escapeHtml(value)}${close}`);
 
+// Only what the page reads reaches its source: no ARV (owner, 2026-11-14), nor any field dotato adds later.
+const PAGE_FIELDS = [
+  "street", "locality", "facts", "occupancy", "price", "about", "mustRead", "terms", "disclaimer",
+  "heroUrl", "photos", "photosFolderUrl", "phone", "deposit", "closeBy", "walkthrough",
+];
+const forPage = (page) => {
+  if (!page || page.state !== "live" || !page.content || typeof page.content !== "object") return page;
+  const content = Object.fromEntries(PAGE_FIELDS.filter((k) => k in page.content).map((k) => [k, page.content[k]]));
+  return { ...page, content };
+};
+
 /** The shell with this deal's tags and data. Pure, so tests and e2e render exactly what production serves. */
 export function renderDealPage({ shell, page, url }) {
   const meta = pageMeta(page);
@@ -105,7 +116,7 @@ export function renderDealPage({ shell, page, url }) {
     html = setAttr(html, /(<meta\s+property="og:image"\s+content=")[^"]*(")/, meta.image);
     html = setAttr(html, /(<meta\s+name="twitter:image"\s+content=")[^"]*(")/, meta.image);
   }
-  const data = `<script type="application/json" id="deal-data">${scriptJson(page)}</script>`;
+  const data = `<script type="application/json" id="deal-data">${scriptJson(forPage(page))}</script>`;
   return html.replace("</head>", () => `${data}</head>`);
 }
 
