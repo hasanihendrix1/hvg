@@ -26,6 +26,8 @@ const PHONE =
   /^(?:\+?1[-. ]?)?\(?([2-9][0-9]{2})\)?[-. ]?([2-9][0-9]{2})[-. ]?([0-9]{4})$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ISO_DAY = /^20\d{2}-\d{2}-\d{2}$/;
+const ISO_INSTANT = /^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}/;
+const MAX_GUESTS = 4;
 
 // A real calendar day this century: "2026-02-31" has the shape and no date, and the database refuses it.
 const isCalendarDay = (s) => {
@@ -39,6 +41,22 @@ const text = (v, max) =>
 
 const wholeDollars = (v, min, max) =>
   typeof v === "number" && Number.isInteger(v) && v >= min && v <= max ? v : null;
+
+// Who they bring to the walkthrough: at most four, each named. Null refuses the whole list.
+const guestList = (raw) => {
+  if (raw == null) return [];
+  if (!Array.isArray(raw) || raw.length > MAX_GUESTS) return null;
+  const out = [];
+  for (const g of raw) {
+    const name = g && typeof g === "object" ? text(g.name, 80) : null;
+    if (!name) return null;
+    if (g.phone != null && typeof g.phone !== "string") return null;
+    const phone = typeof g.phone === "string" && g.phone.trim() !== "" ? g.phone.trim() : null;
+    if (phone !== null && phone.length > 30) return null;
+    out.push({ name, phone });
+  }
+  return out;
+};
 
 const json = (statusCode, body) => ({
   statusCode,
@@ -55,7 +73,7 @@ export function validateResponse(p) {
   if (!p || typeof p !== "object") return { ok: false, reason: "invalid" };
   const slug = typeof p.slug === "string" && p.slug.length >= 16 && p.slug.length <= 96 && SLUG.test(p.slug) ? p.slug : null;
   if (!slug) return { ok: false, reason: "slug" };
-  if (p.kind !== "interested" && p.kind !== "offer") return { ok: false, reason: "kind" };
+  if (p.kind !== "interested" && p.kind !== "offer" && p.kind !== "rsvp") return { ok: false, reason: "kind" };
   if (typeof p.submissionId !== "string" || !UUID.test(p.submissionId)) return { ok: false, reason: "submissionId" };
   const firstName = text(p.firstName, 80);
   const lastName = text(p.lastName, 80);
@@ -79,7 +97,21 @@ export function validateResponse(p) {
     if (closeBy !== null && !isCalendarDay(closeBy)) return { ok: false, reason: "closeBy" };
     if (o.notes != null && typeof o.notes !== "string") return { ok: false, reason: "notes" };
     const notes = typeof o.notes === "string" ? o.notes.trim().slice(0, 1000) || null : null;
-    offer = { siteUnseen: o.siteUnseen, amount, emd, closeBy, notes };
+    const ddDays = o.ddDays == null || o.ddDays === "" ? null : Number.isInteger(o.ddDays) && o.ddDays >= 0 && o.ddDays <= 365 ? o.ddDays : undefined;
+    if (ddDays === undefined) return { ok: false, reason: "ddDays" };
+    offer = { siteUnseen: o.siteUnseen, amount, emd, closeBy, notes, ddDays };
+  }
+
+  // A walkthrough RSVP names the time it answers, so a time moved since is seen on the other side.
+  let rsvp = null;
+  if (p.kind === "rsvp") {
+    const r = p.rsvp && typeof p.rsvp === "object" ? p.rsvp : {};
+    const slotAt = text(r.slotAt, 40);
+    if (!slotAt || !ISO_INSTANT.test(slotAt) || Number.isNaN(Date.parse(slotAt))) return { ok: false, reason: "rsvp" };
+    const guests = guestList(r.guests);
+    if (guests === null) return { ok: false, reason: "guests" };
+    if (r.note != null && typeof r.note !== "string") return { ok: false, reason: "note" };
+    rsvp = { slotAt: new Date(slotAt).toISOString(), guests, note: typeof r.note === "string" ? r.note.trim().slice(0, 1000) || null : null };
   }
 
   return {
@@ -102,6 +134,7 @@ export function validateResponse(p) {
       dealUpdatesConsentVersion: BUYER_DEAL_UPDATES_CONSENT_VERSION,
       dealUpdatesConsentText: BUYER_DEAL_UPDATES_CONSENT_TEXT,
       offer,
+      rsvp,
       receivedAt: new Date().toISOString(),
     },
   };
@@ -162,6 +195,8 @@ export const handler = async (event) => {
     const status = err && err.response && err.response.status;
     // Only dotato's own "no such deal" means gone; a 404 is a webhook that is off or misaddressed.
     if (status === 410) return json(410, { message: "gone" });
+    // The walkthrough has no time any more: the page the buyer holds is out of date.
+    if (status === 409) return json(409, { message: "changed" });
     console.error("dotato deal response failed:", status || (err && err.message));
     return json(502, { message: "failed" });
   }

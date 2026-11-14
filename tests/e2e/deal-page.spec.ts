@@ -32,6 +32,9 @@ const CONTENT = {
   closeBy: "2026-12-12",
 };
 
+// A walkthrough a year out, so the RSVP is open whenever this runs.
+const AHEAD = { at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), label: "Sat, Nov 21 · 10:00 AM" };
+
 type Served = { posts: Record<string, unknown>[] };
 
 async function serve(
@@ -347,6 +350,92 @@ test.describe("desktop", () => {
     await expect(page.getByRole("link", { name: "Join the buyer list" }).first()).toHaveAttribute("href", "/investors#buyer-list");
     await expect(page.getByText("Sample Dr")).toHaveCount(0);
     await expectAxeClean(page);
+  });
+
+  test("a walkthrough still ahead shows its one time, and the RSVP sends who is coming", async ({ page }) => {
+    const served = await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
+    await page.goto(`/deals/${SLUG}`);
+    const walk = page.getByTestId("deal-walk");
+    await expect(walk).toContainText("One walkthrough for everyone");
+    await expect(walk).toContainText(AHEAD.label);
+    await walk.getByRole("button", { name: "RSVP for the walkthrough" }).click();
+
+    await expect(page.getByRole("heading", { name: "RSVP for the walkthrough" })).toBeFocused();
+    await expect(page.locator(".deal-walk-flow")).toContainText(AHEAD.label);
+    await fillContact(page);
+    await page.getByRole("checkbox", { name: /updates on deals I respond to/ }).check();
+    await page.getByRole("button", { name: "Add a guest" }).click();
+    await page.getByLabel("Guest 1 name").fill("Sam Roofer");
+    await page.getByRole("button", { name: "Add another guest" }).click();
+    await expectAxeClean(page);
+    // A line added and left empty is not a guest.
+    await page.getByLabel("Anything we should know?").fill("Bringing my contractor");
+    await page.getByRole("button", { name: "Send RSVP" }).click();
+
+    await expect(page.getByRole("heading", { name: "You're on the list" })).toBeVisible();
+    await expect(page.getByText(`See you at 1234 Sample Dr SE on ${AHEAD.label}, with 1 guest.`)).toBeVisible();
+    expect(served.posts).toHaveLength(1);
+    expect(served.posts[0]).toMatchObject({
+      kind: "rsvp",
+      offer: null,
+      consentDealUpdates: true,
+      rsvp: { slotAt: AHEAD.at, guests: [{ name: "Sam Roofer", phone: null }], note: "Bringing my contractor" },
+    });
+  });
+
+  test("a guest line with a phone and no name is caught on the form, and at most four come along", async ({ page }) => {
+    const served = await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
+    await page.goto(`/deals/${SLUG}`);
+    await page.getByTestId("deal-walk").getByRole("button", { name: "RSVP for the walkthrough" }).click();
+    await fillContact(page);
+    await page.getByRole("button", { name: "Add a guest" }).click();
+    await page.getByLabel("Phone Optional").fill("404-555-0199");
+    await page.getByRole("button", { name: "Send RSVP" }).click();
+    await expect(page.getByRole("alert")).toContainText("add a name for each person");
+    expect(served.posts).toHaveLength(0);
+    for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Add another guest" }).click();
+    await expect(page.getByRole("button", { name: "Add another guest" })).toHaveCount(0);
+  });
+
+  test("no walkthrough, or one already started, offers no RSVP", async ({ page }) => {
+    await serve(page, live());
+    await page.goto(`/deals/${SLUG}`);
+    await expect(page.getByRole("heading", { name: "1234 Sample Dr SE" })).toBeVisible();
+    await expect(page.getByTestId("deal-walk")).toHaveCount(0);
+    await serve(page, live({ ...CONTENT, walkthrough: { at: "2020-01-04T15:00:00.000Z", label: "Sat, Jan 4 · 10:00 AM" } }));
+    await page.goto(`/deals/${SLUG}`);
+    await expect(page.getByRole("heading", { name: "1234 Sample Dr SE" })).toBeVisible();
+    await expect(page.getByTestId("deal-walk")).toHaveCount(0);
+  });
+
+  test("a walkthrough that moved while the form was open asks for a reload, never a wrong RSVP", async ({ page }) => {
+    await serve(page, live({ ...CONTENT, walkthrough: AHEAD }), { respond: () => 409 });
+    await page.goto(`/deals/${SLUG}`);
+    await page.getByTestId("deal-walk").getByRole("button", { name: "RSVP for the walkthrough" }).click();
+    await fillContact(page);
+    await page.getByRole("button", { name: "Send RSVP" }).click();
+    await expect(page.getByRole("alert")).toHaveText("The walkthrough time has changed. Reload this page to see the new time.");
+    await expect(page.getByRole("heading", { name: "You're on the list" })).toHaveCount(0);
+  });
+
+  test("an offer carries its due diligence days, and a bad number is caught on the form", async ({ page }) => {
+    const served = await serve(page, live());
+    await page.goto(`/deals/${SLUG}`);
+    await page.locator(".deal-price-card").getByRole("button", { name: "Submit an offer" }).click();
+    await page.getByRole("button", { name: /^After a walkthrough/ }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Offer price").fill("$150,000");
+    await fillContact(page);
+    await page.getByLabel("Due diligence days").fill("two weeks");
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await expect(page.getByRole("alert")).toContainText("due diligence as a number of days");
+    await page.getByLabel("Due diligence days").fill("10");
+    await page.getByRole("button", { name: "Review offer" }).click();
+    await expect(page.locator(".deal-review-rows")).toContainText("Due diligence");
+    await expect(page.locator(".deal-review-rows")).toContainText("10 days");
+    await page.getByRole("button", { name: "Send offer" }).click();
+    await expect(page.getByText("It becomes final after your walkthrough.")).toBeVisible();
+    expect(served.posts[0].offer).toMatchObject({ amount: 150000, ddDays: 10 });
   });
 
   test("the shell opened directly is unindexed and shows no deal", async ({ page }) => {

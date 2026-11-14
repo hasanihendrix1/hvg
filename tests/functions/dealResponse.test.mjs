@@ -42,6 +42,13 @@ const offer = (o = {}, overrides = {}) =>
     ...overrides,
   });
 
+const rsvp = (r = {}, overrides = {}) =>
+  interest({
+    kind: "rsvp",
+    rsvp: { slotAt: "2026-11-21T15:00:00.000Z", guests: [{ name: " Sam Roofer ", phone: "" }], note: " Bringing my contractor ", ...r },
+    ...overrides,
+  });
+
 const post = (payload) => handler({ httpMethod: "POST", headers: {}, body: JSON.stringify(payload) });
 const sent = () => {
   const [url, body, opts] = axios.post.mock.calls[0];
@@ -92,13 +99,13 @@ test("only a literal true ticks a texting box", async () => {
 test("a site-unseen offer carries its answer, price and terms", async () => {
   const res = await post(offer());
   expect(res.statusCode).toBe(200);
-  expect(sent().json.offer).toEqual({ siteUnseen: true, amount: 158000, emd: 3000, closeBy: "2026-12-12", notes: "Cash" });
+  expect(sent().json.offer).toEqual({ siteUnseen: true, amount: 158000, emd: 3000, closeBy: "2026-12-12", notes: "Cash", ddDays: null });
 });
 
 test("an offer after a walkthrough needs no acknowledgment", async () => {
   const res = await post(offer({ siteUnseen: false, acknowledgedUnseen: false, emd: null, closeBy: null, notes: null }));
   expect(res.statusCode).toBe(200);
-  expect(sent().json.offer).toEqual({ siteUnseen: false, amount: 158000, emd: null, closeBy: null, notes: null });
+  expect(sent().json.offer).toEqual({ siteUnseen: false, amount: 158000, emd: null, closeBy: null, notes: null, ddDays: null });
 });
 
 test.each([
@@ -114,7 +121,13 @@ test.each([
   ["a bad email", interest({ email: "dana@" })],
   ["no last name", interest({ lastName: " " })],
   ["a slug that is not one", interest({ slug: "../etc" })],
-  ["an unknown kind", interest({ kind: "rsvp" })],
+  ["an unknown kind", interest({ kind: "tour" })],
+  ["DD days that are not whole days", offer({ ddDays: 2.5 })],
+  ["DD days past a year", offer({ ddDays: 366 })],
+  ["an RSVP with no walkthrough time", rsvp({ slotAt: undefined })],
+  ["an RSVP whose time is not an instant", rsvp({ slotAt: "Saturday at 10" })],
+  ["an RSVP bringing five people", rsvp({ guests: Array.from({ length: 5 }, () => ({ name: "Al" })) })],
+  ["an RSVP guest with no name", rsvp({ guests: [{ name: " " }] })],
   ["a submission id that is not a uuid", interest({ submissionId: "1" })],
 ])("refuses %s before anything reaches dotato", async (_name, payload) => {
   const res = await post(payload);
@@ -134,6 +147,38 @@ test("without the webhook settings nothing is sent and the buyer is told", async
   const res = await post(offer());
   expect(res.statusCode).toBe(503);
   expect(axios.post).not.toHaveBeenCalled();
+});
+
+test("an RSVP goes to dotato with the time it answered, who they bring and their note", async () => {
+  expect((await post(rsvp())).statusCode).toBe(200);
+  expect(sent().json).toMatchObject({
+    kind: "rsvp",
+    offer: null,
+    rsvp: { slotAt: "2026-11-21T15:00:00.000Z", guests: [{ name: "Sam Roofer", phone: null }], note: "Bringing my contractor" },
+  });
+});
+
+test("an RSVP alone, with no guests or note, is fine; an interest carries no RSVP", async () => {
+  expect((await post(rsvp({ guests: undefined, note: undefined }))).statusCode).toBe(200);
+  expect(sent().json.rsvp).toEqual({ slotAt: "2026-11-21T15:00:00.000Z", guests: [], note: null });
+  axios.post.mockClear();
+  await post(interest());
+  expect(sent().json.rsvp).toBeNull();
+});
+
+test("an offer carries its DD days, or none", async () => {
+  await post(offer({ ddDays: 10 }));
+  expect(sent().json.offer.ddDays).toBe(10);
+  axios.post.mockClear();
+  await post(offer());
+  expect(sent().json.offer.ddDays).toBeNull();
+});
+
+test("a walkthrough time dotato no longer holds answers 409, so the page asks for a reload", async () => {
+  axios.post.mockRejectedValue({ response: { status: 409 } });
+  const res = await post(rsvp());
+  expect(res.statusCode).toBe(409);
+  expect(JSON.parse(res.body)).toEqual({ message: "changed" });
 });
 
 test("a deal dotato no longer knows answers 410, so the page says it is gone", async () => {
