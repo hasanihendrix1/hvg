@@ -18,8 +18,6 @@ export interface DealPageContent {
   /** "Delivered Vacant", or null when he has not confirmed it */
   occupancy: string | null;
   price: { label: "Suggested Price" | "Buy Now"; amount: number };
-  /** Only when the comp run rated the ARV high confidence (owner, 2026-11-12) */
-  arv: number | null;
   about: string | null;
   mustRead: string[];
   terms: string[];
@@ -101,7 +99,6 @@ export function readDealContent(raw: unknown): DealPageContent | null {
     facts: str(r.facts, 300),
     occupancy: str(r.occupancy, 100),
     price: { label: p.label === "Buy Now" ? "Buy Now" : "Suggested Price", amount },
-    arv: money(r.arv),
     about: str(r.about, 4000),
     mustRead: list(r.mustRead, 10),
     terms: list(r.terms, 10),
@@ -122,6 +119,54 @@ export function readDealContent(raw: unknown): DealPageContent | null {
 /** Whether the walkthrough is still ahead: its RSVP closes when it starts. */
 export function walkthroughOpen(w: DealWalkthrough | null, now: number = Date.now()): w is DealWalkthrough {
   return w !== null && Date.parse(w.at) > now;
+}
+
+export interface WalkthroughParts {
+  weekday: string;
+  month: string;
+  day: string;
+  time: string;
+}
+
+const WALK_LABEL = /^([A-Za-z]{3}), ([A-Za-z]{3}) (\d{1,2}) · (.+)$/;
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+/** "Sat, Nov 21 · 10:00 AM" in its parts, for the RSVP ticket's stub; null for a label in any other shape. */
+export function walkthroughParts(label: string): WalkthroughParts | null {
+  const m = WALK_LABEL.exec(label.trim());
+  if (!m || !MONTHS.includes(m[2].toLowerCase())) return null;
+  return { weekday: m[1], month: m[2], day: m[3], time: m[4].trim() };
+}
+
+/** Past this many days a countdown is noise, not a nudge. */
+const COUNTDOWN_MAX_DAYS = 30;
+
+/**
+ * "Today", "Tomorrow" or "In 3 days": how far the label's printed day is on the viewer's own calendar.
+ * Counted from the printed day, never the instant, so it can't disagree with the date beside it.
+ */
+export function walkthroughCountdown(w: DealWalkthrough, now: Date = new Date()): string | null {
+  const parts = walkthroughParts(w.label);
+  const at = Date.parse(w.at);
+  if (!parts || Number.isNaN(at) || at <= now.getTime()) return null;
+  const month = MONTHS.indexOf(parts.month.toLowerCase());
+  // The label carries no year: take the one that puts its day nearest the instant.
+  const year = new Date(at).getUTCFullYear();
+  const day = [year - 1, year, year + 1]
+    .map((y) => new Date(y, month, Number(parts.day)))
+    .sort((a, b) => Math.abs(a.getTime() - at) - Math.abs(b.getTime() - at))[0];
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((day.getTime() - today.getTime()) / 86_400_000);
+  if (days < 0 || days > COUNTDOWN_MAX_DAYS) return null;
+  return days === 0 ? "Today" : days === 1 ? "Tomorrow" : `In ${days} days`;
+}
+
+/** "2026-12-12" → "Fri, Dec 12" */
+export function closeByLabel(iso: string): string {
+  const d = new Date(`${iso}T12:00:00`);
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 
 /** What the server put in the page's #deal-data script, read defensively. */
