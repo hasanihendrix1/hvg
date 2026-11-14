@@ -10,7 +10,6 @@ import axios from "axios";
 import {
   handler,
   BUYER_CONSENT_TEXT,
-  BUYER_DEAL_ALERTS_CONSENT_TEXT,
   BUYER_DEAL_UPDATES_CONSENT_TEXT,
 } from "../../netlify/functions/dealResponse.js";
 
@@ -81,13 +80,21 @@ test("an interest goes to dotato signed over its timestamp and exact body", asyn
     consentCallsEmail: true,
     consentText: BUYER_CONSENT_TEXT,
     consentDealAlerts: false,
-    dealAlertsConsentText: BUYER_DEAL_ALERTS_CONSENT_TEXT,
     consentDealUpdates: true,
     dealUpdatesConsentText: BUYER_DEAL_UPDATES_CONSENT_TEXT,
     offer: null,
   });
+  // The deal page shows no deal-alerts box (owner, 2026-11-14): no wording the buyer never saw is recorded
+  expect(s.json).not.toHaveProperty("dealAlertsConsentText");
+  expect(s.json).not.toHaveProperty("dealAlertsConsentVersion");
   expect(s.json).not.toHaveProperty("fax");
   expect(s.json).not.toHaveProperty("fillTimeMs");
+});
+
+test("a deal page response never carries a deal-alerts yes, even when one is posted", async () => {
+  await post(interest({ consentDealAlerts: true, consentDealUpdates: true }));
+  expect(sent().json.consentDealAlerts).toBe(false);
+  expect(sent().json.consentDealUpdates).toBe(true);
 });
 
 test("only a literal true ticks a texting box", async () => {

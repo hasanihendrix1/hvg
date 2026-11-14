@@ -2,7 +2,6 @@ import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import "../styles/deal-page.css";
 import {
   BUYER_CONSENT_TEXT,
-  BUYER_DEAL_ALERTS_CONSENT_TEXT,
   BUYER_DEAL_UPDATES_CONSENT_TEXT,
 } from "../data/consent";
 import {
@@ -49,7 +48,6 @@ type Contact = {
   phone: string;
   email: string;
   consent: boolean;
-  dealAlerts: boolean;
   dealUpdates: boolean;
 };
 
@@ -59,7 +57,6 @@ const EMPTY_CONTACT: Contact = {
   phone: "",
   email: "",
   consent: false,
-  dealAlerts: false,
   dealUpdates: false,
 };
 
@@ -743,13 +740,7 @@ function ContactFields({ contact, setContact }: { contact: Contact; setContact: 
             {BUYER_CONSENT_TEXT} See our <a href="/investor-privacy">Investor Privacy Notice</a>.
           </span>
         </label>
-        {/* ⚖ The investor deal-texts boxes: optional, unticked until the buyer ticks one. */}
-        <label className="deal-consent">
-          <input type="checkbox" name="consentDealAlerts" checked={contact.dealAlerts} onChange={set("dealAlerts")} />
-          <span>
-            {BUYER_DEAL_ALERTS_CONSENT_TEXT} See our <a href="/investor-sms-terms">Investor SMS Terms</a>.
-          </span>
-        </label>
+        {/* ⚖ Deal updates only, optional and unticked: the deal-alerts box lives on /investors (owner, 2026-11-14). */}
         <label className="deal-consent">
           <input type="checkbox" name="consentDealUpdates" checked={contact.dealUpdates} onChange={set("dealUpdates")} />
           <span>
@@ -796,7 +787,6 @@ function useSend(p: FlowProps, kind: "interested" | "offer" | "rsvp") {
           phone: c.phone.trim(),
           email: c.email.trim(),
           consentCallsEmail: c.consent,
-          consentDealAlerts: c.dealAlerts,
           consentDealUpdates: c.dealUpdates,
           offer,
           rsvp,

@@ -10,9 +10,6 @@ import "dotenv/config";
 // (tests/consent-sync.test.mjs fails if they differ).
 export const BUYER_CONSENT_TEXT =
   "I agree to receive calls and emails from Hendrix Ventures Group LLC about investment inventory.";
-export const BUYER_DEAL_ALERTS_CONSENT_VERSION = "2026-11-11.1";
-export const BUYER_DEAL_ALERTS_CONSENT_TEXT =
-  "I agree to receive recurring promotional text messages from Hendrix Ventures Group LLC with deal alerts about investment properties we have available, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal alerts are optional and not required to join the buyer list.";
 export const BUYER_DEAL_UPDATES_CONSENT_VERSION = "2026-11-11.1";
 export const BUYER_DEAL_UPDATES_CONSENT_TEXT =
   "I agree to receive text messages from Hendrix Ventures Group LLC with updates on deals I respond to, such as walkthrough times and offer status, at the number provided. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help. Deal updates are optional and not required to join the buyer list.";
@@ -127,9 +124,8 @@ export function validateResponse(p) {
       buyerType: null,
       consentCallsEmail: true,
       consentText: BUYER_CONSENT_TEXT,
-      consentDealAlerts: p.consentDealAlerts === true,
-      dealAlertsConsentVersion: BUYER_DEAL_ALERTS_CONSENT_VERSION,
-      dealAlertsConsentText: BUYER_DEAL_ALERTS_CONSENT_TEXT,
+      // The deal page shows no deal-alerts box (owner, 2026-11-14), so it never sends a yes to one.
+      consentDealAlerts: false,
       consentDealUpdates: p.consentDealUpdates === true,
       dealUpdatesConsentVersion: BUYER_DEAL_UPDATES_CONSENT_VERSION,
       dealUpdatesConsentText: BUYER_DEAL_UPDATES_CONSENT_TEXT,

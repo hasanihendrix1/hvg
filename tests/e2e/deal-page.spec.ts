@@ -166,10 +166,10 @@ test.describe("desktop", () => {
       kind: "offer",
       firstName: "Dana",
       consentCallsEmail: true,
-      consentDealAlerts: false,
       offer: { siteUnseen: true, acknowledgedUnseen: true, amount: 158000, emd: 3000, closeBy: "2026-12-12", notes: null },
     });
     expect(body.submissionId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(body).not.toHaveProperty("consentDealAlerts");
     expect(body.fillTimeMs).toBeGreaterThan(0);
   });
 
@@ -295,7 +295,19 @@ test.describe("desktop", () => {
     await page.getByRole("checkbox", { name: /calls and emails/ }).check();
     await page.getByRole("button", { name: "Send" }).click();
     await expect(page.getByRole("heading", { name: "Got it" })).toBeVisible();
-    expect(served.posts[0]).toMatchObject({ kind: "interested", offer: null, consentDealUpdates: true, consentDealAlerts: false });
+    expect(served.posts[0]).toMatchObject({ kind: "interested", offer: null, consentDealUpdates: true });
+  });
+
+  test("the deal page's forms ask for two yeses: calls and emails, and updates on this deal", async ({ page }) => {
+    await serve(page, live({ ...CONTENT, walkthrough: AHEAD }));
+    for (const open of ["I'm interested", "RSVP for the walkthrough"]) {
+      await page.goto(`/deals/${SLUG}`);
+      await page.locator(".deal-price-card").getByRole("button", { name: open }).first().click();
+      await expect(page.getByRole("checkbox")).toHaveCount(2);
+      await expect(page.getByRole("checkbox", { name: /calls and emails/ })).toBeVisible();
+      await expect(page.getByRole("checkbox", { name: /updates on deals I respond to/ })).toBeVisible();
+      await expect(page.getByText(/deal alerts/i)).toHaveCount(0);
+    }
   });
 
   test("a failed send says so with the number, and the retry is the same submission", async ({ page }) => {
